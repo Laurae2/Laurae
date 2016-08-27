@@ -4,15 +4,15 @@
 \alias{tableplot_jpg}
 \title{Batch tableplot generator to JPEG}
 \usage{
-tableplot_jpg(data, target, nBins, folder = "./autoplots/plot_", ID = FALSE,
-  width = 960, height = 960, pointsize = 12)
+tableplot_jpg(data, target, nBins = 100, folder = "./autoplots/plot_",
+  ID = FALSE, width = 960, height = 960, pointsize = 12)
 }
 \arguments{
 \item{data}{The data to load.}
 
 \item{target}{The target label. Either factor or numeric.}
 
-\item{nBins}{The amount of bins per histogram. Should be between 50 and 500 if possible (higher may overfit, lower may underfit).}
+\item{nBins}{The amount of bins per histogram. Should be between 50 and 500 if possible (higher may overfit, lower may underfit). Defaults to \code{100}.}
 
 \item{folder}{The output folder where tableplots will be stored. Defaults to \code{"./autoplots/plot_"}.}
 
