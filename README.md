@@ -13,12 +13,13 @@ Package for (very) advanced Data Science for R by Laurae
 | Function Name | Type | What is it for |
 | --- | --- | --- |
 | tsne_grid | Dimensionality Reduction + Grid Search | Allows to grid search a seed and a perplexity interval using t-SNE, while returning the best t-SNE model along with the best iteration found, all in a fully verbose fashion. |
+| read_sparse_csv | Iterated numeric sparse matrix reading | R always imports CSV as dense. This function allows to read very large CSVs in chunks by variables (or a specific subset of variables), outputting a sparse matrix with typically lower RAM usage than a dense matrix if sparsity is high enough, all in a fully verbose fashion. Sparsity can be defined as 0 or NA, while saving as RDS is available in the loading streak. |
 
 To add:
 
 * xgboost grid search
 * xgboost unbalanced large dataset learning
-* large sparse matrix loader
+* large sparse matrix loader for categorical data
 * Categorical to Numeric converter: h2o's autoencoder, mxnet's autoencoder, t-SNE, Generalized Low Rank Models, largeVis, FeatureHashing - along with testing performance using xgboost
 * Rule search
 * Logloss brute force calibration
