@@ -6,7 +6,7 @@
 #' 
 #' @param data The data to load.
 #' @param target The target label. Either factor or numeric.
-#' @param nBins The amount of bins per histogram. Should be between 50 and 500 if possible (higher may overfit, lower may underfit).
+#' @param nBins The amount of bins per histogram. Should be between 50 and 500 if possible (higher may overfit, lower may underfit). Defaults to \code{100}.
 #' @param folder The output folder where tableplots will be stored. Defaults to \code{"./autoplots/plot_"}.
 #' @param ID Should the filename use the ID of the feature (starts at 1) or the name of the feature? Defaults to \code{FALSE}.
 #' @param width The width output of each tableplot, in pixels. Defaults to \code{960}.
@@ -20,7 +20,7 @@
 #' 
 #' @export
 
-tableplot_jpg <- function(data, target, nBins, folder = "./autoplots/plot_", ID = FALSE, width = 960, height = 960, pointsize = 12) {
+tableplot_jpg <- function(data, target, nBins = 100, folder = "./autoplots/plot_", ID = FALSE, width = 960, height = 960, pointsize = 12) {
   
   data <- tablePrepare(data.frame(target = target, data))
   for (i in 2:ncol(data)) {
