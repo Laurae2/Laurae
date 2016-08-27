@@ -12,15 +12,15 @@ read_sparse_csv(input, iterfeature, nfeatures = NA, colClasses = NA,
 
 \item{iterfeature}{The amount of variables loaded per iteration. The smaller the longer it takes to load the whole dataset in its entireity.}
 
-\item{nfeatures}{The IDs of features to load. Defaults to \code{"NA"} which means loading all columns.}
+\item{nfeatures}{The IDs of features to load. Defaults to \code{NA} which means loading all columns.}
 
-\item{colClasses}{The classes of the columns. Defaults to \code{"NA"} which means autoselection as numeric. Do not modify (keep default).}
+\item{colClasses}{The classes of the columns. Defaults to \code{NA} which means autoselection as numeric. Do not modify (keep default).}
 
-\item{RDS}{Whether to store in a RDS file of that name. Defaults to \code{"NA"} which means no RDS file. Otherwise, it takes \code{"RDS"} as filename.}
+\item{RDS}{Whether to store in a RDS file of that name. Defaults to \code{NA} which means no RDS file. Otherwise, it takes \code{RDS} as filename.}
 
-\item{compress_RDS}{Whether to compress RDS file. Defaults to \code{"TRUE"}}
+\item{compress_RDS}{Whether to compress RDS file. Defaults to \code{TRUE}}
 
-\item{NA_sparse}{Whether sparsity is defined as NA. Defaults to \code{"FALSE"}}
+\item{NA_sparse}{Whether sparsity is defined as NA. Defaults to \code{FALSE}}
 }
 \value{
 The sparse matrix

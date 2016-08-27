@@ -5,11 +5,11 @@
 #' 
 #' @param input The input file name.
 #' @param iterfeature The amount of variables loaded per iteration. The smaller the longer it takes to load the whole dataset in its entireity.
-#' @param nfeatures The IDs of features to load. Defaults to \code{"NA"} which means loading all columns.
-#' @param colClasses The classes of the columns. Defaults to \code{"NA"} which means autoselection as numeric. Do not modify (keep default).
-#' @param RDS Whether to store in a RDS file of that name. Defaults to \code{"NA"} which means no RDS file. Otherwise, it takes \code{"RDS"} as filename.
-#' @param compress_RDS Whether to compress RDS file. Defaults to \code{"TRUE"}
-#' @param NA_sparse Whether sparsity is defined as NA. Defaults to \code{"FALSE"}
+#' @param nfeatures The IDs of features to load. Defaults to \code{NA} which means loading all columns.
+#' @param colClasses The classes of the columns. Defaults to \code{NA} which means autoselection as numeric. Do not modify (keep default).
+#' @param RDS Whether to store in a RDS file of that name. Defaults to \code{NA} which means no RDS file. Otherwise, it takes \code{RDS} as filename.
+#' @param compress_RDS Whether to compress RDS file. Defaults to \code{TRUE}
+#' @param NA_sparse Whether sparsity is defined as NA. Defaults to \code{FALSE}
 #' 
 #' @return The sparse matrix
 #' 

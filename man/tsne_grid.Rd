@@ -14,9 +14,9 @@ tsne_grid(data, output_dims, input_dims = ncol(data),
 
 \item{output_dims}{How many dimensions to output? (increases exponentially the computation time)}
 
-\item{input_dims}{How many input dimensions to use? (defaults to \code{"ncol(data)"}) - this should be changed when using pca to a value below the default value}
+\item{input_dims}{How many input dimensions to use? (defaults to \code{ncol(data)}) - this should be changed when using pca to a value below the default value}
 
-\item{perplexity_range}{What hyperparameter interval to look for? (should be formatted as (min, max)) - defaults to \code{"c(1, floor((ncol(data)-1)/3))"} - to grid search a seed for a fixed perplexity value, use min = max as inputs - the best pragmatic perpelxity for the lowest loss is typically \code{"floor((ncol(data)-1)/3)"}}
+\item{perplexity_range}{What hyperparameter interval to look for? (should be formatted as (min, max)) - defaults to \code{c(1, floor((ncol(data)-1)/3))} - to grid search a seed for a fixed perplexity value, use min = max as inputs - the best pragmatic perpelxity for the lowest loss is typically \code{floor((ncol(data)-1)/3)}}
 
 \item{tries}{How many seeds to test t-SNE per perplexity value? (this increases linearly the computation time)}
 
