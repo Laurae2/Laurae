@@ -62,7 +62,7 @@ xgb.ncv(data, label, extra_data = NA, out_of_fold = TRUE, nfolds = 5,
 \item{early_stopping_rounds}{How many rounds the evaluation metric does not follow the maximization rule to force stopping a boosting iteration of xgboost on a fold? Defaults to \code{50}.}
 }
 \value{
-A list with one to three elements: \code{"scores"} for the scored folds (data.frame), \code{"preds"} for out of fold predictions (data.frame), and \code{"extra"} for extra data predictions per fold (data.frame).
+A list with two to four elements: \code{"scores"} for the scored folds (data.frame), \code{"folds"} for the folds IDs (list), \code{"preds"} for out of fold predictions (data.frame), and \code{"extra"} for extra data predictions per fold (data.frame).
 }
 \description{
 This function allows you to run a repeated cross-validation using xgboost, to get out of fold predictions, and to get predictions from each fold on external data.

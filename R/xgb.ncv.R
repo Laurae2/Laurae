@@ -30,7 +30,7 @@
 #' @param maximize Should we maximize the evaluation metric? Defaults to \code{FALSE}.
 #' @param early_stopping_rounds How many rounds the evaluation metric does not follow the maximization rule to force stopping a boosting iteration of xgboost on a fold? Defaults to \code{50}.
 #' 
-#' @return A list with one to three elements: \code{"scores"} for the scored folds (data.frame), \code{"preds"} for out of fold predictions (data.frame), and \code{"extra"} for extra data predictions per fold (data.frame).
+#' @return A list with two to four elements: \code{"scores"} for the scored folds (data.frame), \code{"folds"} for the folds IDs (list), \code{"preds"} for out of fold predictions (data.frame), and \code{"extra"} for extra data predictions per fold (data.frame).
 #' 
 #' @examples 
 #' Pick your xgb.cv function, replace data by the initial matrix, insert the label, check ntimes to the value you want, and change the sinkfile. Unlist params if needed, and add the seed as a parameter.
@@ -146,14 +146,14 @@ xgb.ncv <- function(data,
   if (out_of_fold == TRUE) {
     
     if (is.na(extra_data)[[1]][1] == FALSE) {
-      return(list(scores = score_list, preds = preds_list, extra = extra_list))
+      return(list(scores = score_list, folds = folds, preds = preds_list, extra = extra_list))
     } else {
-      return(list(scores = score_list, preds = preds_list))
+      return(list(scores = score_list, folds = folds, preds = preds_list))
     }
     
   } else {
     
-    return (list(scores = score_list))
+    return (list(scores = score_list, folds = folds))
     
   }
   
