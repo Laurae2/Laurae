@@ -18,6 +18,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | outliers | rule_single, rule_double |
 | R.utils | rule_single, rule_double |
 | data.table | read_sparse_csv |
+| Matrix | read_sparse_csv |
+| recommenderlab | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | tsne_grid |
 | tabplot | tableplot_jpg |
 | caret | xgb.ncv |
