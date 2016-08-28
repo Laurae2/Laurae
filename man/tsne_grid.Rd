@@ -31,7 +31,7 @@ tsne_grid(data, output_dims, input_dims = ncol(data),
 \item{is_distance}{Is the input a distance matrix? (assumes the diagonal cuts in half the input data.frame)}
 }
 \value{
-t-SNE list A list with the best (lowest loss at a specific iteration) t-SNE elements from Rtsne
+A list with the best (lowest loss at a specific iteration) t-SNE elements from Rtsne
 }
 \description{
 This function allows you to search a perplexity hyperparameter range along with different seeds.
