@@ -8,6 +8,21 @@ install_github("Laurae2/Laurae")
 # Laurae
 Advanced Toolbox for Data Science for R by Laurae
 
+# What you need?
+
+If I am not missing stuff (please make a pull request if something is missing that must be added):
+
+| Package | Which functions? |
+| --- | --- |
+| xgboost (0.60) | xgb.ncv
+| outliers | rule_single, rule_double |
+| R.utils | rule_single, rule_double |
+| data.table | read_sparse_csv |
+| Rtsne | tsne_grid |
+| tabplot | tableplot_jpg |
+| caret | xgb.ncv |
+
+
 # What is inside?
 
 | Function Name | Type | What is it for |
