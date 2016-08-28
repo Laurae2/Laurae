@@ -26,7 +26,7 @@ read_sparse_csv(input, iterfeature, nfeatures = NA, colClasses = NA,
 The sparse matrix
 }
 \description{
-This functions allows you to big load sparse numeric CSVs. Loading in chunks allows to not explode the memory as when the data is imported into R, it is typically a dense matrix.
+This function allows you to big load sparse numeric CSVs. Loading in chunks allows to not explode the memory as when the data is imported into R, it is typically a dense matrix.
 Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 }
 \examples{

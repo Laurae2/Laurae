@@ -1,6 +1,6 @@
 #' Read sparse (numeric) CSVs
 #'
-#' This functions allows you to big load sparse numeric CSVs. Loading in chunks allows to not explode the memory as when the data is imported into R, it is typically a dense matrix.
+#' This function allows you to big load sparse numeric CSVs. Loading in chunks allows to not explode the memory as when the data is imported into R, it is typically a dense matrix.
 #' Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 #' 
 #' @param input The input file name.

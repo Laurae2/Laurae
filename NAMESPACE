@@ -3,3 +3,4 @@
 export(read_sparse_csv)
 export(tableplot_jpg)
 export(tsne_grid)
+export(xgb.ncv)
