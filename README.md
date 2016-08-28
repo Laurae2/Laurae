@@ -6,7 +6,7 @@ install_github("Laurae2/Laurae")
 ```
 
 # Laurae
-Package for (very) advanced Data Science for R by Laurae
+Advanced Toolbox for Data Science for R by Laurae
 
 # What is inside?
 
