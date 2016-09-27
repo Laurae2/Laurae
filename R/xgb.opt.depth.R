@@ -51,7 +51,7 @@ xgb.opt.depth <- function(initial = 8, min_depth = 1, max_depth = 25, patience =
   if (Laurae.xgb.opt.depth.iter[1, "Score"] == better(Laurae.xgb.opt.depth.df[, "score"])) {
     
     Laurae.xgb.opt.depth.iter[4, ] <<- c(4, initial - 1, worst_score, worst_score)
-    Laurae.xgb.opt.depth.iter[5, ] <<- c(5, initial - 1, worst_score, worst_score)
+    Laurae.xgb.opt.depth.iter[5, ] <<- c(5, initial + 1, worst_score, worst_score)
     
     for (i in 4:5) {
       
