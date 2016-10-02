@@ -85,7 +85,7 @@ xgb.opt.depth <- function(initial = 8, min_depth = 1, max_depth = 25, patience =
       xgb.opt.depth.callback(i, learner, better, sd_effect)
       
       # Has improved
-      if ((Laurae.xgb.opt.depth.best == (initial - (i - 2))) | (Laurae.xgb.opt.depth.iter[i, "Depth"] == min_depth)) {
+      if ((Laurae.xgb.opt.depth.best == (initial - (i - 2))) & (Laurae.xgb.opt.depth.iter[i, "Depth"] > min_depth)) {
         j <- 0
       } else {
         j <- j + 1
@@ -121,7 +121,7 @@ xgb.opt.depth <- function(initial = 8, min_depth = 1, max_depth = 25, patience =
       xgb.opt.depth.callback(i, learner, better, sd_effect)
       
       # Has improved
-      if ((Laurae.xgb.opt.depth.best == (initial + (i - 2))) | (Laurae.xgb.opt.depth.iter[i, "Depth"] == max_depth)) {
+      if ((Laurae.xgb.opt.depth.best == (initial + (i - 2))) & (Laurae.xgb.opt.depth.iter[i, "Depth"] < max_depth)) {
         j <- 0
       } else {
         j <- j + 1
