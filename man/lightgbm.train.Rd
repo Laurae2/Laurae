@@ -49,11 +49,11 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{min_sum_hessian_in_leaf}{Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.}
 
-\item{feature_fraction}{Type: numeric (0, 1). Column subsampling percentage. For instance, 0.5 means selecting 50% of features randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}.}
+\item{feature_fraction}{Type: numeric (0, 1). Column subsampling percentage. For instance, 0.5 means selecting 50\% of features randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}.}
 
 \item{feature_fraction_seed}{Type: integer. Random starting seed for the column subsampling (\code{feature_fraction}). Defaults to \code{2}.}
 
-\item{bagging_fraction}{Type: numeric (0, 1). Row subsampling percentage. For instance, 0.5 means selecting 50% of rows randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}. Unused when \code{bagging_freq} is \code{0}.}
+\item{bagging_fraction}{Type: numeric (0, 1). Row subsampling percentage. For instance, 0.5 means selecting 50\% of rows randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}. Unused when \code{bagging_freq} is \code{0}.}
 
 \item{bagging_freq}{Type: integer. The frequency of row subsampling (\code{bagging_fraction}). Lower values potentially decrease overfitting, while training faster. Defaults to \code{0}.}
 
