@@ -23,7 +23,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Rtsne | tsne_grid |
 | tabplot | tableplot_jpg |
 | caret | xgb.ncv |
-
+| LightGBM (to compile) | lightgbm.train, lightgbm.predict, lightgbm.cv, lightgbm.predict.cv |
 
 # What is inside?
 
@@ -36,8 +36,19 @@ If I am not missing stuff (please make a pull request if something is missing th
 | rule_single | Outlying Univariate Continuous Association Rule Finder | Allows to use an outlying univariate continuous association rule finder on data and predicts immediately. Intermediate outlying scores can be stored. High verbosity of outputs during computation.
 | rule_double | Outlying Bivariate Linear Continuous Association Rule Finder | Allows to use an outlying bivariate linear continuous association rule finder on data and predicts immediately. Intermediate outlying scores cannot be stored. If a bivariate combination is ill-conditioned (sum of correlation matrix = 4), that bivariate combination is skipped to avoid a solver matrix inversion crash/freeze/interruption when trying to compute Mahalanobis distance dimensionality reduction. High verbosity of outputs during computation. Potential TO-DO: give the user the possibility to use their own dimensionality reduction function (like a truncated PCA 1-axis). |
 | xgb.opt.depth | xgboost Depth Optimizer | Allows to optimize xgboost's depth parameter using simple heuristics. The learner function is customizable to fit any other model requiring to work by integer steps. Hence, it is adaptable to work on continuous 1-D features, with a large safety net you define yourself by coercing the integer to your own range. |
+| lightgbm.train | LightGBM trainer | Trains a LightGBM model. |
+| lightgbm.predict | LightGBM predictor | Predicts from a LightGBM model. |
+| lightgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. |
+| lightgbm.cv.predict | LightGBM CV predictor | Predicts from a Cross-Validated LightGBM model. |
 
-To add:
+# TO-DO:
+
+* Refactor LightGBM code
+* Better handling of LightGBM arguments
+* Better handling of LightGBM files
+* Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
+
+# To add:
 
 * xgboost grid search
 * xgboost unbalanced large dataset learning
@@ -49,3 +60,7 @@ To add:
 * Automated Feature Analyzer (analyze created features and test against randomness of improval) - all with verbosity
 * Leave-one-out encoding (encodes any categorical using a continuous variable such as the label or a feature)
 * AND MANY MORE...
+
+# Extra contributors:
+
+@fakyras for the base R code for LightGBM.
