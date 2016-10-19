@@ -7,12 +7,13 @@
 lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
   val_name = "test.csv", input_model = "LightGBM_model.txt",
   output_result = "LightGBM_predict_result.txt",
-  gbmpath = "/home/dba/KAGGLE/LightGBM", newx = TRUE, data.table = FALSE)
+  gbmpath = "/home/dba/KAGGLE/LightGBM", newx = TRUE,
+  data.table = exists("data.table"))
 }
 \arguments{
-\item{model}{Type: character. ?????}
+\item{model}{Type: character.The working directory of the model.}
 
-\item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}.}
+\item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features.}
 
 \item{y_val}{Type: vector. The validation labels. Defaults to \code{NULL}.}
 
@@ -28,7 +29,7 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
 
 \item{newx}{Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.}
 
-\item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{FALSE}.}
+\item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
 }
 \value{
 The predictions.

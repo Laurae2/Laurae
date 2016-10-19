@@ -1,14 +1,13 @@
-#' LightGBM Model Training
+#' LightGBM Cross-Validated Model Training
 #'
-#' This function allows you to train a LightGBM model.
+#' This function allows you to cross-validate a LightGBM model.
 #' It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 #' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
-#' @param y_val Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
-#' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
+#' @param idx Type: vector of integers. The fold assigned to each row.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
@@ -49,20 +48,19 @@
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
 #' @param gbmpath Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.
 #' @param workingdir Type: character. The working directory used for LightGBM, starting from gbmpath. Defaults to \code{''}.
-#' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
+#' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' 
-#' @return The working directory for the trained model.
+#' @return If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
 #' 
 #' @examples 
 #' None yet.
 #' 
 #' @export
 
-lightgbm.train <- function(
+lightgbm.cv <- function(
   y_train,
   x_train,
-  y_val = NULL,
-  x_val = NULL,
+  idx,
   application = 'regression',
   validation = TRUE,
   num_iterations = 10,
@@ -103,100 +101,60 @@ lightgbm.train <- function(
   machine_list_file = '',
   gbmpath = '/home/dba/KAGGLE/LightGBM',
   workingdir = '',
-  files_exist = FALSE
+  prediction = TRUE
 ) {
-  
-  # Check file existance
-  if(!file.exists(paste0(gbmpath, '/lightgbm'))){
-    return(paste0('Could not find lightgbm.exe under ', paste0(gbmpath, '/lightgbm'), "."))
+  models=list()
+  idx_list=unique(idx)
+  for (i in 1:length(idx_list)) {
+    print('************')
+    print(paste('Fold no:',i))
+    print('************')    
+    models[[i]]=
+      lightgbm.train(
+        x_train=x_train[idx!=i,],
+        y_train=y_train[idx!=i],
+        x_val=x_train[idx==i,],
+        y_val=y_train[idx==i],
+        application,
+        validation,
+        num_iterations,
+        learning_rate,
+        num_leaves,
+        tree_learner,
+        num_threads,
+        min_data_in_leaf,
+        min_sum_hessian_in_leaf,
+        feature_fraction,
+        feature_fraction_seed,
+        bagging_fraction,
+        bagging_freq,
+        bagging_seed,
+        max_bin,
+        data_random_seed,
+        data_has_label,
+        output_model,
+        input_model,
+        output_result,
+        is_sigmoid,init_score,
+        is_pre_partition,
+        is_sparse,
+        two_round,
+        save_binary,
+        sigmoid,
+        is_unbalance,
+        max_position,
+        label_gain,
+        metric,metric_freq,
+        is_training_metric,
+        ndcg_at,num_machines,
+        local_listen_port,
+        time_out,
+        machine_list_file,
+        gbmpath,workingdir
+      )
   }
-  
-  # Setup working directory for LightGBM
-  print(paste('Using LightGBM path:', gbmpath))
-  if (workingdir == '') {
-    workingdir = stri_rand_strings(1, 20)
+  if (!prediction) { return(models) }
+  if(prediction) {
+    return(lightgbm.cv.predict(models))
   }
-  
-  # Create working directory for LightGBM
-  dir.create(file.path(gbmpath, workingdir), showWarnings = FALSE)
-  print(paste('Working directory of LightGBM:', file.path(gbmpath, workingdir)))
-  
-  # Setup the train configuration file
-  file.copy(paste0(gbmpath, '/lightgbm'), file.path(gbmpath, workingdir))
-  fileConn <- file(file.path(gbmpath, workingdir, "train.conf"), "w")
-  write(paste0('task=train'), fileConn, append = TRUE)
-  write(paste0('application=',application), fileConn, append = TRUE)
-  write(paste0('data="',file.path(gbmpath, workingdir,'train.csv"')), fileConn, append = TRUE)
-  if (validation) write(paste0('valid="',file.path(gbmpath, workingdir, 'val.csv"')), fileConn, append = TRUE)
-  write(paste0('num_iterations=', num_iterations), fileConn, append = TRUE)
-  write(paste0('learning_rate=', learning_rate), fileConn, append = TRUE)
-  write(paste0('num_leaves=', num_leaves), fileConn, append = TRUE)
-  write(paste0('tree_learner=', tree_learner), fileConn, append = TRUE)
-  write(paste0('num_threads=', num_threads), fileConn, append = TRUE)
-  write(paste0('min_data_in_leaf=', min_data_in_leaf), fileConn, append = TRUE)
-  write(paste0('min_sum_hessian_in_leaf=', min_sum_hessian_in_leaf), fileConn, append = TRUE)
-  write(paste0('feature_fraction=', feature_fraction), fileConn, append = TRUE)
-  write(paste0('feature_fraction_seed=', feature_fraction_seed), fileConn, append = TRUE)
-  write(paste0('bagging_fraction=', bagging_fraction), fileConn, append = TRUE)
-  write(paste0('bagging_freq=', bagging_freq), fileConn, append = TRUE)
-  write(paste0('bagging_seed=', bagging_seed), fileConn, append = TRUE)
-  write(paste0('max_bin=', max_bin), fileConn, append = TRUE)
-  write(paste0('data_random_seed=', data_random_seed), fileConn, append = TRUE)
-  write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
-  if (output_model!='') write(paste0('output_model="',file.path(gbmpath, workingdir, output_model),'"'), fileConn, append = TRUE)
-  write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
-  if (init_score!='') write(paste0('init_score="',file.path(gbmpath, workingdir, init_score),'"'), fileConn, append = TRUE)
-  write(paste0('is_pre_partition=', tolower(as.character(is_pre_partition))), fileConn, append = TRUE)
-  write(paste0('is_sparse=', tolower(as.character(is_sparse))), fileConn, append = TRUE)
-  write(paste0('two_round=', tolower(as.character(two_round))), fileConn, append = TRUE)
-  write(paste0('save_binary=', tolower(as.character(save_binary))), fileConn, append = TRUE)
-  write(paste0('sigmoid=', sigmoid), fileConn, append = TRUE)
-  write(paste0('is_unbalance=', tolower(as.character(is_unbalance))), fileConn, append = TRUE)
-  write(paste0('max_position=', max_position), fileConn, append = TRUE)
-  write(paste0('label_gain=', paste(label_gain, collapse = ",")), fileConn, append = TRUE)
-  write(paste0('metric=', paste(metric, collapse = ",")), fileConn, append = TRUE)
-  write(paste0('metric_freq=', metric_freq), fileConn, append = TRUE)
-  write(paste0('is_training_metric=', tolower(as.character(is_training_metric))), fileConn, append = TRUE)
-  write(paste0('ndcg_at=', paste(ndcg_at, collapse = ",")), fileConn, append = TRUE)
-  write(paste0('num_machines=', num_machines), fileConn, append = TRUE)
-  write(paste0('local_listen_port=', local_listen_port), fileConn, append = TRUE)
-  write(paste0('time_out=', time_out), fileConn, append = TRUE)
-  if (machine_list_file!='') write(paste0('machine_list_file="', file.path(gbmpath, workingdir, machine_list_file), '"'), fileConn, append = TRUE)
-  close(fileConn)
-  print(paste('Training configuration file saved to:', file.path(gbmpath, workingdir, "train.conf")))
-  
-  # Export data
-  if (!files_exist) {
-    if (exists("fwrite") & is.data.table(x_train)) {
-      # Uses the super fast CSV writer
-      print(paste('Saving train data (data.table) file to:', file.path(gbmpath, workingdir, "train.csv")))
-      my_data <- x_train
-      my_data[, datatable_target := y_train]
-      setcolorder(my_data, c("datatable_target", colnames(x_train)))
-      fwrite(my_data, file.path = file.path(gbmpath, workingdir, "train.csv"), col.names = FALSE, sep = ",", na = "nan")
-    } else {
-      # Fallback if no fwrite
-      print(paste('Saving train data file to:', file.path(gbmpath, workingdir,"train.csv")))
-      write.table(cbind(y_train, x_train), file.path(gbmpath, workingdir, "train.csv"), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
-      gc(verbose = FALSE) # In case of memory explosion
-    }
-    if (validation) {
-      if (exists("fwrite") & is.data.table(x_train)) {
-        print(paste('Saving validation data (data.table) file to:', file.path(gbmpath, workingdir,'val.csv')))
-        my_data <- x_val
-        my_data[, datatable_target := y_val]
-        setcolorder(my_data, c("datatable_target", colnames(x_val)))
-        fwrite(my_data, file.path = file.path(gbmpath, workingdir, "val.csv"), col.names = FALSE, sep = ",", na = "nan")
-      } else {
-        # Fallback if no fwrite
-        print(paste('Saving validation data file to:', file.path(gbmpath, workingdir,'val.csv')))
-        write.table(cbind(y_val, x_val), file.path(gbmpath, workingdir, "val.csv"), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
-        gc(verbose = FALSE) # In case of memory explosion
-      }
-    }
-  }
-  system(paste0(file.path(gbmpath, workingdir), '/lightgbm config=', file.path(gbmpath, workingdir), '/train.conf'))
-  print(paste('Model completed, results saved in ', file.path(gbmpath, workingdir)))
-  return(workingdir)
-  
 }

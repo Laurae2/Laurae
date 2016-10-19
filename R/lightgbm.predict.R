@@ -2,8 +2,8 @@
 #'
 #' This function allows to run predictions on provided data.
 #' 
-#' @param model Type: character. ?????
-#' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}.
+#' @param model Type: character.The working directory of the model.
+#' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features.
 #' @param y_val Type: vector. The validation labels. Defaults to \code{NULL}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param val_name Type: character. The file output name for the vaildation file. Defaults to \code{"test.csv"}.
@@ -11,7 +11,7 @@
 #' @param output_result Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.
 #' @param gbmpath Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.
 #' @param newx Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.
-#' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{FALSE}.
+#' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
 #' 
 #' @return The predictions.
 #' 
@@ -30,7 +30,7 @@ lightgbm.predict <- function(
   output_result = 'LightGBM_predict_result.txt',
   gbmpath = '/home/dba/KAGGLE/LightGBM',
   newx = TRUE,
-  data.table = FALSE
+  data.table = exists("data.table")
 ) {
   
   # Check file existance
