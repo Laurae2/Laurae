@@ -18,8 +18,9 @@ lightgbm.cv(y_train, x_train, idx, application = "regression",
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
-  time_out = 120, machine_list_file = "",
-  gbmpath = "/home/dba/KAGGLE/LightGBM", workingdir = "",
+  time_out = 120, machine_list_file = "", lgbm_path = "path/to/LightGBM",
+  workingdir = "", files_exist = FALSE, train_conf = "lgbm_train",
+  train_name = "lgbm_train", val_name = "lgbm_val", unicity = FALSE,
   prediction = TRUE)
 }
 \arguments{
@@ -105,9 +106,19 @@ lightgbm.cv(y_train, x_train, idx, application = "regression",
 
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
 
-\item{gbmpath}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
 
-\item{workingdir}{Type: character. The working directory used for LightGBM, starting from gbmpath. Defaults to \code{''}.}
+\item{workingdir}{Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{''}.}
+
+\item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
+
+\item{train_conf}{Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}}
+
+\item{train_name}{Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}}
+
+\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
+
+\item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file.}
 
 \item{prediction}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
 }

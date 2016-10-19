@@ -5,6 +5,11 @@
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 #' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
 #' 
+#' Folder/File specifics:
+#' * \code{lgbm_path} must contain LightGBM.
+#' * \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
+#' * \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
+#' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
 #' @param y_val Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
@@ -26,9 +31,9 @@
 #' @param max_bin Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.
 #' @param data_random_seed Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
-#' @param output_model Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'LightGBM_model.txt'}. Unused yet.
-#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.
+#' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
+#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'lgbm_model.txt'}. Unused yet.
+#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Unused yet.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
 #' @param is_pre_partition Type: boolean. Whether data is pre-partitioned for parallel learning. Defaults to \code{FALSE}. Unused.
@@ -47,9 +52,12 @@
 #' @param local_listen_port Type: integer. The TCP listening port for the local machines. Allow this port in the firewall before training. \code{12400}.
 #' @param time_out Type: integer. The socket time-out in minutes. Defaults to \code{120}.
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
-#' @param gbmpath Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.
-#' @param workingdir Type: character. The working directory used for LightGBM, starting from gbmpath. Defaults to \code{''}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
+#' @param workingdir Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
+#' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
+#' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
+#' @param val_name Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}
 #' 
 #' @return The working directory for the trained model.
 #' 
@@ -80,9 +88,9 @@ lightgbm.train <- function(
   max_bin = 255,
   data_random_seed = 1,
   data_has_label = TRUE,
-  output_model = 'LightGBM_model.txt',
-  input_model = 'LightGBM_model.txt',
-  output_result = 'LightGBM_predict_result.txt',
+  output_model = 'lgbm_model.txt',
+  input_model = 'lgbm_model.txt',
+  output_result = 'lgbm_predict_result.txt',
   is_sigmoid = TRUE,
   init_score = '',
   is_pre_partition = FALSE,
@@ -101,33 +109,36 @@ lightgbm.train <- function(
   local_listen_port = 12400,
   time_out = 120,
   machine_list_file = '',
-  gbmpath = '/home/dba/KAGGLE/LightGBM',
-  workingdir = '',
-  files_exist = FALSE
+  lgbm_path = 'path/to/LightGBM',
+  workingdir = getwd(),
+  files_exist = FALSE,
+  train_conf = 'lgbm_train',
+  train_name = 'lgbm_train',
+  val_name = 'lgbm_val'
 ) {
   
   # Check file existance
-  if(!file.exists(paste0(gbmpath, '/lightgbm'))){
-    return(paste0('Could not find lightgbm.exe under ', paste0(gbmpath, '/lightgbm'), "."))
+  if(!file.exists(file.path(lgbm_path, 'lightgbm'))){
+    return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path, 'lightgbm'), "."))
   }
   
   # Setup working directory for LightGBM
-  print(paste('Using LightGBM path:', gbmpath))
-  if (workingdir == '') {
-    workingdir = stri_rand_strings(1, 20)
-  }
+  print(paste('Using LightGBM path:', lgbm_path))
+  train_conf <- paste0(train_conf, ".csv")
+  train_name <- paste0(train_name, ".csv")
+  val_name <- paste0(val_name, ".csv")
   
   # Create working directory for LightGBM
-  dir.create(file.path(gbmpath, workingdir), showWarnings = FALSE)
-  print(paste('Working directory of LightGBM:', file.path(gbmpath, workingdir)))
+  dir.create(file.path(workingdir), showWarnings = FALSE)
+  print(paste('Working directory of LightGBM:', file.path(workingdir)))
   
   # Setup the train configuration file
-  file.copy(paste0(gbmpath, '/lightgbm'), file.path(gbmpath, workingdir))
-  fileConn <- file(file.path(gbmpath, workingdir, "train.conf"), "w")
+  #file.copy(paste0(lgbm_path, '/lightgbm'), file.path(workingdir))
+  fileConn <- file(file.path(workingdir, train_conf), "w")
   write(paste0('task=train'), fileConn, append = TRUE)
   write(paste0('application=',application), fileConn, append = TRUE)
-  write(paste0('data="',file.path(gbmpath, workingdir,'train.csv"')), fileConn, append = TRUE)
-  if (validation) write(paste0('valid="',file.path(gbmpath, workingdir, 'val.csv"')), fileConn, append = TRUE)
+  write(paste0('data="',file.path(workingdir, train_name, '"')), fileConn, append = TRUE)
+  if (validation) write(paste0('valid="',file.path(workingdir, val_name, '"')), fileConn, append = TRUE)
   write(paste0('num_iterations=', num_iterations), fileConn, append = TRUE)
   write(paste0('learning_rate=', learning_rate), fileConn, append = TRUE)
   write(paste0('num_leaves=', num_leaves), fileConn, append = TRUE)
@@ -143,9 +154,9 @@ lightgbm.train <- function(
   write(paste0('max_bin=', max_bin), fileConn, append = TRUE)
   write(paste0('data_random_seed=', data_random_seed), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
-  if (output_model!='') write(paste0('output_model="',file.path(gbmpath, workingdir, output_model),'"'), fileConn, append = TRUE)
+  if (output_model!='') write(paste0('output_model="',file.path(workingdir, output_model),'"'), fileConn, append = TRUE)
   write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
-  if (init_score!='') write(paste0('init_score="',file.path(gbmpath, workingdir, init_score),'"'), fileConn, append = TRUE)
+  if (init_score!='') write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
   write(paste0('is_pre_partition=', tolower(as.character(is_pre_partition))), fileConn, append = TRUE)
   write(paste0('is_sparse=', tolower(as.character(is_sparse))), fileConn, append = TRUE)
   write(paste0('two_round=', tolower(as.character(two_round))), fileConn, append = TRUE)
@@ -161,42 +172,42 @@ lightgbm.train <- function(
   write(paste0('num_machines=', num_machines), fileConn, append = TRUE)
   write(paste0('local_listen_port=', local_listen_port), fileConn, append = TRUE)
   write(paste0('time_out=', time_out), fileConn, append = TRUE)
-  if (machine_list_file!='') write(paste0('machine_list_file="', file.path(gbmpath, workingdir, machine_list_file), '"'), fileConn, append = TRUE)
+  if (machine_list_file != '') write(paste0('machine_list_file="', file.path(workingdir, machine_list_file), '"'), fileConn, append = TRUE)
   close(fileConn)
-  print(paste('Training configuration file saved to:', file.path(gbmpath, workingdir, "train.conf")))
+  print(paste('Training configuration file saved to:', file.path(workingdir, train_conf)))
   
   # Export data
   if (!files_exist) {
     if (exists("fwrite") & is.data.table(x_train)) {
       # Uses the super fast CSV writer
-      print(paste('Saving train data (data.table) file to:', file.path(gbmpath, workingdir, "train.csv")))
+      print(paste('Saving train data (data.table) file to:', file.path(workingdir, train_name)))
       my_data <- x_train
       my_data[, datatable_target := y_train]
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
-      fwrite(my_data, file.path = file.path(gbmpath, workingdir, "train.csv"), col.names = FALSE, sep = ",", na = "nan")
+      fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
       # Fallback if no fwrite
-      print(paste('Saving train data file to:', file.path(gbmpath, workingdir,"train.csv")))
-      write.table(cbind(y_train, x_train), file.path(gbmpath, workingdir, "train.csv"), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+      print(paste('Saving train data file to:', file.path(workingdir, train_name)))
+      write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
     }
     if (validation) {
       if (exists("fwrite") & is.data.table(x_train)) {
-        print(paste('Saving validation data (data.table) file to:', file.path(gbmpath, workingdir,'val.csv')))
+        print(paste('Saving validation data (data.table) file to:', file.path(workingdir, val_name)))
         my_data <- x_val
         my_data[, datatable_target := y_val]
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
-        fwrite(my_data, file.path = file.path(gbmpath, workingdir, "val.csv"), col.names = FALSE, sep = ",", na = "nan")
+        fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = "nan")
       } else {
         # Fallback if no fwrite
-        print(paste('Saving validation data file to:', file.path(gbmpath, workingdir,'val.csv')))
-        write.table(cbind(y_val, x_val), file.path(gbmpath, workingdir, "val.csv"), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+        print(paste('Saving validation data file to:', file.path(workingdir, val_name)))
+        write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
         gc(verbose = FALSE) # In case of memory explosion
       }
     }
   }
-  system(paste0(file.path(gbmpath, workingdir), '/lightgbm config=', file.path(gbmpath, workingdir), '/train.conf'))
-  print(paste('Model completed, results saved in ', file.path(gbmpath, workingdir)))
+  system(paste0(file.path(lgbm_path, 'lightgbm'), ' config=', file.path(workingdir, train_conf)))
+  print(paste('Model completed, results saved in ', file.path(workingdir)))
   return(workingdir)
   
 }

@@ -5,9 +5,9 @@
 \title{LightGBM Prediction}
 \usage{
 lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
-  val_name = "test.csv", input_model = "LightGBM_model.txt",
-  output_result = "LightGBM_predict_result.txt",
-  gbmpath = "/home/dba/KAGGLE/LightGBM", newx = TRUE,
+  val_name = "lgbm_test.csv", input_model = "lgbm_model.txt",
+  output_result = "lgbm_predict_result.txt", lgbm_path = "path/to/LightGBM",
+  files_exist = TRUE, pred_conf = "lgbm_pred",
   data.table = exists("data.table"))
 }
 \arguments{
@@ -19,15 +19,17 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
-\item{val_name}{Type: character. The file output name for the vaildation file. Defaults to \code{"test.csv"}.}
+\item{val_name}{Type: character. The file output name for the vaildation file. Defaults to \code{"lgbm_test.csv"}.}
 
-\item{input_model}{Type: character. The file name of the model. Defaults to \code{'LightGBM_model.txt'}.}
+\item{input_model}{Type: character. The file name of the model. Defaults to \code{'lgbm_model.txt'}.}
 
-\item{output_result}{Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.}
+\item{output_result}{Type: character. The output prediction file. Defaults to \code{'lgbm_predict_result.txt'}.}
 
-\item{gbmpath}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
 
-\item{newx}{Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.}
+\item{files_exist}{Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.}
+
+\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 
 \item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
 }

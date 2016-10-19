@@ -46,8 +46,13 @@
 #' @param local_listen_port Type: integer. The TCP listening port for the local machines. Allow this port in the firewall before training. \code{12400}.
 #' @param time_out Type: integer. The socket time-out in minutes. Defaults to \code{120}.
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
-#' @param gbmpath Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.
-#' @param workingdir Type: character. The working directory used for LightGBM, starting from gbmpath. Defaults to \code{''}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
+#' @param workingdir Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{''}.
+#' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
+#' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
+#' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
+#' @param val_name Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}
+#' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' 
 #' @return If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
@@ -99,59 +104,70 @@ lightgbm.cv <- function(
   local_listen_port = 12400,
   time_out = 120,
   machine_list_file = '',
-  gbmpath = '/home/dba/KAGGLE/LightGBM',
+  lgbm_path = 'path/to/LightGBM',
   workingdir = '',
+  files_exist = FALSE,
+  train_conf = 'lgbm_train',
+  train_name = 'lgbm_train',
+  val_name = 'lgbm_val',
+  unicity = FALSE,
   prediction = TRUE
 ) {
-  models=list()
-  idx_list=unique(idx)
+  models <- list()
+  idx_list <- unique(idx)
   for (i in 1:length(idx_list)) {
     print('************')
     print(paste('Fold no:',i))
-    print('************')    
-    models[[i]]=
-      lightgbm.train(
-        x_train=x_train[idx!=i,],
-        y_train=y_train[idx!=i],
-        x_val=x_train[idx==i,],
-        y_val=y_train[idx==i],
-        application,
-        validation,
-        num_iterations,
-        learning_rate,
-        num_leaves,
-        tree_learner,
-        num_threads,
-        min_data_in_leaf,
-        min_sum_hessian_in_leaf,
-        feature_fraction,
-        feature_fraction_seed,
-        bagging_fraction,
-        bagging_freq,
-        bagging_seed,
-        max_bin,
-        data_random_seed,
-        data_has_label,
-        output_model,
-        input_model,
-        output_result,
-        is_sigmoid,init_score,
-        is_pre_partition,
-        is_sparse,
-        two_round,
-        save_binary,
-        sigmoid,
-        is_unbalance,
-        max_position,
-        label_gain,
-        metric,metric_freq,
-        is_training_metric,
-        ndcg_at,num_machines,
-        local_listen_port,
-        time_out,
-        machine_list_file,
-        gbmpath,workingdir
-      )
+    print('************')
+    models[[i]] <- lightgbm.train(
+      x_train = x_train[idx!=i,],
+      y_train = y_train[idx!=i],
+      x_val = x_train[idx==i,],
+      y_val = y_train[idx==i],
+      application = application,
+      validation = validation,
+      num_iterations = num_iterations,
+      learning_rate = learning_rate,
+      num_leaves = num_leaves,
+      tree_learner = tree_learner,
+      num_threads = num_threads,
+      min_data_in_leaf = min_data_in_leaf,
+      min_sum_hessian_in_leaf = min_sum_hessian_in_leaf,
+      feature_fraction = feature_fraction,
+      feature_fraction_seed = feature_fraction_seed,
+      bagging_fraction = bagging_fraction,
+      bagging_freq = bagging_freq,
+      bagging_seed = bagging_seed,
+      max_bin = max_bin,
+      data_random_seed = data_random_seed,
+      data_has_label = data_has_label,
+      output_model = output_model,
+      input_model = input_model,
+      output_result = output_result,
+      is_sigmoid = is_sigmoid,
+      init_score = init_score,
+      is_pre_partition = is_pre_partition,
+      is_sparse = is_sparse,
+      two_round = two_round,
+      save_binary = save_binary,
+      sigmoid = sigmoid,
+      is_unbalance = is_unbalance,
+      max_position = max_position,
+      label_gain = label_gain,
+      metric = metric,
+      metric_freq = metric_freq,
+      is_training_metric = is_training_metric,
+      ndcg_at = ndcg_at,
+      num_machines = num_machines,
+      local_listen_port = local_listen_port,
+      time_out = time_out,
+      machine_list_file = machine_list_file,
+      lgbm_path = lgbm_path,
+      workingdir = workingdir,
+      files_exist = files_exist,
+      train_conf = paste0(train_conf, "_", i, ".csv"),
+      train_name = paste0(train_name, "_", i, ".csv"),
+      val_name = paste0(val_name, "_", i, ".csv"))
   }
   if (!prediction) { return(models) }
   if(prediction) {

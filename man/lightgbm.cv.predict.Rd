@@ -4,29 +4,29 @@
 \alias{lightgbm.cv.predict}
 \title{LightGBM Cross-Validated Prediction}
 \usage{
-lightgbm.cv.predict(models, data_has_label = TRUE,
-  input_model = "LightGBM_model.txt",
+lightgbm.cv.predict(models, input_model = "LightGBM_model.txt",
   output_result = "LightGBM_predict_result.txt",
-  gbmpath = "/home/dba/KAGGLE/LightGBM", data.table = exists("data.table"))
+  lgbm_path = "path/to/LightGBM", val_name = "lgbm_val",
+  data.table = exists("data.table"))
 }
 \arguments{
-\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
+\item{models}{Type: character.The working directory of the model.}
 
 \item{input_model}{Type: character. The file name of the model. Defaults to \code{'LightGBM_model.txt'}.}
 
 \item{output_result}{Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.}
 
-\item{gbmpath}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
+
+\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
 
 \item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
-
-\item{model}{Type: character.The working directory of the model.}
 }
 \value{
 The predictions.
 }
 \description{
-This function allows to get cross-validated predictions on cross-validated training data.
+This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE.
 }
 \examples{
 None yet.

@@ -11,16 +11,16 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
-  output_model = "LightGBM_model.txt", input_model = "LightGBM_model.txt",
-  output_result = "LightGBM_predict_result.txt", is_sigmoid = TRUE,
+  output_model = "lgbm_model.txt", input_model = "lgbm_model.txt",
+  output_result = "lgbm_predict_result.txt", is_sigmoid = TRUE,
   init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
   two_round = FALSE, save_binary = FALSE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
-  time_out = 120, machine_list_file = "",
-  gbmpath = "/home/dba/KAGGLE/LightGBM", workingdir = "",
-  files_exist = FALSE)
+  time_out = 120, machine_list_file = "", lgbm_path = "path/to/LightGBM",
+  workingdir = getwd(), files_exist = FALSE, train_conf = "lgbm_train",
+  train_name = "lgbm_train", val_name = "lgbm_val")
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -65,11 +65,11 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
-\item{output_model}{Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.}
+\item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
 
-\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'LightGBM_model.txt'}. Unused yet.}
+\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'lgbm_model.txt'}. Unused yet.}
 
-\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.}
+\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Unused yet.}
 
 \item{is_sigmoid}{Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.}
 
@@ -107,11 +107,17 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
 
-\item{gbmpath}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'/home/dba/KAGGLE/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
 
-\item{workingdir}{Type: character. The working directory used for LightGBM, starting from gbmpath. Defaults to \code{''}.}
+\item{workingdir}{Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{getwd()}.}
 
 \item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
+
+\item{train_conf}{Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}}
+
+\item{train_name}{Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}}
+
+\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
 }
 \value{
 The working directory for the trained model.
@@ -121,6 +127,12 @@ This function allows you to train a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
+}
+\details{
+Folder/File specifics:
+* \code{lgbm_path} must contain LightGBM.
+* \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
+* \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
 }
 \examples{
 None yet.
