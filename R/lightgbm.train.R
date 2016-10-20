@@ -217,7 +217,7 @@ lightgbm.train <- function(
     }
   }
   
-  if (!verbose) {
+  if (verbose) {
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose)
   } else {
     system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, train_conf), '"'), stdout = log_name)
