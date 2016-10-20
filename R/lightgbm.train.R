@@ -220,7 +220,7 @@ lightgbm.train <- function(
   if (verbose) {
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose)
   } else {
-    system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, train_conf), '"'), stdout = log_name)
+    system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, train_conf), '"'), stdout = file.path(workingdir, log_name))
   }
   cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   
