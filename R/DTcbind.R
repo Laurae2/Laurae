@@ -1,4 +1,4 @@
-#' data.table column binding (without) copy
+#' data.table column binding (nearly without) copy
 #'
 #' This function attempts to cbind two data.tables without making copies. Compared to cbind, this can result to up to 3X memory efficiency. By default, a 2X memory efficiency is minimal with frequent garbage collects.
 #' 

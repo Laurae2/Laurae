@@ -2,7 +2,7 @@
 % Please edit documentation in R/DTcbind.R
 \name{DTcbind}
 \alias{DTcbind}
-\title{data.table column binding (without) copy}
+\title{data.table column binding (nearly without) copy}
 \usage{
 DTcbind(dt1, dt2, low_mem = FALSE, collect = 0, silent = FALSE)
 }
