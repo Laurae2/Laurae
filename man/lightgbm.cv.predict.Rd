@@ -30,10 +30,11 @@ lightgbm.cv.predict(models, folds, input_model = "LightGBM_model.txt",
 The predictions.
 }
 \description{
-This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE.
+This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE. Deprecated.
 }
 \examples{
 #None yet.
 
+#@export
 }
 

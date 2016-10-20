@@ -127,7 +127,7 @@ lightgbm.cv <- function(
     preds <- numeric(length(folds))
   }
   for (i in 1:length(folds_list)) {
-    cat('\n************\n', paste('Fold no:',i), '************\n', sep = "")
+    cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
     models[[i]] <- lightgbm.train(
       x_train = x_train[folds != i,],
       y_train = y_train[folds != i],

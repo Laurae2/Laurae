@@ -1,6 +1,6 @@
 #' LightGBM Cross-Validated Prediction
 #'
-#' This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE.
+#' This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE. Deprecated.
 #' 
 #' @param models Type: character.The working directory of the model.
 #' @param folds Type: vector of integers. The fold assigned to each row.
@@ -16,7 +16,7 @@
 #' @examples 
 #' #None yet.
 #' 
-#' @export
+#' #@export
 
 lightgbm.cv.predict <- function(
   models,
