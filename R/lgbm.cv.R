@@ -202,7 +202,7 @@ lgbm.cv <- function(
       )
     
     if (prediction) {
-      preds[folds == i] <- lightgbm.predict(
+      preds[folds == i] <- lgbm.predict(
         model = models[[i]],
         x_val = NA,
         y_val = NA,
