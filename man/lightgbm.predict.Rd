@@ -34,7 +34,7 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
 
 \item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
 
-\item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}.}
+\item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.}
 }
 \value{
 The predictions.

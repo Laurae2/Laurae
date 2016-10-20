@@ -123,7 +123,7 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
 
-\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set.}
+\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space.}
 
 \item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.}
 

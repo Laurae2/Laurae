@@ -13,7 +13,7 @@
 #' @param files_exist Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
-#' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}.
+#' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.
 #' 
 #' @return The predictions.
 #' 
@@ -71,7 +71,11 @@ lightgbm.predict <- function(
   close(fileConn)
   
   
-  system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), intern = !verbose)
+  if (!verbose) {
+    system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), intern = !verbose)
+  } else {
+    system2(file.path(lgbm_path), args = paste0('config="', file.path(model, pred_conf), '"'), stdout = file.path(lgbm_path, "diverted_verbose.txt"))
+  }
 
   if (!verbose) {sink()}
   

@@ -62,7 +62,7 @@
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
-#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set.
+#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
@@ -195,7 +195,11 @@ lightgbm.cv <- function(
       files_exist = files_exist,
       train_conf = ifelse(unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
       train_name = ifelse(unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
-      val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name))
+      val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
+      verbose = as.logical(verbose),
+      log_name = ifelse(!((!is.na(log_name)) & (verbose %in% c(0, 1))), stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
+      log_append = (log_append & (verbose %in% c(0, 1)))
+      )
     if (prediction) {
       preds[folds == i] <- lightgbm.predict(
         model = models[[i]],
