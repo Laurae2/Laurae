@@ -229,6 +229,7 @@ lgbm.train <- function(
     }
   }
   
+  gc(verbose = FALSE)
   if (verbose) {
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose)
   } else {
@@ -248,6 +249,7 @@ lgbm.train <- function(
     sink()
   }
   
+  gc(verbose = FALSE)
   if (predictions) {
     output[["Predictions"]] <- lgbm.predict(
       model = '',
