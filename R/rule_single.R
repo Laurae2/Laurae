@@ -18,10 +18,10 @@
 #' @return A list with one to three elements: \code{"scores"} the outlying scores for features, \code{"parsed_scores"} for the association rule result on specific features, and \code{"output"} for the association rule general result per observation.
 #' 
 #' @examples 
-#' scored_data <- rule_single(data = data, label = NA, scoring = TRUE, ruling = FALSE)
-#' rules <- rule_single(data = scored_data, label = target,
-#' iterations = 100, scoring = FALSE, ruling = TRUE)
-#' preds <- preds[rules$output[(length(target)+1):(nrow(data))] == 0] <- 0
+#' #scored_data <- rule_single(data = data, label = NA, scoring = TRUE, ruling = FALSE)
+#' #rules <- rule_single(data = scored_data, label = target,
+#' #iterations = 100, scoring = FALSE, ruling = TRUE)
+#' #preds <- preds[rules$output[(length(target)+1):(nrow(data))] == 0] <- 0
 #' 
 #' @export
 

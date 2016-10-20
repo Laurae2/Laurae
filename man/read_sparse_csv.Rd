@@ -30,8 +30,8 @@ This function allows you to big load sparse numeric CSVs. Loading in chunks allo
 Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 }
 \examples{
-read_sparse_csv("train_numeric.csv", iterfeature = 100, IDs = c(1:500, 601:1000), colClasses = NA,
-RDS = TRUE, compress_RDS = FALSE, NA_sparse = FALSE)
+#read_sparse_csv("train_numeric.csv", iterfeature = 100, IDs = c(1:500, 601:1000), colClasses = NA,
+#RDS = TRUE, compress_RDS = FALSE, NA_sparse = FALSE)
 
 }
 

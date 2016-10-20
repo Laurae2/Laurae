@@ -17,7 +17,7 @@
 #' @return The predictions.
 #' 
 #' @examples 
-#' None yet.
+#' #None yet.
 #' 
 #' @export
 
@@ -68,7 +68,7 @@ lightgbm.predict <- function(
   system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
   
   if (data.table == TRUE) {
-    return(fread(file.path(model, output_result), header = FALSE))
+    return(fread(file.path(model, output_result), header = FALSE)$V1)
   } else {
     return(read.csv(file.path(model, output_result), header = FALSE))
   }

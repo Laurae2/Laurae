@@ -38,10 +38,10 @@ This function allows you to search a perplexity hyperparameter range along with 
 Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 }
 \examples{
-tsne_model <- tsne_grid(initial_diag = initial_diag, dims = 3,
-perplexity_range = c(floor((ncol(initial_diag)-1)/3), floor((ncol(initial_diag)-1)/3)),
-tries = 100, iterations = 10000, theta = 0.0, check_duplicates = FALSE,
-pca = FALSE, is_distance = TRUE)
+#tsne_model <- tsne_grid(initial_diag = initial_diag, dims = 3,
+#perplexity_range = c(floor((ncol(initial_diag)-1)/3), floor((ncol(initial_diag)-1)/3)),
+#tries = 100, iterations = 10000, theta = 0.0, check_duplicates = FALSE,
+#pca = FALSE, is_distance = TRUE)
 
 }
 

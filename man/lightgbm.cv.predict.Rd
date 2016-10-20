@@ -4,13 +4,15 @@
 \alias{lightgbm.cv.predict}
 \title{LightGBM Cross-Validated Prediction}
 \usage{
-lightgbm.cv.predict(models, input_model = "LightGBM_model.txt",
+lightgbm.cv.predict(models, folds, input_model = "LightGBM_model.txt",
   output_result = "LightGBM_predict_result.txt",
-  lgbm_path = "path/to/LightGBM.exe", val_name = "lgbm_val",
-  data.table = exists("data.table"))
+  lgbm_path = "path/to/LightGBM.exe", val_name = "lgbm_val.csv",
+  unicity = TRUE, data.table = exists("data.table"))
 }
 \arguments{
 \item{models}{Type: character.The working directory of the model.}
+
+\item{folds}{Type: vector of integers. The fold assigned to each row.}
 
 \item{input_model}{Type: character. The file name of the model. Defaults to \code{'LightGBM_model.txt'}.}
 
@@ -18,7 +20,9 @@ lightgbm.cv.predict(models, input_model = "LightGBM_model.txt",
 
 \item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
-\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
+\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}.}
+
+\item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
 
 \item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
 }
@@ -29,7 +33,7 @@ The predictions.
 This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE.
 }
 \examples{
-None yet.
+#None yet.
 
 }
 

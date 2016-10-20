@@ -17,10 +17,10 @@
 #' @return A list with the best (lowest loss at a specific iteration) t-SNE elements from Rtsne
 #' 
 #' @examples 
-#' tsne_model <- tsne_grid(initial_diag = initial_diag, dims = 3,
-#' perplexity_range = c(floor((ncol(initial_diag)-1)/3), floor((ncol(initial_diag)-1)/3)),
-#' tries = 100, iterations = 10000, theta = 0.0, check_duplicates = FALSE,
-#' pca = FALSE, is_distance = TRUE)
+#' #tsne_model <- tsne_grid(initial_diag = initial_diag, dims = 3,
+#' #perplexity_range = c(floor((ncol(initial_diag)-1)/3), floor((ncol(initial_diag)-1)/3)),
+#' #tries = 100, iterations = 10000, theta = 0.0, check_duplicates = FALSE,
+#' #pca = FALSE, is_distance = TRUE)
 #' 
 #' @export
 

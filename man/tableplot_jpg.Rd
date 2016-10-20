@@ -33,8 +33,8 @@ A numeric target allows to provide an overview of each variable against the orde
 A factor target allows to provide an overview of each variable against each factor of the label
 }
 \examples{
-tableplot_jpg(train[, !(colnames(train) \%in\% "target")], train$target,
-folder = "./plots/my_plot_", ID = FALSE, width = 960, height = 960, pointsize = 12)
+#tableplot_jpg(train[, !(colnames(train) \%in\% "target")], train$target,
+#folder = "./plots/my_plot_", ID = FALSE, width = 960, height = 960, pointsize = 12)
 
 }
 

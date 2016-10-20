@@ -32,7 +32,7 @@
 #' @param data_random_seed Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'lgbm_model.txt'}. Unused yet.
+#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{''}. Unused yet.
 #' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Unused yet.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
@@ -62,7 +62,7 @@
 #' @return The working directory for the trained model.
 #' 
 #' @examples 
-#' None yet.
+#' #None yet.
 #' 
 #' @export
 
@@ -89,7 +89,7 @@ lightgbm.train <- function(
   data_random_seed = 1,
   data_has_label = TRUE,
   output_model = 'lgbm_model.txt',
-  input_model = 'lgbm_model.txt',
+  input_model = '',
   output_result = 'lgbm_predict_result.txt',
   is_sigmoid = TRUE,
   init_score = '',
@@ -151,9 +151,9 @@ lightgbm.train <- function(
   write(paste0('max_bin=', max_bin), fileConn, append = TRUE)
   write(paste0('data_random_seed=', data_random_seed), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
-  if (output_model!='') write(paste0('output_model="',file.path(workingdir, output_model),'"'), fileConn, append = TRUE)
+  if (output_model != '') write(paste0('output_model="', file.path(workingdir, output_model), '"'), fileConn, append = TRUE)
   write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
-  if (init_score!='') write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
+  if (init_score != '') write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
   write(paste0('is_pre_partition=', tolower(as.character(is_pre_partition))), fileConn, append = TRUE)
   write(paste0('is_sparse=', tolower(as.character(is_sparse))), fileConn, append = TRUE)
   write(paste0('two_round=', tolower(as.character(two_round))), fileConn, append = TRUE)

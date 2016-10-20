@@ -35,7 +35,7 @@ In addition, a sink is forced. Make sure to run \code{sink()} if you interrupt (
 initial = 8, min_depth = 1, max_depth = 25, patience = 2, sd_effect = 0.001, worst_score = 0, learner = NA, better = max_better
 }
 \examples{
-Please check xgb.opt.utils.R file in GitHub.
+#Please check xgb.opt.utils.R file in GitHub.
 
 }
 

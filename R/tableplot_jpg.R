@@ -16,8 +16,8 @@
 #' @return Nothing
 #' 
 #' @examples 
-#' tableplot_jpg(train[, !(colnames(train) %in% "target")], train$target,
-#' folder = "./plots/my_plot_", ID = FALSE, width = 960, height = 960, pointsize = 12)
+#' #tableplot_jpg(train[, !(colnames(train) %in% "target")], train$target,
+#' #folder = "./plots/my_plot_", ID = FALSE, width = 960, height = 960, pointsize = 12)
 #' 
 #' @export
 

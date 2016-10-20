@@ -13,7 +13,7 @@
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
-#' @param idx Type: vector of integers. The fold assigned to each row.
+#' @param folds Type: vector of integers. The fold assigned to each row.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
@@ -32,7 +32,7 @@
 #' @param data_random_seed Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{'LightGBM_model.txt'}. Unused yet.
+#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{''}. Unused yet.
 #' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
@@ -58,20 +58,20 @@
 #' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
-#' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file.
+#' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' 
 #' @return If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
 #' 
 #' @examples 
-#' None yet.
+#' #None yet.
 #' 
 #' @export
 
 lightgbm.cv <- function(
   y_train,
   x_train,
-  idx,
+  folds,
   application = 'regression',
   validation = TRUE,
   num_iterations = 10,
@@ -90,7 +90,7 @@ lightgbm.cv <- function(
   data_random_seed = 1,
   data_has_label = TRUE,
   output_model = 'LightGBM_model.txt',
-  input_model = 'LightGBM_model.txt',
+  input_model = '',
   output_result = 'LightGBM_predict_result.txt',
   is_sigmoid = TRUE,
   init_score = '',
@@ -113,23 +113,21 @@ lightgbm.cv <- function(
   lgbm_path = 'path/to/LightGBM.exe',
   workingdir = getwd(),
   files_exist = FALSE,
-  train_conf = 'lgbm_train',
-  train_name = 'lgbm_train',
-  val_name = 'lgbm_val',
+  train_conf = 'lgbm_train.conf',
+  train_name = 'lgbm_train.csv',
+  val_name = 'lgbm_val.csv',
   unicity = FALSE,
   prediction = TRUE
 ) {
   models <- list()
-  idx_list <- unique(idx)
-  for (i in 1:length(idx_list)) {
-    print('************')
-    print(paste('Fold no:',i))
-    print('************')
+  folds_list <- unique(folds)
+  for (i in 1:length(folds_list)) {
+    cat('\n************\n', paste('Fold no:',i), '************\n', sep = "")
     models[[i]] <- lightgbm.train(
-      x_train = x_train[idx!=i,],
-      y_train = y_train[idx!=i],
-      x_val = x_train[idx==i,],
-      y_val = y_train[idx==i],
+      x_train = x_train[folds != i,],
+      y_train = y_train[folds != i],
+      x_val = x_train[folds == i,],
+      y_val = y_train[folds == i],
       application = application,
       validation = validation,
       num_iterations = num_iterations,
@@ -147,8 +145,8 @@ lightgbm.cv <- function(
       max_bin = max_bin,
       data_random_seed = data_random_seed,
       data_has_label = data_has_label,
-      output_model = output_model,
-      input_model = input_model,
+      output_model = stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")),
+      input_model = stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")),
       output_result = output_result,
       is_sigmoid = is_sigmoid,
       init_score = init_score,
@@ -177,6 +175,11 @@ lightgbm.cv <- function(
   }
   if (!prediction) { return(models) }
   if(prediction) {
-    return(lightgbm.cv.predict(models))
+    return(lightgbm.cv.predict(models = models,
+                               folds = folds,
+                               input_model = output_model,
+                               lgbm_path = lgbm_path,
+                               val_name = val_name,
+                               unicity = unicity))
   }
 }

@@ -17,7 +17,7 @@
 #' @return Three elements forced in the global environment: \code{"Laurae.xgb.opt.depth.df"} for the dataframe with depth log (data.frame), \code{"Laurae.xgb.opt.depth.iter"} for the dataframe with iteration log (list), and \code{"Laurae.xgb.opt.depth.best"} for a length 1 vector with the best depth found (numeric).
 #' 
 #' @examples 
-#' Please check xgb.opt.utils.R file in GitHub.
+#' #Please check xgb.opt.utils.R file in GitHub.
 #' 
 #' @export
 

@@ -34,8 +34,8 @@ Unlike the univariate rule finder, it cannot be used to score outliers first (a 
 Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 }
 \examples{
-rules <- rule_double(data = scored_data, label = target, iterations = 100)
-preds <- preds[rules[(length(target)+1):(nrow(data))] == 0] <- 0
+#rules <- rule_double(data = scored_data, label = target, iterations = 100)
+#preds <- preds[rules[(length(target)+1):(nrow(data))] == 0] <- 0
 
 }
 

@@ -40,7 +40,7 @@ The predictions.
 This function allows to run predictions on provided data.
 }
 \examples{
-None yet.
+#None yet.
 
 }
 
