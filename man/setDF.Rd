@@ -27,6 +27,5 @@ setDF(df)
 is.data.table(df) # Returns FALSE = OK
 sum(c(coln == colnames(df), c(rown == rownames(df)))) # Returns 2 = OK
 
-#@export
 }
 

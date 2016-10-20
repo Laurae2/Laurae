@@ -13,6 +13,7 @@
 #' @return Nothing (the merged data.table is in \code{dt1} itself)
 #' 
 #' @examples
+#' library(data.table)
 #' df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' setDT(df1)
@@ -31,7 +32,7 @@
 #' # if you are a hero with enough RAM (3GB+ recommended), uncomment the line below and run it
 #' #df1 <- cbind(df1, df3) # RAM usage explodes!
 #' 
-#' #@export
+#' @export
 
 DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = FALSE) {
   

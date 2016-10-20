@@ -4,6 +4,8 @@
 #' 
 #' @return Printed messages of success or failure.
 #' 
+#' @import data.table
+#' 
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices jpeg
 #' @importFrom stats cor

@@ -5,12 +5,11 @@ Authors@R: person("First", "Last", email = "first.last@example.com", role = c("a
 Description: This package is for advanced statistics, visualization, and
     modeling.
 Depends:
-    R (>= 3.3.0)
+    R (>= 3.3.0),
+	data.table (>= 1.9.7)
 Imports:
-	data.table (>= 1.9.7),
-	stringi (>= 1.1.2),
-	utils (>= 3.3.0)
-License: What license is it under?
+	stringi (>= 1.1.2)
+License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1

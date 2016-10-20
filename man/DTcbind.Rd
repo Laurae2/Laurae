@@ -27,6 +27,7 @@ This function attempts to cbind two data.tables without making copies. Compared 
 Warning: \code{dt1} and \code{dt2} are pointers only even if you pass the objects to this function. This is how memory efficiency is achieved.
 }
 \examples{
+library(data.table)
 df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 setDT(df1)
@@ -45,6 +46,5 @@ setDT(df3)
 # if you are a hero with enough RAM (3GB+ recommended), uncomment the line below and run it
 #df1 <- cbind(df1, df3) # RAM usage explodes!
 
-#@export
 }
 
