@@ -70,6 +70,7 @@ lightgbm.predict <- function(
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   close(fileConn)
   
+  if (!verbose) sink()
   
   if (verbose) {
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), intern = !verbose)
