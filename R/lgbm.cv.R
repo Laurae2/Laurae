@@ -141,13 +141,21 @@ lgbm.cv <- function(
     
     if (verbose > 0) cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
     
-    x_train <- x_train[folds != i,]
+    # Create folds
+    x_tr <- x_train[folds != i,]
     gc(verbose = FALSE)
     x_val <- x_train[folds == i,]
     gc(verbose = FALSE)
     
+    # Attempts to speed up
+    if (is.data.table(x_tr) == FALSE) {
+      setDT(x_train)
+      setDT(x_val)
+    }
+    
+    # Train
     models[[i]] <- lgbm.train(
-      x_train = x_train,
+      x_train = x_tr,
       y_train = y_train[folds != i],
       x_val = x_val,
       y_val = y_train[folds == i],
