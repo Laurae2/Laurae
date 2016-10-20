@@ -11,7 +11,7 @@ lightgbm.cv(y_train, x_train, folds, application = "regression",
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
-  output_model = "LightGBM_model.txt", input_model = "",
+  output_model = "LightGBM_model.txt", input_model = NA,
   output_result = "LightGBM_predict_result.txt", is_sigmoid = TRUE,
   init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
   two_round = FALSE, save_binary = FALSE, sigmoid = 1,
@@ -22,7 +22,7 @@ lightgbm.cv(y_train, x_train, folds, application = "regression",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  unicity = FALSE, prediction = TRUE)
+  unicity = FALSE, prediction = TRUE, pred_conf = "lgbm_pred.conf")
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -67,7 +67,7 @@ lightgbm.cv(y_train, x_train, folds, application = "regression",
 
 \item{output_model}{Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.}
 
-\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{''}. Unused yet.}
+\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
 
 \item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.}
 
@@ -122,6 +122,8 @@ lightgbm.cv(y_train, x_train, folds, application = "regression",
 \item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
 
 \item{prediction}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
+
+\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 }
 \value{
 If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.

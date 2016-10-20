@@ -11,7 +11,7 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
-  output_model = "lgbm_model.txt", input_model = "",
+  output_model = "lgbm_model.txt", input_model = NA,
   output_result = "lgbm_predict_result.txt", is_sigmoid = TRUE,
   init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
   two_round = FALSE, save_binary = FALSE, sigmoid = 1,
@@ -68,7 +68,7 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
 
-\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{''}. Unused yet.}
+\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
 
 \item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Unused yet.}
 
