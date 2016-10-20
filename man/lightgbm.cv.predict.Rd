@@ -6,7 +6,7 @@
 \usage{
 lightgbm.cv.predict(models, input_model = "LightGBM_model.txt",
   output_result = "LightGBM_predict_result.txt",
-  lgbm_path = "path/to/LightGBM", val_name = "lgbm_val",
+  lgbm_path = "path/to/LightGBM.exe", val_name = "lgbm_val",
   data.table = exists("data.table"))
 }
 \arguments{
@@ -16,7 +16,7 @@ lightgbm.cv.predict(models, input_model = "LightGBM_model.txt",
 
 \item{output_result}{Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.}
 
-\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
 \item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
 

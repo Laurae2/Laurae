@@ -9,7 +9,7 @@
 #' @param val_name Type: character. The file output name for the vaildation file. Defaults to \code{"lgbm_test.csv"}.
 #' @param input_model Type: character. The file name of the model. Defaults to \code{'lgbm_model.txt'}.
 #' @param output_result Type: character. The output prediction file. Defaults to \code{'lgbm_predict_result.txt'}.
-#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param files_exist Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
@@ -29,15 +29,15 @@ lightgbm.predict <- function(
   val_name = "lgbm_test.csv",
   input_model = 'lgbm_model.txt',
   output_result = 'lgbm_predict_result.txt',
-  lgbm_path = 'path/to/LightGBM',
+  lgbm_path = 'path/to/LightGBM.exe',
   files_exist = TRUE,
   pred_conf = 'lgbm_pred',
   data.table = exists("data.table")
 ) {
   
   # Check file existance
-  if(!file.exists(file.path(lgbm_path, 'lightgbm'))){
-    return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path, 'lightgbm'), "."))
+  if(!file.exists(file.path(lgbm_path))){
+    return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
   # Setup working directory for LightGBM
@@ -68,7 +68,7 @@ lightgbm.predict <- function(
   if (output_result != '') write(paste0('output_result="', file.path(model, output_result), '"'), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   close(fileConn)
-  system(paste0(file.path(lgbm_path, lightgbm), '/ config=', file.path(model, pred_conf)))
+  system(paste0(file.path(lgbm_path), '/ config=', file.path(model, pred_conf)))
   
   if (data.table == TRUE) {
     return(fread(file.path(model, output_result), header = FALSE))

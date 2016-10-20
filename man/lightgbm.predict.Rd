@@ -6,9 +6,9 @@
 \usage{
 lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
   val_name = "lgbm_test.csv", input_model = "lgbm_model.txt",
-  output_result = "lgbm_predict_result.txt", lgbm_path = "path/to/LightGBM",
-  files_exist = TRUE, pred_conf = "lgbm_pred",
-  data.table = exists("data.table"))
+  output_result = "lgbm_predict_result.txt",
+  lgbm_path = "path/to/LightGBM.exe", files_exist = TRUE,
+  pred_conf = "lgbm_pred", data.table = exists("data.table"))
 }
 \arguments{
 \item{model}{Type: character.The working directory of the model.}
@@ -25,7 +25,7 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
 
 \item{output_result}{Type: character. The output prediction file. Defaults to \code{'lgbm_predict_result.txt'}.}
 
-\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
 \item{files_exist}{Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.}
 

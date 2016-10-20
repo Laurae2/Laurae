@@ -18,8 +18,9 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
-  time_out = 120, machine_list_file = "", lgbm_path = "path/to/LightGBM",
-  workingdir = getwd(), files_exist = FALSE, train_conf = "lgbm_train",
+  time_out = 120, machine_list_file = "",
+  lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
+  files_exist = FALSE, train_conf = "lgbm_train",
   train_name = "lgbm_train", val_name = "lgbm_val")
 }
 \arguments{
@@ -107,9 +108,9 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
 
-\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
-\item{workingdir}{Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{getwd()}.}
+\item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
 \item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
 
@@ -130,7 +131,7 @@ The speed increase to create the train and test files can exceed 100x over write
 }
 \details{
 Folder/File specifics:
-* \code{lgbm_path} must contain LightGBM.
+* \code{lgbm_path} is the path to LightGBM executable, and includes the executable name and tag.
 * \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
 * \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
 }

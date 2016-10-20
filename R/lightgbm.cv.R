@@ -46,8 +46,8 @@
 #' @param local_listen_port Type: integer. The TCP listening port for the local machines. Allow this port in the firewall before training. \code{12400}.
 #' @param time_out Type: integer. The socket time-out in minutes. Defaults to \code{120}.
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
-#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
-#' @param workingdir Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{''}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
+#' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
 #' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
 #' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
@@ -104,8 +104,8 @@ lightgbm.cv <- function(
   local_listen_port = 12400,
   time_out = 120,
   machine_list_file = '',
-  lgbm_path = 'path/to/LightGBM',
-  workingdir = '',
+  lgbm_path = 'path/to/LightGBM.exe',
+  workingdir = getwd(),
   files_exist = FALSE,
   train_conf = 'lgbm_train',
   train_name = 'lgbm_train',

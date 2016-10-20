@@ -6,7 +6,7 @@
 #' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
 #' 
 #' Folder/File specifics:
-#' * \code{lgbm_path} must contain LightGBM.
+#' * \code{lgbm_path} is the path to LightGBM executable, and includes the executable name and tag.
 #' * \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
 #' * \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
 #' 
@@ -52,8 +52,8 @@
 #' @param local_listen_port Type: integer. The TCP listening port for the local machines. Allow this port in the firewall before training. \code{12400}.
 #' @param time_out Type: integer. The socket time-out in minutes. Defaults to \code{120}.
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
-#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
-#' @param workingdir Type: character. The working directory used for LightGBM, starting from lgbm_path. Defaults to \code{getwd()}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
+#' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
 #' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
 #' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
@@ -109,7 +109,7 @@ lightgbm.train <- function(
   local_listen_port = 12400,
   time_out = 120,
   machine_list_file = '',
-  lgbm_path = 'path/to/LightGBM',
+  lgbm_path = 'path/to/LightGBM.exe',
   workingdir = getwd(),
   files_exist = FALSE,
   train_conf = 'lgbm_train',
@@ -118,8 +118,8 @@ lightgbm.train <- function(
 ) {
   
   # Check file existance
-  if(!file.exists(file.path(lgbm_path, 'lightgbm'))){
-    return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path, 'lightgbm'), "."))
+  if(!file.exists(file.path(lgbm_path))){
+    return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
   # Setup working directory for LightGBM
@@ -133,7 +133,7 @@ lightgbm.train <- function(
   print(paste('Working directory of LightGBM:', file.path(workingdir)))
   
   # Setup the train configuration file
-  #file.copy(paste0(lgbm_path, '/lightgbm'), file.path(workingdir))
+  #file.copy(paste0(lgbm_path), file.path(workingdir))
   fileConn <- file(file.path(workingdir, train_conf), "w")
   write(paste0('task=train'), fileConn, append = TRUE)
   write(paste0('application=',application), fileConn, append = TRUE)
@@ -206,7 +206,7 @@ lightgbm.train <- function(
       }
     }
   }
-  system(paste0(file.path(lgbm_path, 'lightgbm'), ' config=', file.path(workingdir, train_conf)))
+  system(paste0(file.path(lgbm_path), ' config=', file.path(workingdir, train_conf)))
   print(paste('Model completed, results saved in ', file.path(workingdir)))
   return(workingdir)
   

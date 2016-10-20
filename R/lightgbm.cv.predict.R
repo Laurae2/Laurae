@@ -5,7 +5,7 @@
 #' @param models Type: character.The working directory of the model.
 #' @param input_model Type: character. The file name of the model. Defaults to \code{'LightGBM_model.txt'}.
 #' @param output_result Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.
-#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM'}.
+#' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param val_name Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
 #' 
@@ -20,7 +20,7 @@ lightgbm.cv.predict <- function(
   models,
   input_model = 'LightGBM_model.txt',
   output_result = 'LightGBM_predict_result.txt',
-  lgbm_path = 'path/to/LightGBM',
+  lgbm_path = 'path/to/LightGBM.exe',
   val_name = 'lgbm_val',
   data.table = exists("data.table")
 ) {
