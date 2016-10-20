@@ -149,9 +149,11 @@ lgbm.cv <- function(
     if (verbose > 0) cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
     
     # Create folds
-    x_tr <- x_train[folds != i,]
+    x_tr <- DTsubsample(DT = x_train, kept = which(folds != i), low_mem = FALSE, collect = 100, silent = TRUE)
+    #x_tr <- x_train[folds != i,]
     gc(verbose = FALSE)
-    x_val <- x_train[folds == i,]
+    x_val <- DTsubsample(DT = x_train, kept = which(folds == i), low_mem = FALSE, collect = 100, silent = TRUE)
+    #x_val <- x_train[folds == i,]
     gc(verbose = FALSE)
     
     # Train
