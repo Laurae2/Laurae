@@ -113,11 +113,11 @@ lightgbm.cv(y_train, x_train, idx, application = "regression",
 
 \item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
 
-\item{train_conf}{Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}}
+\item{train_conf}{Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}}
 
-\item{train_name}{Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}}
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}}
 
-\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
+\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
 
 \item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file.}
 

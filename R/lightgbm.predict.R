@@ -31,7 +31,7 @@ lightgbm.predict <- function(
   output_result = 'lgbm_predict_result.txt',
   lgbm_path = 'path/to/LightGBM.exe',
   files_exist = TRUE,
-  pred_conf = 'lgbm_pred',
+  pred_conf = 'lgbm_pred.conf',
   data.table = exists("data.table")
 ) {
   
@@ -40,21 +40,18 @@ lightgbm.predict <- function(
     return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
-  # Setup working directory for LightGBM
-  pred_conf <- paste0(pred_conf, ".conf")
-  
   # Export data
   if (!files_exist){
     if (exists("fwrite") & is.data.table(x_val)) {
       # Uses the super fast CSV writer
-      print(paste('Saving test data (data.table) file to:', file.path(model, val_name)))
+      cat('Saving test data (data.table) file to: ', file.path(model, val_name), "\n", sep = "")
       my_data <- x_val
       my_data[, datatable_target := y_val]
       setcolorder(my_data, c("datatable_target", colnames(x_val)))
       fwrite(my_data, file.path = file.path(model, val_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
       # Fallback if no fwrite
-      print(paste('Saving test data file to:', file.path(model, val_name)))
+      cat('Saving test data file to: ', file.path(model, val_name), "\n", sep = "")
       write.table(cbind(y_val, x_val), file.path(model, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
     }

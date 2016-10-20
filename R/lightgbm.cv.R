@@ -55,9 +55,9 @@
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
-#' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
-#' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
-#' @param val_name Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}
+#' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
+#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
+#' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' 
@@ -171,9 +171,9 @@ lightgbm.cv <- function(
       lgbm_path = lgbm_path,
       workingdir = workingdir,
       files_exist = files_exist,
-      train_conf = paste0(train_conf, "_", i),
-      train_name = paste0(train_name, "_", i),
-      val_name = paste0(val_name, "_", i))
+      train_conf = stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")),
+      train_name = stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")),
+      val_name = stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
   }
   if (!prediction) { return(models) }
   if(prediction) {

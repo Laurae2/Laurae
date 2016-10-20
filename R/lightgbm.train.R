@@ -55,9 +55,9 @@
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
-#' @param train_conf Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}
-#' @param train_name Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}
-#' @param val_name Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}
+#' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
+#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
+#' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
 #' 
 #' @return The working directory for the trained model.
 #' 
@@ -112,9 +112,9 @@ lightgbm.train <- function(
   lgbm_path = 'path/to/LightGBM.exe',
   workingdir = getwd(),
   files_exist = FALSE,
-  train_conf = 'lgbm_train',
-  train_name = 'lgbm_train',
-  val_name = 'lgbm_val'
+  train_conf = 'lgbm_train.conf',
+  train_name = 'lgbm_train.csv',
+  val_name = 'lgbm_val.csv'
 ) {
   
   # Check file existance
@@ -123,14 +123,11 @@ lightgbm.train <- function(
   }
   
   # Setup working directory for LightGBM
-  print(paste('Using LightGBM path:', lgbm_path))
-  train_conf <- paste0(train_conf, ".conf")
-  train_name <- paste0(train_name, ".csv")
-  val_name <- paste0(val_name, ".csv")
+  cat('Using LightGBM path: ', lgbm_path, "\n", sep = "")
   
   # Create working directory for LightGBM
   dir.create(file.path(workingdir), showWarnings = FALSE)
-  print(paste('Working directory of LightGBM:', file.path(workingdir)))
+  cat('Working directory of LightGBM: ', file.path(workingdir), "\n", sep = "")
   
   # Setup the train configuration file
   #file.copy(paste0(lgbm_path), file.path(workingdir))
@@ -174,40 +171,40 @@ lightgbm.train <- function(
   write(paste0('time_out=', time_out), fileConn, append = TRUE)
   if (machine_list_file != '') write(paste0('machine_list_file="', file.path(workingdir, machine_list_file), '"'), fileConn, append = TRUE)
   close(fileConn)
-  print(paste('Training configuration file saved to:', file.path(workingdir, train_conf)))
+  cat('Training configuration file saved to: ', file.path(workingdir, train_conf), "\n", sep = "")
   
   # Export data
   if (!files_exist) {
     if (exists("fwrite") & is.data.table(x_train)) {
       # Uses the super fast CSV writer
-      print(paste('Saving train data (data.table) file to:', file.path(workingdir, train_name)))
+      cat('Saving train data (data.table) file to: ', file.path(workingdir, train_name), sep = "")
       my_data <- x_train
       my_data[, datatable_target := y_train]
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
       # Fallback if no fwrite
-      print(paste('Saving train data file to:', file.path(workingdir, train_name)))
+      cat('Saving train data file to: ', file.path(workingdir, train_name), "\n", sep = "")
       write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
     }
     if (validation) {
       if (exists("fwrite") & is.data.table(x_train)) {
-        print(paste('Saving validation data (data.table) file to:', file.path(workingdir, val_name)))
+        cat('Saving validation data (data.table) file to: ', file.path(workingdir, val_name), "\n", sep = "")
         my_data <- x_val
         my_data[, datatable_target := y_val]
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
         fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = "nan")
       } else {
         # Fallback if no fwrite
-        print(paste('Saving validation data file to:', file.path(workingdir, val_name)))
+        cat('Saving validation data file to: ', file.path(workingdir, val_name), "\n", sep = "")
         write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
         gc(verbose = FALSE) # In case of memory explosion
       }
     }
   }
   system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'))
-  print(paste('Model completed, results saved in ', file.path(workingdir)))
+  cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   return(workingdir)
   
 }

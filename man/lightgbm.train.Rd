@@ -20,8 +20,8 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
   time_out = 120, machine_list_file = "",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
-  files_exist = FALSE, train_conf = "lgbm_train",
-  train_name = "lgbm_train", val_name = "lgbm_val")
+  files_exist = FALSE, train_conf = "lgbm_train.conf",
+  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv")
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -114,11 +114,11 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
 
-\item{train_conf}{Type: character. The name of the train_conf file (.conf) for the model. Defaults to \code{'lgbm_train'}}
+\item{train_conf}{Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}}
 
-\item{train_name}{Type: character. The name of the training data file (.csv) for the model. Defaults to \code{'lgbm_train'}}
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}}
 
-\item{val_name}{Type: character. The name of the testing data file (.csv) for the model. Defaults to \code{'lgbm_val'}}
+\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
 }
 \value{
 The working directory for the trained model.

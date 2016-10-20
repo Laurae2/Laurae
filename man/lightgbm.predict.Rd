@@ -8,7 +8,7 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
   val_name = "lgbm_test.csv", input_model = "lgbm_model.txt",
   output_result = "lgbm_predict_result.txt",
   lgbm_path = "path/to/LightGBM.exe", files_exist = TRUE,
-  pred_conf = "lgbm_pred", data.table = exists("data.table"))
+  pred_conf = "lgbm_pred.conf", data.table = exists("data.table"))
 }
 \arguments{
 \item{model}{Type: character.The working directory of the model.}
