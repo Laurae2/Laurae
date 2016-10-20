@@ -237,7 +237,7 @@ lgbm.train <- function(
   cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   
   output <- list()
-  output[["Model"]] <- readLines(file.path(workingdir, input_model))
+  output[["Model"]] <- readLines(file.path(workingdir, output_model))
   output[["Path"]] <- file.path(workingdir)
   output[["Name"]] <- file.path(workingdir, output_model)
   output[["lgbm"]] <- file.path(lgbm_path)
@@ -253,7 +253,7 @@ lgbm.train <- function(
       y_pred = NA,
       data_has_label = TRUE,
       val_name = val_name,
-      input_model = file.path(workingdir, output_model),
+      input_model = output_model,
       output_result = output_result,
       lgbm_path = lgbm_path,
       workingdir = file.path(workingdir),
@@ -263,6 +263,6 @@ lgbm.train <- function(
       verbose = verbose)
   }
   
-  return(workingdir)
+  return(output)
   
 }
