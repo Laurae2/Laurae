@@ -26,6 +26,12 @@ If I am not missing stuff (please make a pull request if something is missing th
 | stringi | lightgbm.cv |
 | LightGBM (to compile) | lightgbm.train, lightgbm.predict, lightgbm.cv, lightgbm.predict.cv |
 
+# Installing dependencies?
+
+* For LightGBM, please use: `git clone --recursive https://github.com/wxchan/LightGBM` for the repository (as of 10/20/2016, this one has a correct early_stopping implementation.
+* For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
+* tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
+
 # What is inside?
 
 | Function Name | Type | What is it for |
