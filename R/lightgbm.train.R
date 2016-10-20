@@ -206,7 +206,7 @@ lightgbm.train <- function(
       }
     }
   }
-  system(paste0(file.path(lgbm_path), ' config=', file.path(workingdir, train_conf)))
+  system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'))
   print(paste('Model completed, results saved in ', file.path(workingdir)))
   return(workingdir)
   

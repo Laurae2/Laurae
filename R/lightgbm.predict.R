@@ -44,7 +44,7 @@ lightgbm.predict <- function(
   pred_conf <- paste0(pred_conf, ".conf")
   
   # Export data
-  if (files_exist){
+  if (!files_exist){
     if (exists("fwrite") & is.data.table(x_val)) {
       # Uses the super fast CSV writer
       print(paste('Saving test data (data.table) file to:', file.path(model, val_name)))
@@ -68,7 +68,7 @@ lightgbm.predict <- function(
   if (output_result != '') write(paste0('output_result="', file.path(model, output_result), '"'), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   close(fileConn)
-  system(paste0(file.path(lgbm_path), '/ config=', file.path(model, pred_conf)))
+  system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
   
   if (data.table == TRUE) {
     return(fread(file.path(model, output_result), header = FALSE))

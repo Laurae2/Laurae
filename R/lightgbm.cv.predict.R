@@ -34,9 +34,10 @@ lightgbm.cv.predict <- function(
     preds[[i]]=
       lightgbm.predict(
         model = models[[i]],
-        x_val = paste0(val_name, "_", i, ".csv"),
+        x_val = NA,
         y_val = NA,
         data_has_label = TRUE,
+        val_name = paste0(val_name, "_", i, ".csv"),
         input_model = input_model,
         output_result = output_result,
         lgbm_path = lgbm_path,
