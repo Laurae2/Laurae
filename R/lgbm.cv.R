@@ -137,6 +137,11 @@ lgbm.cv <- function(
     preds <- numeric(length(folds))
   }
   
+  # Attempts to speed up
+  if (is.data.table(x_train) == FALSE) {
+    setDT(x_train)
+  }
+  
   for (i in 1:length(folds_list)) {
     
     if (verbose > 0) cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
@@ -146,12 +151,6 @@ lgbm.cv <- function(
     gc(verbose = FALSE)
     x_val <- x_train[folds == i,]
     gc(verbose = FALSE)
-    
-    # Attempts to speed up
-    if (is.data.table(x_tr) == FALSE) {
-      setDT(x_train)
-      setDT(x_val)
-    }
     
     # Train
     models[[i]] <- lgbm.train(

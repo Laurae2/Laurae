@@ -136,6 +136,12 @@ lgbm.train <- function(
     sink(file = file.path(workingdir, "diverted_verbose.txt"), append = log_append, split = as.logical(verbose))
   }
   
+  # Attempts to speed up
+  if (is.data.table(x_train) == FALSE) {
+    setDT(x_train)
+    setDT(x_val)
+  }
+  
   # Setup working directory for LightGBM
   cat('Using LightGBM path: ', lgbm_path, "\n", sep = "")
   
