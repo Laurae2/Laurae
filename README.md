@@ -23,6 +23,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Rtsne | tsne_grid |
 | tabplot | tableplot_jpg |
 | caret | xgb.ncv |
+| stringi | lightgbm.cv |
 | LightGBM (to compile) | lightgbm.train, lightgbm.predict, lightgbm.cv, lightgbm.predict.cv |
 
 # What is inside?
