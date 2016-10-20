@@ -132,6 +132,13 @@ It is recommended to have your x_train and x_val sets as data.table, and to use 
 To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
 }
+\details{
+Folder/File specifics:
+* \code{lgbm_path} is the path to LightGBM executable, and includes the executable name and tag.
+* \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
+* \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
+* \code{unicity} defines whether to create separate files (if \code{TRUE}) or to save space by writing over the same file (if \code{FALSE}). Predicting does not work with \code{FALSE}.
+}
 \examples{
 None yet.
 

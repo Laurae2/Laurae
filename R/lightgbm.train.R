@@ -124,7 +124,7 @@ lightgbm.train <- function(
   
   # Setup working directory for LightGBM
   print(paste('Using LightGBM path:', lgbm_path))
-  train_conf <- paste0(train_conf, ".csv")
+  train_conf <- paste0(train_conf, ".conf")
   train_name <- paste0(train_name, ".csv")
   val_name <- paste0(val_name, ".csv")
   

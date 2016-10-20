@@ -14,7 +14,8 @@
 #' @return The sparse matrix
 #' 
 #' @examples 
-#' read_sparse_csv("train_numeric.csv", iterfeature = 100, IDs = c(1:500, 601:1000), colClasses = NA, RDS = TRUE, compress_RDS = FALSE, NA_sparse = FALSE)
+#' read_sparse_csv("train_numeric.csv", iterfeature = 100, IDs = c(1:500, 601:1000), colClasses = NA,
+#' RDS = TRUE, compress_RDS = FALSE, NA_sparse = FALSE)
 #' 
 #' @export
 

@@ -71,7 +71,9 @@ Verbosity is automatic and cannot be removed. In case you need this function wit
 In addition, a sink is forced. Make sure to run \code{sink()} if you interrupt (or if xgboost interrupts) prematurely the execution of the function. Otherwise, you end up with no more messages printed to your R console.
 }
 \examples{
-Pick your xgb.cv function, replace data by the initial matrix, insert the label, check ntimes to the value you want, and change the sinkfile. Unlist params if needed, and add the seed as a parameter.
+Pick your xgb.cv function, replace data by the initial matrix, insert the label,
+check ntimes to the value you want, and change the sinkfile.
+Unlist params if needed, and add the seed as a parameter.
 
 }
 

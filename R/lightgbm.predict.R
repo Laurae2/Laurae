@@ -41,7 +41,7 @@ lightgbm.predict <- function(
   }
   
   # Setup working directory for LightGBM
-  pred_conf <- paste0(pred_conf, ".csv")
+  pred_conf <- paste0(pred_conf, ".conf")
   
   # Export data
   if (files_exist){

@@ -33,7 +33,9 @@
 #' @return A list with two to four elements: \code{"scores"} for the scored folds (data.frame), \code{"folds"} for the folds IDs (list), \code{"preds"} for out of fold predictions (data.frame), and \code{"extra"} for extra data predictions per fold (data.frame).
 #' 
 #' @examples 
-#' Pick your xgb.cv function, replace data by the initial matrix, insert the label, check ntimes to the value you want, and change the sinkfile. Unlist params if needed, and add the seed as a parameter.
+#' Pick your xgb.cv function, replace data by the initial matrix, insert the label,
+#' check ntimes to the value you want, and change the sinkfile.
+#' Unlist params if needed, and add the seed as a parameter.
 #' 
 #' @export
 

@@ -19,7 +19,8 @@
 #' 
 #' @examples 
 #' scored_data <- rule_single(data = data, label = NA, scoring = TRUE, ruling = FALSE)
-#' rules <- rule_single(data = scored_data, label = target, iterations = 100, scoring = FALSE, ruling = TRUE)
+#' rules <- rule_single(data = scored_data, label = target,
+#' iterations = 100, scoring = FALSE, ruling = TRUE)
 #' preds <- preds[rules$output[(length(target)+1):(nrow(data))] == 0] <- 0
 #' 
 #' @export
