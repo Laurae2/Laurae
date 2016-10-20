@@ -200,7 +200,7 @@ lgbm.train <- function(
       # Uses the super fast CSV writer
       cat('Saving train data (data.table) file to: ', file.path(workingdir, train_name), sep = "")
       my_data <- x_train
-      my_data[, datatable_target := y_train]
+      my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
@@ -213,7 +213,7 @@ lgbm.train <- function(
       if (exists("fwrite") & is.data.table(x_train)) {
         cat('Saving validation data (data.table) file to: ', file.path(workingdir, val_name), "\n", sep = "")
         my_data <- x_val
-        my_data[, datatable_target := y_val]
+        my_data$datatable_target <- y_val
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
         fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = "nan")
       } else {
