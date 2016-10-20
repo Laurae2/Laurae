@@ -62,7 +62,7 @@
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
-#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose.txt"}, but the model log is output to \code{log_name}.
+#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose_cv.txt"}, but the model log is output to \code{log_name}.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
@@ -135,8 +135,8 @@ lightgbm.cv <- function(
     preds <- numeric(length(folds))
   }
   
-  if ((!is.na(log_name)) & (verbose %in% c(-1, 2))) {
-    sink(file = file.path(workingdir, "diverted_verbose.txt"), append = log_append, split = as.logical(verbose + 1))
+  if (!verbose) {
+    sink(file = file.path(workingdir, "diverted_verbose_cv.txt"), append = log_append, split = as.logical(verbose > 0))
   }
   
   for (i in 1:length(folds_list)) {
@@ -214,7 +214,7 @@ lightgbm.cv <- function(
     
   }
   
-  if ((!is.na(log_name)) & (verbose %in% c(-1, 2))) {
+  if (!verbose) {
     sink()
   }
   
