@@ -42,7 +42,7 @@ lightgbm.predict <- function(
     return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
-  if (!verbose) sink(file = file.path(lgbm_path, "diverted_verbose.txt"), append = FALSE)
+  if (!verbose) sink(file = file.path(model, "diverted_verbose.txt"), append = FALSE)
   
   # Export data
   if (!files_exist){
@@ -76,8 +76,6 @@ lightgbm.predict <- function(
   } else {
     system2(file.path(lgbm_path), args = paste0('config="', file.path(model, pred_conf), '"'), stdout = file.path(lgbm_path, "diverted_verbose.txt"))
   }
-
-  if (!verbose) {sink()}
   
   if (data.table == TRUE) {
     return(fread(file.path(model, output_result), header = FALSE)$V1)
