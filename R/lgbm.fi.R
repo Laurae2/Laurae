@@ -12,7 +12,7 @@
 #' @examples
 #' #None yet.
 #' 
-#' #@export
+#' @export
 
 lgbm.fi <- function(
   workingdir,
