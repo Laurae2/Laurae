@@ -73,7 +73,7 @@
 #' 
 #' @export
 
-lightgbm.cv <- function(
+lgbm.cv <- function(
   y_train,
   x_train,
   folds,
@@ -146,7 +146,7 @@ lightgbm.cv <- function(
     x_val <- x_train[folds == i,]
     gc(verbose = FALSE)
     
-    models[[i]] <- lightgbm.train(
+    models[[i]] <- lgbm.train(
       x_train = x_train,
       y_train = y_train[folds != i],
       x_val = x_val,

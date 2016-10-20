@@ -70,7 +70,7 @@
 #' 
 #' @export
 
-lightgbm.train <- function(
+lgbm.train <- function(
   y_train,
   x_train,
   y_val = NULL,

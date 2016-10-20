@@ -22,7 +22,7 @@
 #' 
 #' @export
 
-lightgbm.predict <- function(
+lgbm.predict <- function(
   model,
   x_val,
   y_val = NA,
