@@ -12,25 +12,29 @@ Advanced Toolbox for Data Science for R by Laurae
 
 If I am not missing stuff (please make a pull request if something is missing that must be added):
 
-| Package | Which functions? |
+| Package | Requires compilation? | Which functions? |
 | --- | --- |
-| xgboost (0.60) | xgb.ncv, xgb.opt.depth |
-| outliers | rule_single, rule_double |
-| R.utils | rule_single, rule_double |
-| data.table | read_sparse_csv |
-| Matrix | read_sparse_csv |
-| recommenderlab | read_sparse_csv (only when using NAs as sparse) |
-| Rtsne | tsne_grid |
-| tabplot | tableplot_jpg |
-| caret | xgb.ncv |
-| stringi | lightgbm.cv |
-| LightGBM (to compile) | lightgbm.train, lightgbm.predict, lightgbm.cv, lightgbm.predict.cv |
+| LightGBM | YES | lightgbm.train, lightgbm.predict, lightgbm.cv |
+| xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
+| outliers | No | rule_single, rule_double |
+| R.utils | No | rule_single, rule_double |
+| data.table | No | read_sparse_csv |
+| Matrix | No | read_sparse_csv |
+| recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
+| Rtsne | No | tsne_grid |
+| tabplot | No | tableplot_jpg |
+| caret | No | xgb.ncv |
+| stringi | No | lightgbm.cv |
 
 # Installing dependencies?
 
 * For LightGBM, please use: `git clone --recursive https://github.com/wxchan/LightGBM` for the repository (as of 10/20/2016, this one has a correct early_stopping implementation.
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
+
+# Strange errors on first run
+
+Sometimes you will get strange errors (like a corrupted documentation database) on the first load ever on the package. Restart R to get rid of this issue. It does not show up anymore afterwards.
 
 # What is inside?
 
@@ -43,10 +47,9 @@ If I am not missing stuff (please make a pull request if something is missing th
 | rule_single | Outlying Univariate Continuous Association Rule Finder | Allows to use an outlying univariate continuous association rule finder on data and predicts immediately. Intermediate outlying scores can be stored. High verbosity of outputs during computation.
 | rule_double | Outlying Bivariate Linear Continuous Association Rule Finder | Allows to use an outlying bivariate linear continuous association rule finder on data and predicts immediately. Intermediate outlying scores cannot be stored. If a bivariate combination is ill-conditioned (sum of correlation matrix = 4), that bivariate combination is skipped to avoid a solver matrix inversion crash/freeze/interruption when trying to compute Mahalanobis distance dimensionality reduction. High verbosity of outputs during computation. Potential TO-DO: give the user the possibility to use their own dimensionality reduction function (like a truncated PCA 1-axis). |
 | xgb.opt.depth | xgboost Depth Optimizer | Allows to optimize xgboost's depth parameter using simple heuristics. The learner function is customizable to fit any other model requiring to work by integer steps. Hence, it is adaptable to work on continuous 1-D features, with a large safety net you define yourself by coercing the integer to your own range. |
-| lightgbm.train | LightGBM trainer | Trains a LightGBM model. |
-| lightgbm.predict | LightGBM predictor | Predicts from a LightGBM model. |
-| lightgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. |
-| lightgbm.cv.predict | LightGBM CV predictor | Predicts from a Cross-Validated LightGBM model. |
+| lightgbm.train | LightGBM trainer | Trains a LightGBM model. Full verbosity control, with logging to file possible. |
+| lightgbm.predict | LightGBM predictor | Predicts from a LightGBM model. Use the model working directory if you lost the model variable (which is not needed to predict - you only need the correct model working directory and the model name). |
+| lightgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. Full verbosity control, with logging to file possible, with predictions given back as return. |
 
 # TO-DO:
 
