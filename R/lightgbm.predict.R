@@ -69,7 +69,13 @@ lightgbm.predict <- function(
   if (output_result != '') write(paste0('output_result="', file.path(model, output_result), '"'), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   close(fileConn)
-  system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
+  
+  
+  if (verbose) {
+    system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
+  } else {
+    system2(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), stdout = file.path(workingdir, "diverted_verbose.txt"))
+  }
   
   if (!verbose) {sink()}
   
