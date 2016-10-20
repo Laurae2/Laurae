@@ -5,9 +5,9 @@
 \title{LightGBM Cross-Validated Model Training}
 \usage{
 lightgbm.cv(y_train, x_train, folds, application = "regression",
-  validation = TRUE, num_iterations = 10, learning_rate = 0.1,
-  num_leaves = 127, tree_learner = "serial", num_threads = 2,
-  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
+  validation = TRUE, num_iterations = 10, early_stopping_rounds = NA,
+  learning_rate = 0.1, num_leaves = 127, tree_learner = "serial",
+  num_threads = 2, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
@@ -36,6 +36,8 @@ lightgbm.cv(y_train, x_train, folds, application = "regression",
 \item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.}
 
 \item{num_iterations}{Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.}
+
+\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.}
 
 \item{learning_rate}{Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.}
 

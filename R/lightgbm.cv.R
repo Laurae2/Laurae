@@ -17,6 +17,7 @@
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
+#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param tree_learner Type: character. The type of learner use, between \code{'serial'} (single machine tree learner), \code{'feature'} (feature parallel tree learner), \code{'data'} (data parallel tree learner). Defaults to \code{'serial'}. Other learners are not supported yet. (?)
@@ -76,6 +77,7 @@ lightgbm.cv <- function(
   application = 'regression',
   validation = TRUE,
   num_iterations = 10,
+  early_stopping_rounds = NA,
   learning_rate = 0.1,
   num_leaves = 127,
   tree_learner = 'serial',
@@ -136,6 +138,7 @@ lightgbm.cv <- function(
       application = application,
       validation = validation,
       num_iterations = num_iterations,
+      early_stopping_rounds = early_stopping_rounds,
       learning_rate = learning_rate,
       num_leaves = num_leaves,
       tree_learner = tree_learner,

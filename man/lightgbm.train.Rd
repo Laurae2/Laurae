@@ -6,15 +6,15 @@
 \usage{
 lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   application = "regression", validation = TRUE, num_iterations = 10,
-  learning_rate = 0.1, num_leaves = 127, tree_learner = "serial",
-  num_threads = 2, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
-  feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
-  bagging_freq = 0, bagging_seed = 3, max_bin = 255,
-  data_random_seed = 1, data_has_label = TRUE,
-  output_model = "lgbm_model.txt", input_model = NA,
-  output_result = "lgbm_predict_result.txt", is_sigmoid = TRUE,
-  init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
-  two_round = FALSE, save_binary = FALSE, sigmoid = 1,
+  early_stopping_rounds = NA, learning_rate = 0.1, num_leaves = 127,
+  tree_learner = "serial", num_threads = 2, min_data_in_leaf = 100,
+  min_sum_hessian_in_leaf = 10, feature_fraction = 1,
+  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
+  bagging_seed = 3, max_bin = 255, data_random_seed = 1,
+  data_has_label = TRUE, output_model = "lgbm_model.txt",
+  input_model = NA, output_result = "lgbm_predict_result.txt",
+  is_sigmoid = TRUE, init_score = "", is_pre_partition = FALSE,
+  is_sparse = TRUE, two_round = FALSE, save_binary = FALSE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
@@ -37,6 +37,8 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 \item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.}
 
 \item{num_iterations}{Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.}
+
+\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.}
 
 \item{learning_rate}{Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.}
 
