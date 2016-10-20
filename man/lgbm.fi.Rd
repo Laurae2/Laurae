@@ -4,15 +4,18 @@
 \alias{lgbm.fi}
 \title{LightGBM Feature Importance}
 \usage{
-lgbm.fi(workingdir, feature_names = NA, input_model = "lgbm_model.txt",
-  ntreelimit = 0)
+lgbm.fi(model, workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
+  input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
+  feature_names = NA, ntreelimit = 0)
 }
 \arguments{
-\item{workingdir}{Type: character. The working directory of the model file.}
+\item{model}{Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.}
+
+\item{workingdir}{Type: character. The working directory of the model file. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".}
+
+\item{input_model}{Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".}
 
 \item{feature_names}{Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.}
-
-\item{input_model}{Type: character. The name of the model file. Defaults to \code{"lgbm_model.txt"}.}
 
 \item{ntreelimit}{Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.}
 }

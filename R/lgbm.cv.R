@@ -212,8 +212,7 @@ lgbm.cv <- function(
       pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf)
       )
     if (predictions) {
-      str(outputs)
-      preds <- outputs[["Models"]][[as.character(i)]][["Predictions"]][folds == i]
+      preds[folds == i] <- outputs[["Models"]][[as.character(i)]][["Predictions"]]
     }
   }
   

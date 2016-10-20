@@ -2,9 +2,10 @@
 #'
 #' This function allows to get the feature importance on a LightGBM model. The model file must be \code{"workingdir"}, where \code{"workingdir"} is the folder and \code{input_model} is the model file name.
 #' 
-#' @param workingdir Type: character. The working directory of the model file.
+#' @param model Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.
+#' @param workingdir Type: character. The working directory of the model file. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".
+#' @param input_model Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".
 #' @param feature_names Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.
-#' @param input_model Type: character. The name of the model file. Defaults to \code{"lgbm_model.txt"}.
 #' @param ntreelimit Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.
 #' 
 #' @return Nothing (the data.table is transformed to a data.frame already)
@@ -15,10 +16,20 @@
 #' @export
 
 lgbm.fi <- function(
-  workingdir,
+  model,
+  workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
+  input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
   feature_names = NA,
-  input_model = "lgbm_model.txt",
   ntreelimit = 0) {
+  
+  # Export model if necessary
+  if (length(model) > 1) {
+    if (exists("fwrite")) {
+      fwrite(as.data.table(model[["Model"]]), file.path(workingdir, input_model), col.names = FALSE, quote = FALSE)
+    } else {
+      write.table(model[["Model"]], file.path(workingdir, input_model), col.names = FALSE, quote = FALSE, row.names = FALSE)
+    }
+  }
   
   model <- readLines(file.path(workingdir, input_model))
   ntrees <- grep("Tree=", model) # Note: starts at tree=0 for iteration=1

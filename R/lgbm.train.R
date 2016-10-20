@@ -239,8 +239,10 @@ lgbm.train <- function(
   output <- list()
   output[["Model"]] <- readLines(file.path(workingdir, output_model))
   output[["Path"]] <- file.path(workingdir)
-  output[["Name"]] <- file.path(workingdir, output_model)
+  output[["Name"]] <- output_model
   output[["lgbm"]] <- file.path(lgbm_path)
+  output[["Train"]] <- train_name
+  output[["Test"]] <- val_name
   
   if (!is.na(log_name)) {
     sink()
