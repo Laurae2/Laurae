@@ -18,7 +18,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
-| data.table | No | read_sparse_csv |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv |
 | Matrix | No | read_sparse_csv |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
@@ -30,6 +30,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 * For LightGBM, please use: `git clone --recursive https://github.com/wxchan/LightGBM` for the repository (as of 10/20/2016, this one has a correct early_stopping implementation.
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
+* data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
 
 # Strange errors on first run
