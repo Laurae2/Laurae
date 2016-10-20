@@ -22,7 +22,8 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  verbose = TRUE, log_name = NA, log_append = FALSE)
+  verbose = TRUE, log_name = NA, log_append = FALSE,
+  predictions = FALSE, pred_conf = "lgbm_pred.conf")
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -128,9 +129,13 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 \item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.}
 
 \item{log_append}{Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.}
+
+\item{predictions}{Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.}
+
+\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.}
 }
 \value{
-The working directory for the trained model.
+A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, and the predictions (\code{Predictions}) if \code{predictions} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 }
 \description{
 This function allows you to train a LightGBM model.

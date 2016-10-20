@@ -60,13 +60,13 @@
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
-#' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
+#' @param predictions Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose.txt"}, but the model log is output to \code{log_name}.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
-#' @return If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
+#' @return If \code{predictions == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
 #' 
 #' @examples 
 #' #None yet.
@@ -123,17 +123,19 @@ lgbm.cv <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   unicity = FALSE,
-  prediction = TRUE,
+  predictions = TRUE,
   pred_conf = 'lgbm_pred.conf',
   verbose = TRUE,
   log_name = NA,
   log_append = FALSE
 ) {
-  models <- list()
+  
+  outputs <- list()
+  outputs[["Models"]] <- list()
   folds_list <- unique(folds)
   gc(verbose = FALSE)
   
-  if (prediction) {
+  if (predictions) {
     preds <- numeric(length(folds))
   }
   
@@ -153,7 +155,7 @@ lgbm.cv <- function(
     gc(verbose = FALSE)
     
     # Train
-    models[[i]] <- lgbm.train(
+    outputs[["Models"]][[as.character(i)]] <- lgbm.train(
       x_train = x_tr,
       y_train = y_train[folds != i],
       x_val = x_val,
@@ -205,29 +207,15 @@ lgbm.cv <- function(
       val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
       verbose = as.logical(verbose),
       log_name = ifelse(!((!is.na(log_name)) & (verbose %in% c(0, 1))), stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
-      log_append = (log_append & (verbose %in% c(0, 1)))
+      log_append = (log_append & (verbose %in% c(0, 1))),
+      predictions = predictions,
+      pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf)
       )
-    
-    if (prediction) {
-      preds[folds == i] <- lgbm.predict(
-        model = models[[i]],
-        x_val = NA,
-        y_val = NA,
-        data_has_label = TRUE,
-        val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-        input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
-        output_result = ifelse(!unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
-        lgbm_path = lgbm_path,
-        files_exist = TRUE,
-        pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
-        data.table = exists("data.table"),
-        verbose = as.logical(verbose))
-    }
     
   }
   
-  if (!prediction) { return(models) }
-  if(prediction) {
+  if (!predictions) { return(models) }
+  if(predictions) {
     return(preds)
   }
 }

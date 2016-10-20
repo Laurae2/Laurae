@@ -4,31 +4,35 @@
 \alias{lgbm.predict}
 \title{LightGBM Prediction}
 \usage{
-lgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
-  val_name = "lgbm_test.csv", input_model = "lgbm_model.txt",
+lgbm.predict(model, x_pred = NA, y_pred = NA, data_has_label = FALSE,
+  val_name = "lgbm_test.csv", input_model = ifelse(is.list(model),
+  model[["File"]], "lgbm_model.txt"),
   output_result = "lgbm_predict_result.txt",
-  lgbm_path = "path/to/LightGBM.exe", files_exist = TRUE,
-  pred_conf = "lgbm_pred.conf", data.table = exists("data.table"),
-  verbose = TRUE)
+  lgbm_path = ifelse(is.list(model), model[["lgbm"]], getwd()),
+  workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
+  files_exist = TRUE, pred_conf = "lgbm_pred.conf",
+  data.table = exists("data.table"), verbose = TRUE)
 }
 \arguments{
-\item{model}{Type: character.The working directory of the model.}
+\item{model}{Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}.}
 
-\item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features.}
+\item{x_pred}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.}
 
-\item{y_val}{Type: vector. The validation labels. Defaults to \code{NULL}.}
+\item{y_pred}{Type: vector. The validation labels. Defaults to \code{NA}.}
 
-\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
+\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.}
 
 \item{val_name}{Type: character. The file output name for the vaildation file. Defaults to \code{"lgbm_test.csv"}.}
 
-\item{input_model}{Type: character. The file name of the model. Defaults to \code{'lgbm_model.txt'}.}
+\item{input_model}{Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take lgbm_model.txt".}
 
 \item{output_result}{Type: character. The output prediction file. Defaults to \code{'lgbm_predict_result.txt'}.}
 
-\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{ifelse(is.list(model), model[["File"]], getwd())}, which means "take the model file name if provided the model list, else take the default working directory".}
 
-\item{files_exist}{Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.}
+\item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".}
+
+\item{files_exist}{Type: boolean. Whether to NOT create CSV files for the prediction data, if already created. Defaults to \code{TRUE}.}
 
 \item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 

@@ -62,8 +62,10 @@
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose.txt"}, but the model log is output to \code{log_name}.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
+#' @param predictions Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.
+#' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.
 #' 
-#' @return The working directory for the trained model.
+#' @return A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, and the predictions (\code{Predictions}) if \code{predictions} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 #' 
 #' @examples 
 #' #None yet.
@@ -122,7 +124,9 @@ lgbm.train <- function(
   val_name = 'lgbm_val.csv',
   verbose = TRUE,
   log_name = NA,
-  log_append = FALSE
+  log_append = FALSE,
+  predictions = FALSE,
+  pred_conf = 'lgbm_pred.conf'
 ) {
   
   # Check file existance
@@ -232,8 +236,31 @@ lgbm.train <- function(
   }
   cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   
+  output <- list()
+  output[["Model"]] <- readLines(file.path(workingdir, input_model))
+  output[["Path"]] <- file.path(workingdir)
+  output[["Name"]] <- file.path(workingdir, output_model)
+  output[["lgbm"]] <- file.path(lgbm_path)
+  
   if (!is.na(log_name)) {
     sink()
+  }
+  
+  if (predictions) {
+    output[["Predictions"]] <- lgbm.predict(
+      model = '',
+      x_pred = NA,
+      y_pred = NA,
+      data_has_label = TRUE,
+      val_name = val_name,
+      input_model = file.path(workingdir, output_model),
+      output_result = output_result,
+      lgbm_path = lgbm_path,
+      workingdir = file.path(workingdir),
+      files_exist = TRUE,
+      pred_conf = pred_conf,
+      data.table = exists("data.table"),
+      verbose = verbose)
   }
   
   return(workingdir)

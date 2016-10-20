@@ -22,7 +22,7 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  unicity = FALSE, prediction = TRUE, pred_conf = "lgbm_pred.conf",
+  unicity = FALSE, predictions = TRUE, pred_conf = "lgbm_pred.conf",
   verbose = TRUE, log_name = NA, log_append = FALSE)
 }
 \arguments{
@@ -124,7 +124,7 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
 
 \item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
 
-\item{prediction}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
+\item{predictions}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
 
 \item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 
@@ -135,7 +135,7 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
 \item{log_append}{Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.}
 }
 \value{
-If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
+If \code{predictions == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
 }
 \description{
 This function allows you to cross-validate a LightGBM model.
