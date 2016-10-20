@@ -2,7 +2,7 @@
 #'
 #' This function allows to get cross-validated predictions on cross-validated training data. Requires a cross-validated train with \code{unicity} = TRUE. Deprecated.
 #' 
-#' @param models Type: character.The working directory of the model.
+#' @param models Type: character. The working directory of the model.
 #' @param folds Type: vector of integers. The fold assigned to each row.
 #' @param input_model Type: character. The file name of the model. Defaults to \code{'LightGBM_model.txt'}.
 #' @param output_result Type: character. The output prediction file. Defaults to \code{'LightGBM_predict_result.txt'}.

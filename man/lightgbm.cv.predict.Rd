@@ -10,7 +10,7 @@ lightgbm.cv.predict(models, folds, input_model = "LightGBM_model.txt",
   unicity = TRUE, data.table = exists("data.table"))
 }
 \arguments{
-\item{models}{Type: character.The working directory of the model.}
+\item{models}{Type: character. The working directory of the model.}
 
 \item{folds}{Type: vector of integers. The fold assigned to each row.}
 
