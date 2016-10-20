@@ -219,7 +219,7 @@ lightgbm.train <- function(
   system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'))
   cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   
-  if (!is.na(sink)) {
+  if (!is.na(log_name)) {
     sink()
   }
   
