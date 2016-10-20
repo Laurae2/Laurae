@@ -8,7 +8,8 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
   val_name = "lgbm_test.csv", input_model = "lgbm_model.txt",
   output_result = "lgbm_predict_result.txt",
   lgbm_path = "path/to/LightGBM.exe", files_exist = TRUE,
-  pred_conf = "lgbm_pred.conf", data.table = exists("data.table"))
+  pred_conf = "lgbm_pred.conf", data.table = exists("data.table"),
+  verbose = TRUE)
 }
 \arguments{
 \item{model}{Type: character.The working directory of the model.}
@@ -32,6 +33,8 @@ lightgbm.predict(model, x_val, y_val = NA, data_has_label = TRUE,
 \item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 
 \item{data.table}{Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.}
+
+\item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}.}
 }
 \value{
 The predictions.

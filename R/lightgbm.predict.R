@@ -13,6 +13,7 @@
 #' @param files_exist Type: boolean. Whether to NOT create CSV files for validation data, if already created. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
+#' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}.
 #' 
 #' @return The predictions.
 #' 
@@ -32,7 +33,8 @@ lightgbm.predict <- function(
   lgbm_path = 'path/to/LightGBM.exe',
   files_exist = TRUE,
   pred_conf = 'lgbm_pred.conf',
-  data.table = exists("data.table")
+  data.table = exists("data.table"),
+  verbose = TRUE
 ) {
   
   # Check file existance
@@ -40,18 +42,20 @@ lightgbm.predict <- function(
     return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
+  if (!verbose) sink(file = file.path(lgbm_path, "diverted_verbose.txt"), append = FALSE)
+  
   # Export data
   if (!files_exist){
     if (exists("fwrite") & is.data.table(x_val)) {
       # Uses the super fast CSV writer
-      cat('Saving test data (data.table) file to: ', file.path(model, val_name), "\n", sep = "")
+      if (verbose) cat('Saving test data (data.table) file to: ', file.path(model, val_name), "\n", sep = "")
       my_data <- x_val
       my_data[, datatable_target := y_val]
       setcolorder(my_data, c("datatable_target", colnames(x_val)))
       fwrite(my_data, file.path = file.path(model, val_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
       # Fallback if no fwrite
-      cat('Saving test data file to: ', file.path(model, val_name), "\n", sep = "")
+      if (verbose) cat('Saving test data file to: ', file.path(model, val_name), "\n", sep = "")
       write.table(cbind(y_val, x_val), file.path(model, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
     }
@@ -66,6 +70,8 @@ lightgbm.predict <- function(
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   close(fileConn)
   system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
+  
+  if (!verbose) {sink()}
   
   if (data.table == TRUE) {
     return(fread(file.path(model, output_result), header = FALSE)$V1)

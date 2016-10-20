@@ -21,7 +21,8 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   time_out = 120, machine_list_file = "",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
-  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv")
+  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
+  verbose = TRUE, log_name = NA, log_append = FALSE)
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -121,6 +122,12 @@ lightgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 \item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}}
 
 \item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
+
+\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}.}
+
+\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.}
+
+\item{log_append}{Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.}
 }
 \value{
 The working directory for the trained model.
