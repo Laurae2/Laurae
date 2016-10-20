@@ -4,7 +4,7 @@
 #' 
 #' @param workingdir Type: character. The working directory of the model file.
 #' @param feature_names Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.
-#' @param input_model Type: character. The name of the model file. Defaults to \code{"LightGBM_model.txt"}.
+#' @param input_model Type: character. The name of the model file. Defaults to \code{"lgbm_model.txt"}.
 #' @param ntreelimit Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.
 #' 
 #' @return Nothing (the data.table is transformed to a data.frame already)
@@ -17,7 +17,7 @@
 lgbm.fi <- function(
   workingdir,
   feature_names = NA,
-  input_model = "LightGBM_model.txt",
+  input_model = "lgbm_model.txt",
   ntreelimit = 0) {
   
   model <- readLines(file.path(workingdir, input_model))

@@ -32,9 +32,9 @@
 #' @param max_bin Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.
 #' @param data_random_seed Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
-#' @param output_model Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.
+#' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
 #' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
-#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.
+#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Unused yet.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
 #' @param is_pre_partition Type: boolean. Whether data is pre-partitioned for parallel learning. Defaults to \code{FALSE}. Unused.
@@ -95,9 +95,9 @@ lgbm.cv <- function(
   max_bin = 255,
   data_random_seed = 1,
   data_has_label = TRUE,
-  output_model = 'LightGBM_model.txt',
+  output_model = 'lgbm_model.txt',
   input_model = NA,
-  output_result = 'LightGBM_predict_result.txt',
+  output_result = 'lgbm_predict.txt',
   is_sigmoid = TRUE,
   init_score = '',
   is_pre_partition = FALSE,

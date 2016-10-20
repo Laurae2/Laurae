@@ -11,12 +11,12 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
-  output_model = "LightGBM_model.txt", input_model = NA,
-  output_result = "LightGBM_predict_result.txt", is_sigmoid = TRUE,
-  init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
-  two_round = FALSE, save_binary = FALSE, sigmoid = 1,
-  is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
-  31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
+  output_model = "lgbm_model.txt", input_model = NA,
+  output_result = "lgbm_predict.txt", is_sigmoid = TRUE, init_score = "",
+  is_pre_partition = FALSE, is_sparse = TRUE, two_round = FALSE,
+  save_binary = FALSE, sigmoid = 1, is_unbalance = FALSE,
+  max_position = 20, label_gain = c(0, 1, 3, 7, 15, 31, 63),
+  metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
   time_out = 120, machine_list_file = "",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
@@ -68,11 +68,11 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
-\item{output_model}{Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.}
+\item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
 
 \item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
 
-\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.}
+\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Unused yet.}
 
 \item{is_sigmoid}{Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.}
 

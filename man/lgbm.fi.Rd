@@ -4,7 +4,7 @@
 \alias{lgbm.fi}
 \title{LightGBM Feature Importance}
 \usage{
-lgbm.fi(workingdir, feature_names = NA, input_model = "LightGBM_model.txt",
+lgbm.fi(workingdir, feature_names = NA, input_model = "lgbm_model.txt",
   ntreelimit = 0)
 }
 \arguments{
@@ -12,7 +12,7 @@ lgbm.fi(workingdir, feature_names = NA, input_model = "LightGBM_model.txt",
 
 \item{feature_names}{Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.}
 
-\item{input_model}{Type: character. The name of the model file. Defaults to \code{"LightGBM_model.txt"}.}
+\item{input_model}{Type: character. The name of the model file. Defaults to \code{"lgbm_model.txt"}.}
 
 \item{ntreelimit}{Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.}
 }
@@ -25,6 +25,5 @@ This function allows to get the feature importance on a LightGBM model. The mode
 \examples{
 #None yet.
 
-#@export
 }
 

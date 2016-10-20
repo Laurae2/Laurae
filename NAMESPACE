@@ -2,6 +2,7 @@
 
 export(Laurae_load)
 export(lgbm.cv)
+export(lgbm.fi)
 export(lgbm.predict)
 export(lgbm.train)
 export(read_sparse_csv)
