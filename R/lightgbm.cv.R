@@ -203,7 +203,7 @@ lightgbm.cv <- function(
         y_val = NA,
         data_has_label = TRUE,
         val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-        input_model = stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")),
+        input_model = ifelse(unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), input_model),
         output_result = ifelse(unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
         lgbm_path = lgbm_path,
         files_exist = TRUE,
