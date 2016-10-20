@@ -217,11 +217,7 @@ lightgbm.train <- function(
     }
   }
   
-  if (verbose) {
-    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'))
-  } else {
-    system2(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), stdout = file.path(workingdir, log_name))
-  }
+  system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose)
   cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
   
   if (!is.na(log_name)) {

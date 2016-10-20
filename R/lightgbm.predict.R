@@ -71,12 +71,8 @@ lightgbm.predict <- function(
   close(fileConn)
   
   
-  if (verbose) {
-    system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'))
-  } else {
-    system2(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), stdout = file.path(workingdir, "diverted_verbose.txt"))
-  }
-  
+  system(paste0('"', file.path(lgbm_path), '" config="', file.path(model, pred_conf), '"'), intern = !verbose)
+
   if (!verbose) {sink()}
   
   if (data.table == TRUE) {
