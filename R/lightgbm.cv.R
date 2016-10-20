@@ -62,7 +62,7 @@
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
-#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}.
+#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
@@ -136,13 +136,13 @@ lightgbm.cv <- function(
   }
   
   if ((!is.na(log_name)) & (verbose %in% c(-1, 2))) {
-    sink(file = file.path(lgbm_path, log_name), append = log_append, split = as.logical(verbose + 1))
+    sink(file = file.path(workingdir, log_name), append = log_append, split = as.logical(verbose + 1))
   }
   
   for (i in 1:length(folds_list)) {
     
     if (!((!is.na(log_name)) & (verbose %in% c(0, 1)))) {
-      sink(file = stri_replace_last_fixed(file.path(lgbm_path, log_name), ".", paste0("_", i, ".")), append = log_append, split = as.logical(verbose))
+      sink(file = stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), append = log_append, split = as.logical(verbose))
     }
     
     cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")

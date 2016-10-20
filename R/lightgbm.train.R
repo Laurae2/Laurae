@@ -59,7 +59,7 @@
 #' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
-#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}.
+#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set.
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
 #' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
@@ -131,7 +131,7 @@ lightgbm.train <- function(
   }
   
   if (!is.na(log_name)) {
-    sink(file = file.path(lgbm_path, log_name), append = log_append, split = as.logical(verbose))
+    sink(file = file.path(workingdir, log_name), append = log_append, split = as.logical(verbose))
   }
   
   # Setup working directory for LightGBM
