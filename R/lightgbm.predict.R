@@ -63,7 +63,7 @@ lightgbm.predict <- function(
   # Do the prediction stuff
   fileConn <- file(file.path(model, pred_conf), "w")
   write(paste0('task=prediction'), fileConn, append = TRUE)
-  write(paste0('data="', file.path(model, val_name, '"')), fileConn, append = TRUE)
+  write(paste0('data="', file.path(model, val_name), '"'), fileConn, append = TRUE)
   if (input_model != '') write(paste0('input_model="', file.path(model, input_model), '"'), fileConn, append = TRUE)
   if (output_result != '') write(paste0('output_result="', file.path(model, output_result), '"'), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
