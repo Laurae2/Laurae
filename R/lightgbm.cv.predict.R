@@ -31,40 +31,24 @@ lightgbm.cv.predict <- function(
   folds_list <- unique(folds)
   preds <- list()
   for (i in 1:length(folds_list)) {
-    if (unicity == FALSE) {
-      if (data.table) {
-        dat <- fread(stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
-      } else {
-        dat <- read.csv(stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
-      }
-      preds[[i]]=
-        lightgbm.predict(
-          model = models[[i]],
-          x_val = NA,
-          y_val = NA,
-          data_has_label = TRUE,
-          val_name = stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")),
-          input_model = input_model,
-          output_result = output_result,
-          lgbm_path = lgbm_path,
-          files_exist = TRUE,
-          data.table = data.table
-        )
+    if (data.table) {
+      dat <- fread(stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
     } else {
-      preds[[i]]=
-        lightgbm.predict(
-          model = models[[i]],
-          x_val = NA,
-          y_val = NA,
-          data_has_label = TRUE,
-          val_name = stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")),
-          input_model = input_model,
-          output_result = output_result,
-          lgbm_path = lgbm_path,
-          files_exist = TRUE,
-          data.table = data.table
-        )
-      }
+      dat <- read.csv(stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
+    }
+    preds[[i]]=
+      lightgbm.predict(
+        model = models[[i]],
+        x_val = NA,
+        y_val = NA,
+        data_has_label = TRUE,
+        val_name = stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")),
+        input_model = input_model,
+        output_result = output_result,
+        lgbm_path = lgbm_path,
+        files_exist = TRUE,
+        data.table = data.table
+      )
     
   }
   return(preds)

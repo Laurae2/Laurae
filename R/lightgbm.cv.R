@@ -32,7 +32,7 @@
 #' @param data_random_seed Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'LightGBM_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
+#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{''}. Unused yet.
 #' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'LightGBM_predict_result.txt'}. Unused yet.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
@@ -60,7 +60,6 @@
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param prediction Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
-#' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' 
 #' @return If \code{prediction == TRUE}, returns the cross-validated predictions. Otherwise, returns the working directory for the trained models.
 #' 
@@ -94,7 +93,7 @@ lightgbm.cv <- function(
   input_model = '',
   output_result = 'LightGBM_predict_result.txt',
   is_sigmoid = TRUE,
-  init_score = NA,
+  init_score = '',
   is_pre_partition = FALSE,
   is_sparse = TRUE,
   two_round = FALSE,
@@ -118,14 +117,10 @@ lightgbm.cv <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   unicity = FALSE,
-  prediction = TRUE,
-  pred_conf = 'lgbm_pred.conf'
+  prediction = TRUE
 ) {
   models <- list()
   folds_list <- unique(folds)
-  if (prediction) {
-    preds <- numeric(length(folds))
-  }
   for (i in 1:length(folds_list)) {
     cat('\n************\n', paste('Fold no:',i), '************\n', sep = "")
     models[[i]] <- lightgbm.train(
@@ -150,9 +145,9 @@ lightgbm.cv <- function(
       max_bin = max_bin,
       data_random_seed = data_random_seed,
       data_has_label = data_has_label,
-      output_model = ifelse(unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
-      input_model = ifelse(is.na(unicity), NA, ifelse(unicity, stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")), input_model)),
-      output_result = ifelse(unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
+      output_model = stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")),
+      input_model = stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")),
+      output_result = output_result,
       is_sigmoid = is_sigmoid,
       init_score = init_score,
       is_pre_partition = is_pre_partition,
@@ -174,26 +169,17 @@ lightgbm.cv <- function(
       lgbm_path = lgbm_path,
       workingdir = workingdir,
       files_exist = files_exist,
-      train_conf = ifelse(unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
-      train_name = ifelse(unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
-      val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name))
-    if (prediction) {
-      preds[folds == i] <- lightgbm.predict(
-        model = models[[i]],
-        x_val = NA,
-        y_val = NA,
-        data_has_label = TRUE,
-        val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-        input_model = stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")),
-        output_result = ifelse(unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
-        lgbm_path = lgbm_path,
-        files_exist = TRUE,
-        pred_conf = ifelse(unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
-        data.table = exists("data.table"))
-    }
+      train_conf = stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")),
+      train_name = stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")),
+      val_name = stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")))
   }
   if (!prediction) { return(models) }
   if(prediction) {
-    return(preds)
+    return(lightgbm.cv.predict(models = models,
+                               folds = folds,
+                               input_model = output_model,
+                               lgbm_path = lgbm_path,
+                               val_name = val_name,
+                               unicity = unicity))
   }
 }
