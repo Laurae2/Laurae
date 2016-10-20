@@ -18,7 +18,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, DTcbind |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, DTcbind, DTsubsample |
 | Matrix | No | read_sparse_csv |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
@@ -44,7 +44,7 @@ Sometimes you will get strange errors (like a corrupted documentation database) 
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv <br> Rules: rule_single, rule_double |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Visualizations | tableplots: tableplot_jpg |
-| Extreme low-memory manipulation | data.table: setDF, DTcbind <br> CSV sparse: read_sparse_csv |
+| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
 | --- | --- | --- |
@@ -57,9 +57,10 @@ Sometimes you will get strange errors (like a corrupted documentation database) 
 | xgb.opt.depth | xgboost Depth Optimizer | Allows to optimize xgboost's depth parameter using simple heuristics. The learner function is customizable to fit any other model requiring to work by integer steps. Hence, it is adaptable to work on continuous 1-D features, with a large safety net you define yourself by coercing the integer to your own range. |
 | lightgbm.train | LightGBM trainer | Trains a LightGBM model. Full verbosity control, with logging to file possible. |
 | lightgbm.predict | LightGBM predictor | Predicts from a LightGBM model. Use the model working directory if you lost the model variable (which is not needed to predict - you only need the correct model working directory and the model name). |
-| lightgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. Full verbosity control, with logging to file possible, with predictions given back as return. |
-| setDF | Low memory DT coercion to DF | Coerces a data.table to data.frame using the least possible memory. Actually, it uses about 0 extra memory. |
+| lightgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. Full verbosity control, with logging to file possible, with predictions given back as return. Subsampling is optimized to maximum to lower memory usage peaks. |
+| setDF | Low memory DT coercion to DF | (Already available in data.table) Coerces a data.table to data.frame using the least possible memory. Actually, it uses about 0 extra memory. |
 | DTcbind | Low memory DT cbind | Column bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to cbind, this reduce peak memory usage by 3X, and sometimes by more. |
+| DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. With extreme settings, it uses only the original data.table + 2 rows of memory. Compared to direct subsampling, this reduce peak memory usage by 2X, and sometimes by more. |
 
 # TO-DO:
 
