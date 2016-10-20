@@ -13,7 +13,7 @@ Advanced Toolbox for Data Science for R by Laurae
 If I am not missing stuff (please make a pull request if something is missing that must be added):
 
 | Package | Requires compilation? | Which functions? |
-| --- | --- | --- |
+| --- | :---: | --- |
 | LightGBM | YES | lightgbm.train, lightgbm.predict, lightgbm.cv |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | outliers | No | rule_single, rule_double |
