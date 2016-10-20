@@ -42,6 +42,8 @@ lightgbm.predict <- function(
     return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
+  gc(verbose = FALSE)
+  
   if (!verbose) sink(file = file.path(model, "diverted_verbose.txt"), append = FALSE)
   
   # Export data

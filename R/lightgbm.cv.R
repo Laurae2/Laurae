@@ -131,6 +131,8 @@ lightgbm.cv <- function(
 ) {
   models <- list()
   folds_list <- unique(folds)
+  gc(verbose = FALSE)
+  
   if (prediction) {
     preds <- numeric(length(folds))
   }
@@ -138,10 +140,16 @@ lightgbm.cv <- function(
   for (i in 1:length(folds_list)) {
     
     if (verbose > 0) cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
+    
+    x_train <- x_train[folds != i,]
+    gc(verbose = FALSE)
+    x_val <- x_train[folds == i,]
+    gc(verbose = FALSE)
+    
     models[[i]] <- lightgbm.train(
-      x_train = x_train[folds != i,],
+      x_train = x_train,
       y_train = y_train[folds != i],
-      x_val = x_train[folds == i,],
+      x_val = x_val,
       y_val = y_train[folds == i],
       application = application,
       validation = validation,

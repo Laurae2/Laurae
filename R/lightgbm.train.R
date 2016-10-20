@@ -130,6 +130,8 @@ lightgbm.train <- function(
     return(paste0('Could not find lightgbm.exe under ', file.path(lgbm_path), "."))
   }
   
+  gc(verbose = FALSE)
+  
   if (!is.na(log_name)) {
     sink(file = file.path(workingdir, "diverted_verbose.txt"), append = log_append, split = as.logical(verbose))
   }
