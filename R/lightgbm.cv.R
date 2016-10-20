@@ -135,11 +135,11 @@ lightgbm.cv <- function(
     preds <- numeric(length(folds))
   }
   
-  if (!verbose) {
-    sink(file = file.path(workingdir, "diverted_verbose_cv.txt"), append = log_append, split = as.logical(verbose > 0))
-  }
-  
   for (i in 1:length(folds_list)) {
+    
+    if (!verbose) {
+      sink(file = file.path(workingdir, "diverted_verbose_cv.txt"), append = log_append, split = as.logical(verbose > 0))
+    }
     
     cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
     models[[i]] <- lightgbm.train(
@@ -165,9 +165,9 @@ lightgbm.cv <- function(
       max_bin = max_bin,
       data_random_seed = data_random_seed,
       data_has_label = data_has_label,
-      output_model = ifelse(unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
-      input_model = ifelse(is.na(unicity), NA, ifelse(unicity, stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")), input_model)),
-      output_result = ifelse(unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
+      output_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
+      input_model = ifelse(is.na(!unicity), NA, ifelse(!unicity, stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")), input_model)),
+      output_result = ifelse(!unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
       is_sigmoid = is_sigmoid,
       init_score = init_score,
       is_pre_partition = is_pre_partition,
@@ -189,33 +189,34 @@ lightgbm.cv <- function(
       lgbm_path = lgbm_path,
       workingdir = workingdir,
       files_exist = files_exist,
-      train_conf = ifelse(unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
-      train_name = ifelse(unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
-      val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
+      train_conf = ifelse(!unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
+      train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
+      val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
       verbose = as.logical(verbose),
       log_name = ifelse(!((!is.na(log_name)) & (verbose %in% c(0, 1))), stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
       log_append = (log_append & (verbose %in% c(0, 1)))
       )
+    
+    if (!verbose) {
+      sink()
+    }
+    
     if (prediction) {
       preds[folds == i] <- lightgbm.predict(
         model = models[[i]],
         x_val = NA,
         y_val = NA,
         data_has_label = TRUE,
-        val_name = ifelse(unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-        input_model = ifelse(unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), input_model),
-        output_result = ifelse(unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
+        val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
+        input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
+        output_result = ifelse(!unicity, stri_replace_last_fixed(output_result, ".", paste0("_", i, ".")), output_result),
         lgbm_path = lgbm_path,
         files_exist = TRUE,
-        pred_conf = ifelse(unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
+        pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
         data.table = exists("data.table"),
         verbose = as.logical(verbose))
     }
     
-  }
-  
-  if (!verbose) {
-    sink()
   }
   
   if (!prediction) { return(models) }
