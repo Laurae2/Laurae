@@ -99,7 +99,7 @@ Linux users can skip xgboost (https://github.com/dmlc/xgboost/tree/master/R-pack
 
 Windows users need MinGW (architecture x86_64) and Visual Studio 2015 Community (or any working version, starting from 2013). Prepare at least 10 GB.
 
-## xgboost (~1 GB)
+## xgboost (~1 GB in Windows)
 
 This applies to **Windows only**. Linux users can just compile "out of the box" xgboost with the gcc tool chain and install easily the package in R.
 
