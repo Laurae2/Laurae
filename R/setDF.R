@@ -7,7 +7,6 @@
 #' @return Nothing (the data.table is transformed to a data.frame already)
 #' 
 #' @examples
-#' #library(data.table)
 #' df <- data.frame(matrix(nrow = 100, ncol = 10))
 #' coln <- colnames(df)
 #' rown <- rownames(df)

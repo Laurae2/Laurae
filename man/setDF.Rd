@@ -16,7 +16,6 @@ Nothing (the data.table is transformed to a data.frame already)
 This function allows to coerce a data.table to a data.frame without making in-memory copy. Therefore, you do not need 3x your current memory to coerce to a data.frame from a data.table.
 }
 \examples{
-#library(data.table)
 df <- data.frame(matrix(nrow = 100, ncol = 10))
 coln <- colnames(df)
 rown <- rownames(df)

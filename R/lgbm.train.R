@@ -73,26 +73,28 @@
 #' @return A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the testing file name even if there were none provided (\code{Test}), and the predictions (\code{Predictions}) if \code{predictions} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 #' 
 #' @examples
-#' # Train a regression model on 1000 samples and validate on 1000 others.
-#' # Runs on 2 threads.
-#' # 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
-#' # 127 leaves for an "approximate equivalent" of depth = 7.
-#' # Uses the working dir / temp folder as working directory for the temporary files.
-#' # trained <- lgbm.train(y_train = targets[1:1000],
-#' #                       x_train = data[1:1000, ],
-#' #                       y_val = targets[1001:2000],
-#' #                       x_val = data[1001:2000, ],
-#' #                       application = "regression",
-#' #                       validation = TRUE,
-#' #                       num_iterations = 1000,
-#' #                       early_stopping_rounds = 10,
-#' #                       learning_rate = 0.1,
-#' #                       num_leaves = 127,
-#' #                       tree_learner = "serial",
-#' #                       num_threads = 2,
-#' #                       lgbm_path = "C:/xgboost/LightGBM/windows/x64/Release/lightgbm.exe",
-#' #                       workingdir = file.path(getwd(), "temp"),
-#' #                       files_exist = FALSE)
+#' \dontrun{
+#' Train a regression model on 1000 samples and validate on 1000 others.
+#' Runs on 2 threads.
+#' 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
+#' 127 leaves for an "approximate equivalent" of depth = 7.
+#' Uses the working dir / temp folder as working directory for the temporary files.
+#' trained <- lgbm.train(y_train = targets[1:1000],
+#'                       x_train = data[1:1000, ],
+#'                       y_val = targets[1001:2000],
+#'                       x_val = data[1001:2000, ],
+#'                       application = "regression",
+#'                       validation = TRUE,
+#'                       num_iterations = 1000,
+#'                       early_stopping_rounds = 10,
+#'                       learning_rate = 0.1,
+#'                       num_leaves = 127,
+#'                       tree_learner = "serial",
+#'                       num_threads = 2,
+#'                       lgbm_path = "C:/LightGBM/windows/x64/Release/lightgbm.exe",
+#'                       workingdir = file.path(getwd(), "temp"),
+#'                       files_exist = FALSE)
+#' }
 #' 
 #' @export
 

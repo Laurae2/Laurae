@@ -28,11 +28,13 @@ A data.table (or data.frame) with 9 columns: \code{c("Feature", "Gain", "Gain_Re
 This function allows to get the feature importance on a LightGBM model. The model file must be \code{"workingdir"}, where \code{"workingdir"} is the folder and \code{input_model} is the model file name.
 }
 \examples{
+\dontrun{
 # Feature importance on a single model without any tree limit.
-# lgbm.fi(model = trained, feature_names = colnames(data), ntreelimit = 0)
-#
+lgbm.fi(model = trained, feature_names = colnames(data), ntreelimit = 0)
+
 # Feature importance on the first model from a cross-validation without any tree limit.
-# lgbm.fi(model = trained.cv[["Models"]][[1]], feature_names = colnames(data))
+lgbm.fi(model = trained.cv[["Models"]][[1]], feature_names = colnames(data))
+}
 
 }
 

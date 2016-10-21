@@ -7,6 +7,15 @@ Description: This package is for advanced statistics, visualization, and
 Depends:
     R (>= 3.3.0),
 	data.table (>= 1.9.7),
+Imports:
+	Matrix,
+	R.utils,
+	Rtsne,
+	caret,
+	outliers,
+	recommenderlab,
+	tabplot,
+	xgboost,
 	stringi (>= 1.1.2)
 License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8

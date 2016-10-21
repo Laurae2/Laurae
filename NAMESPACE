@@ -2,7 +2,6 @@
 
 export(DTcbind)
 export(DTsubsample)
-export(Laurae_load)
 export(lgbm.cv)
 export(lgbm.fi)
 export(lgbm.predict)

@@ -38,10 +38,12 @@ It can be used to score outliers first, then make rules afterwards if needed.
 Verbosity is automatic and cannot be removed. In case you need this function without verbosity, please compile the package after removing verbose messages.
 }
 \examples{
-#scored_data <- rule_single(data = data, label = NA, scoring = TRUE, ruling = FALSE)
-#rules <- rule_single(data = scored_data, label = target,
-#iterations = 100, scoring = FALSE, ruling = TRUE)
-#preds <- preds[rules$output[(length(target)+1):(nrow(data))] == 0] <- 0
+\dontrun{
+scored_data <- rule_single(data = data, label = NA, scoring = TRUE, ruling = FALSE)
+rules <- rule_single(data = scored_data, label = target,
+iterations = 100, scoring = FALSE, ruling = TRUE)
+preds <- preds[rules$output[(length(target)+1):(nrow(data))] == 0] <- 0
+}
 
 }
 

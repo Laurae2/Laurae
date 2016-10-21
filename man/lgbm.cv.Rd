@@ -157,30 +157,32 @@ Then, you are up to choose what you want, including hyperparameters to verbosity
 If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 }
 \examples{
-# 3-fold cross-validated LightGBM with log on a file.
-# Runs on 2 threads.
-# 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
-# 127 leaves for an "approximate equivalent" of depth = 7.
-# Uses the working dir / temp folder as working directory for the temporary files.
-# trained.cv <- lgbm.cv(y_train = targets,
-#                       x_train = data[1:1500, ],
-#                       folds = c(rep(1, 500), rep(2, 500), rep(3, 500)),
-#                       application = "regression",
-#                       validation = TRUE,
-#                       num_iterations = 10,
-#                       learning_rate = 0.1,
-#                       num_leaves = 127,
-#                       tree_learner = "serial",
-#                       num_threads = 2,
-#                       lgbm_path = "C:/xgboost/LightGBM/windows/x64/Release/lightgbm.exe",
-#                       workingdir = file.path(getwd(), "temp"),
-#                       files_exist = FALSE,
-#                       unicity = FALSE,
-#                       train_conf = 'lgbm_train.conf',
-#                       train_name = 'lgbm_train.csv',
-#                       val_name = 'lgbm_val.csv',
-#                       verbose = FALSE,
-#                       log_name = "houseprice_log_cv.txt")
+\dontrun{
+3-fold cross-validated LightGBM with log on a file.
+Runs on 2 threads.
+1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
+127 leaves for an "approximate equivalent" of depth = 7.
+Uses the working dir / temp folder as working directory for the temporary files.
+trained.cv <- lgbm.cv(y_train = targets,
+                      x_train = data[1:1500, ],
+                      folds = c(rep(1, 500), rep(2, 500), rep(3, 500)),
+                      application = "regression",
+                      validation = TRUE,
+                      num_iterations = 10,
+                      learning_rate = 0.1,
+                      num_leaves = 127,
+                      tree_learner = "serial",
+                      num_threads = 2,
+                      lgbm_path = "C:/LightGBM/windows/x64/Release/lightgbm.exe",
+                      workingdir = file.path(getwd(), "temp"),
+                      files_exist = FALSE,
+                      unicity = FALSE,
+                      train_conf = 'lgbm_train.conf',
+                      train_name = 'lgbm_train.csv',
+                      val_name = 'lgbm_val.csv',
+                      verbose = FALSE,
+                      log_name = "houseprice_log_cv.txt")
+}
 
 }
 

@@ -36,6 +36,81 @@ initial = 8, min_depth = 1, max_depth = 25, patience = 2, sd_effect = 0.001, wor
 }
 \examples{
 #Please check xgb.opt.utils.R file in GitHub.
+\dontrun{
+
+
+max_better <- function(cp) {
+  return(max(cp, na.rm = TRUE))
+}
+
+my_learner <- function(depth) {
+  sink(file = "Laurae/log.txt", append = TRUE, split = FALSE)
+  cat("\\n\\n\\nDepth ", depth, "\\n\\n", sep = "")
+  global_depth <<- depth
+  gc()
+  set.seed(11111)
+  temp_model <- xgb.cv(data = dtrain,
+                       nthread = 12,
+                       folds = folded,
+                       nrounds = 100000,
+                       max_depth = depth,
+                       eta = 0.05,
+                       #gamma = 0.1,
+                       subsample = 1.0,
+                       colsample_bytree = 1.0,
+                       booster = "gbtree",
+                       #eval_metric = "auc",
+                       eval_metric = mcc_eval_nofail_cv,
+                       maximize = TRUE,
+                       early_stopping_rounds = 25,
+                       objective = "binary:logistic",
+                       verbose = TRUE
+                       #base_score = 0.005811208
+  )
+  sink()
+  i <<- 0
+  return(c(temp_model$evaluation_log[[4]][temp_model$best_iteration],
+  temp_model$evaluation_log[[5]][temp_model$best_iteration], temp_model$best_iteration))
+}
+
+xgb.opt.depth.callback <- function(i, learner, better, sd_effect) {
+  cat("\\nExploring depth ", sprintf("\%02d", Laurae.xgb.opt.depth.iter[i, "Depth"]), ": ")
+  Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"],
+  c("mean", "sd", "nrounds")] <<- learner(Laurae.xgb.opt.depth.iter[i, "Depth"])
+  Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"],
+  "score"] <<- Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "mean"] +
+  (Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "sd"] * sd_effect)
+  Laurae.xgb.opt.depth.iter[i,
+  "Score"] <<- Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "score"]
+  Laurae.xgb.opt.depth.iter[i,
+  "Best"] <<- better(Laurae.xgb.opt.depth.df[, "score"])
+  Laurae.xgb.opt.depth.best <<- which(
+  Laurae.xgb.opt.depth.df[, "score"] == Laurae.xgb.opt.depth.iter[i, "Best"])[1]
+  cat("[",
+      sprintf("\%05d", Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "nrounds"]),
+      "] ",
+      sprintf("\%.08f", Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "mean"]),
+      ifelse(is.na(Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "mean"]) == TRUE,
+      "",
+      paste("+",
+      sprintf("\%.08f", Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "sd"]),
+      sep = "")),
+      " (Score: ",
+      sprintf("\%.08f", Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "score"]),
+      ifelse(Laurae.xgb.opt.depth.iter[i, "Best"] == Laurae.xgb.opt.depth.iter[i, "Score"],
+      " <<<)",
+      "    )"),
+      " - best is: ",
+      Laurae.xgb.opt.depth.best,
+      " - ",
+      format(Sys.time(), "\%a \%b \%d \%Y \%X"),
+      sep = "")
+}
+
+xgb.opt.depth(initial = 10, min_depth = 1, max_depth = 20, patience = 2, sd_effect = 0,
+worst_score = 0, learner = my_learner, better = max_better)
+
+}
 
 }
 
