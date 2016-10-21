@@ -18,17 +18,18 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi |
+| LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, DTcbind, DTsubsample |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, DTcbind, DTsubsample, setDF |
 | Matrix | No | read_sparse_csv |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
 | tabplot | No | tableplot_jpg |
 | caret | No | xgb.ncv |
 | stringi | No | lightgbm.cv |
+| base | No | kfold, nkfold, lgbm.find |
 
 # Installing dependencies?
 
@@ -49,7 +50,7 @@ Write in your R console `sink()` until you get an error.
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv <br> Rules: rule_single, rule_double |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample <br> CSV sparse: read_sparse_csv |
@@ -67,9 +68,14 @@ Write in your R console `sink()` until you get an error.
 | lgbm.predict | LightGBM predictor | Predicts from a LightGBM model. Use the model working directory if you lost the model variable (which is not needed to predict - you only need the correct model working directory and the model name). |
 | lgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model. Full verbosity control, with logging to file possible, with predictions given back as return. Subsampling is optimized to maximum to lower memory usage peaks. |
 | lgbm.fi | LightGBM Feaure Importance | Computes the feature importance (Gain, Frequence) of a LightGBM model with Sum / Relative Ratio / Absolute Ratio scales. |
+| lgbm.metric | LightGBM Training Metrics | Computes the training metrics of a logged LightGBM model. |
+| lgbm.find | LightGBM Path Helper | Helps you to find and write the correct path for input to lgbm.metric |
 | setDF | Low memory DT coercion to DF | (Already available in data.table) Coerces a data.table to data.frame using the least possible memory. Actually, it uses about 0 extra memory. |
 | DTcbind | Low memory DT cbind | Column bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to cbind, this reduce peak memory usage by 3X, and sometimes by more. |
 | DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. With extreme settings, it uses only the original data.table + 2 rows of memory. Compared to direct subsampling, this reduce peak memory usage by 2X, and sometimes by more. |
+| kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
+| nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
+
 
 # TO-DO:
 
