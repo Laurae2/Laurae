@@ -1,5 +1,9 @@
-# Installing this package?
-To install this package, run in R:
+# Installing this package? (Unproper installation)
+
+**Proper version is at the end of this page.**
+
+If you already installed this package in the past, and you want to install this package super fast, run in R:
+
 ```
 library(devtools)
 install_github("Laurae2/Laurae")
@@ -28,7 +32,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 # Installing dependencies?
 
-* For LightGBM, please use: `git clone --recursive https://github.com/wxchan/LightGBM` for the repository (as of 10/20/2016, this one has a correct early_stopping implementation.
+* For LightGBM, please use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository (as of 10/20/2016, it has now a correct early_stopping implementation)
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
 * data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
@@ -86,3 +90,142 @@ Sometimes you will get strange errors (like a corrupted documentation database) 
 # Extra contributors:
 
 @fakyras for the base R code for LightGBM.
+
+# Installing this package? (Proper installation)
+
+If you need the modeling packages, you are going to need LightGBM and xgboost compiled. Also, xgboost requires to be installed afterwards as a R package. Using drat or CRAN version is not guaranteed to work with my package.
+
+Linux users can skip xgboost (https://github.com/dmlc/xgboost/tree/master/R-package) and LightGBM (https://github.com/Microsoft/LightGBM/wiki/Installation-Guide) installation steps, as they are straightforward (compile source).
+
+Windows users need MinGW (architecture x86_64) and Visual Studio 2015 Community (or any working version, starting from 2013). Prepare at least 10 GB.
+
+## xgboost (~1 GB)
+
+This applies to **Windows only**. Linux users can just compile "out of the box" xgboost with the gcc tool chain and install easily the package in R.
+
+Check first if you have RTools. If not, download a proper version here: https://cran.r-project.org/bin/windows/Rtools/
+
+Check also whether you installed Git Bash or not. If not, install Git Bash (https://git-for-windows.github.io/).
+
+Make sure you installed MinGW (mandatory) for x86_64 architecture.
+
+Run in R: `system('gcc -v')`
+
+* If you don't see MinGW, then edit the PATH variable appropriately so MinGW is FIRST.
+* If you see MinGW, open Git Bash and run:
+
+```
+cd C:/xgboost
+git clone --recursive https://github.com/dmlc/xgboost
+cd xgboost
+git submodule init
+git submodule update
+alias make='mingw32-make'
+cd dmlc-core
+make
+cd ../rabit
+make lib/librabit_empty.a
+cd ..
+cp make/mingw64_min.mk config.mk
+make
+```
+
+This should compile xgboost perfectly out of the box on Windows. If you get an error at the last "make", it means you are not using MinGW or you messed up something in the steps.
+
+Now, fire up an R session and run this:
+
+```
+setwd('C:/xgboost/xgboost/R-package')
+library(devtools)
+install()
+```
+
+If you get a "permission denied" error, go to C:\xgboost\xgboost\R-package, right-click on the “src” folder, select “Properties”:
+
+* Under the “Security” tab, click “Edit”
+* Click “Full control” to all group or user names (click on each group, click Full control for each)
+* Click OK twice
+* Right-click on the “src” folder, select “Properties”
+* Under the “Security” tab, click “Advanced”
+* Check “Replace all child object permission entries with inheritable permission entries from this object” (it is the last box at the bottom left of the opened tab).
+* Click OK twice
+* Run again `install()` in the R console
+
+And you should have now xgboost compiled in Windows.
+
+Check quickly that xgboost works:
+
+```
+library(xgboost)
+set.seed(11111)
+n=100
+ncov=4
+z=matrix(replicate(n,rnorm(ncov)),nrow=n)
+alpha=c(-1,0.5,-0.25,-0.1)
+za=z%*%alpha
+p=exp(za)/(1+exp(za))
+t=rbinom(n,1,p)
+xgb.train(list(objective="binary:logitraw"), xgb.DMatrix(data=z,label=t), nrounds=10)
+```
+
+## LightGBM installation (~8 GB in Windows)
+
+This applies to **Windows only**. Linux users can just compile "out of the box" LightGBM with the gcc tool chain
+
+LightGBM use Visual Studio (2013 or higher) to build in Windows. If you do not have Visual Studio, follow this: download Visual Studio 2015 Community. It is free. When installing Visual Studio Community, use the default installation method. Otherwise, you might have random errors on the UI if you try a minimal installation. Prepare at least 8GB of free drive space.
+
+Once you are done installing Visual Studio 2015 Community, reboot your computer.
+
+Now, or if you skipped the installation step, clone LightGBM repository by doing in Git Bash:
+
+```
+cd C:/xgboost
+git clone --recursive https://github.com/Microsoft/LightGBM
+```
+
+Now the steps:
+
+* Under C:/xgboost/LightGBM/windows, double click LightGBM.sln to open it in Visual Studio.
+* Accept any warning pop up about project versioning issues (Upgrade VC++ Compiler and Libraries --> OK).
+* Wait one minute for the loading.
+* On the Solution Explorer, click "Solution 'LightGBM' (1 project)"
+* On the bottom right tab (Properties), change the "Active config" to "Release|x64" (default is "Debug_mpi|x64")
+* Compile the solution by pressing Ctrl+Shift+B (or click Build > Build Solution).
+* Should everything be correct, you now have LightGBM compiled under C:\xgboost\LightGBM\windows\x64\Release
+
+## data.table
+
+To make LightGBM run as fast as possible, improvements for Input/Output is necessary. For this, you will need the development version of data.table. To download it, run in your R console:
+
+```
+install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
+```
+
+The speed up can reach over 1,000x for pure I/O.
+
+## tabplot
+
+To have "more readable" tableplots for visualizations, you will need to install an old version of the tabplot package. You can do this by running in your R console:
+
+```
+install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")
+```
+
+## Other packages
+
+You can install the other packages by running in your R console:
+
+```
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret"))
+```
+
+## Laurae
+
+You can now install the Laurae package and use the fully fledged version of it.
+
+```
+library(devtools)
+install_github("Laurae2/Laurae")
+```
+
+Getting a package error while running install_github? Make sure you have the package outlined in the error, which is required by devtools.
