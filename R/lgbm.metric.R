@@ -32,7 +32,7 @@ lgbm.metric <- function(
   data.table = TRUE) {
   
   # Load data
-  model <- readLines(workingdir, log_name) #model <- readLines(file.path(getwd(), "temp", "houseprice_log.txt"))
+  model <- readLines(file.path(workingdir, log_name))
   model <- model[grep("iteration", model, ignore.case = TRUE)]
   model <- gsub("LightGBM Info ", "", gsub("\\[|\\]", "", model))
   
