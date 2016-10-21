@@ -135,7 +135,7 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 \item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.}
 }
 \value{
-A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, and the predictions (\code{Predictions}) if \code{predictions} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
+A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the testing file name even if there were none provided (\code{Test}), and the predictions (\code{Predictions}) if \code{predictions} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 }
 \description{
 This function allows you to train a LightGBM model.
@@ -144,13 +144,37 @@ To install data.table development version, please run in your R console: \code{i
 The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
 }
 \details{
-Folder/File specifics:
-* \code{lgbm_path} is the path to LightGBM executable, and includes the executable name and tag.
-* \code{workingdir} is the working directory for the temporary files for LightGBM. Files will be under \code{'workingdir'}.
-* \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{TRUE}.
+The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_result, train_conf, train_name, val_name, pred_conf}).
+
+\code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{FALSE}.
+
+Once you filled these variables (and if they were appropriate), you should fill \code{y_train, x_train}. If you need model validation, fill also \code{y_val, x_val}. y is your label (a vector), while x is your data.table (preferred) or a data.frame or a matrix.
+
+Then, you are up to choose what you want, including hyperparameters to verbosity control.
+
+If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 }
 \examples{
-#None yet.
+# Train a regression model on 1000 samples and validate on 1000 others.
+# Runs on 2 threads.
+# 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
+# 127 leaves for an "approximate equivalent" of depth = 7.
+# Uses the working dir / temp folder as working directory for the temporary files.
+# trained <- lgbm.train(y_train = targets[1:1000],
+#                       x_train = data[1:1000, ],
+#                       y_val = targets[1001:2000],
+#                       x_val = data[1001:2000, ],
+#                       application = "regression",
+#                       validation = TRUE,
+#                       num_iterations = 1000,
+#                       early_stopping_rounds = 10,
+#                       learning_rate = 0.1,
+#                       num_leaves = 127,
+#                       tree_learner = "serial",
+#                       num_threads = 2,
+#                       lgbm_path = "C:/xgboost/LightGBM/windows/x64/Release/lightgbm.exe",
+#                       workingdir = file.path(getwd(), "temp"),
+#                       files_exist = FALSE)
 
 }
 

@@ -6,7 +6,7 @@
 \usage{
 lgbm.fi(model, workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
   input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
-  feature_names = NA, ntreelimit = 0)
+  feature_names = NA, ntreelimit = 0, data.table = TRUE)
 }
 \arguments{
 \item{model}{Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.}
@@ -18,15 +18,21 @@ lgbm.fi(model, workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
 \item{feature_names}{Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.}
 
 \item{ntreelimit}{Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.}
+
+\item{data.table}{Type: boolean. Whether to return a data.table (\code{TRUE}) or a data.frame (\code{FALSE}). Defaults to \code{TRUE}.}
 }
 \value{
-Nothing (the data.table is transformed to a data.frame already)
+A data.table (or data.frame) with 9 columns: \code{c("Feature", "Gain", "Gain_Rel_Ratio", "Gain_Abs_Ratio", "Gain_Std", "Gain_Std_Rel_Ratio", "Gain_Std_Abs_Ratio", "Freq", "Freq_Rel_Ratio", "Freq_Abs_Ratio")}
 }
 \description{
 This function allows to get the feature importance on a LightGBM model. The model file must be \code{"workingdir"}, where \code{"workingdir"} is the folder and \code{input_model} is the model file name.
 }
 \examples{
-#None yet.
+# Feature importance on a single model without any tree limit.
+# lgbm.fi(model = trained, feature_names = colnames(data), ntreelimit = 0)
+#
+# Feature importance on the first model from a cross-validation without any tree limit.
+# lgbm.fi(model = trained.cv[["Models"]][[1]], feature_names = colnames(data))
 
 }
 

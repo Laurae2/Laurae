@@ -7,11 +7,16 @@
 #' @param input_model Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".
 #' @param feature_names Type: vector of characters. The names of the features, in the order they were fed to LightGBM. Returns column numbers if left as \code{NA}. Defaults to \code{NA}.
 #' @param ntreelimit Type: integer. The number of trees to select, starting from the first tree. Defaults to \code{0}.
+#' @param data.table Type: boolean. Whether to return a data.table (\code{TRUE}) or a data.frame (\code{FALSE}). Defaults to \code{TRUE}.
 #' 
-#' @return Nothing (the data.table is transformed to a data.frame already)
+#' @return A data.table (or data.frame) with 9 columns: \code{c("Feature", "Gain", "Gain_Rel_Ratio", "Gain_Abs_Ratio", "Gain_Std", "Gain_Std_Rel_Ratio", "Gain_Std_Abs_Ratio", "Freq", "Freq_Rel_Ratio", "Freq_Abs_Ratio")}
 #' 
 #' @examples
-#' #None yet.
+#' # Feature importance on a single model without any tree limit.
+#' # lgbm.fi(model = trained, feature_names = colnames(data), ntreelimit = 0)
+#' #
+#' # Feature importance on the first model from a cross-validation without any tree limit.
+#' # lgbm.fi(model = trained.cv[["Models"]][[1]], feature_names = colnames(data))
 #' 
 #' @export
 
@@ -20,7 +25,8 @@ lgbm.fi <- function(
   workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
   input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
   feature_names = NA,
-  ntreelimit = 0) {
+  ntreelimit = 0,
+  data.table = TRUE) {
   
   # Export model if necessary
   if (length(model) > 1) {
@@ -75,6 +81,8 @@ lgbm.fi <- function(
   freq_out[, Gain_Std_Abs_Ratio := Gain_Std/sum(Gain_Std)]
   setcolorder(freq_out, c("Feature", "Gain", "Gain_Rel_Ratio", "Gain_Abs_Ratio", "Gain_Std", "Gain_Std_Rel_Ratio", "Gain_Std_Abs_Ratio", "Freq", "Freq_Rel_Ratio", "Freq_Abs_Ratio"))
   freq_out <- freq_out[order(Gain, decreasing = TRUE), ]
+  
+  if (!data.table) {freq_out <- setDF(freq_out)}
   
   return(freq_out)
   

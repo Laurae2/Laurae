@@ -50,7 +50,7 @@ DTsubsample <- function(DT, kept, low_mem = FALSE, collect = 0, silent = FALSE) 
       
     } else {
       # not low mem
-      for (i in columns[2:length(columns)]) {
+      for (i in cols[2:length(cols)]) {
         set(DT_sub, j = i, value = DT[[i]][kept])
       }
       
@@ -72,7 +72,7 @@ DTsubsample <- function(DT, kept, low_mem = FALSE, collect = 0, silent = FALSE) 
         
       } else {
         # not low mem
-        for (i in columns[2:length(columns)]) {
+        for (i in cols[2:length(cols)]) {
           set(DT_sub, j = i, value = DT[[i]][kept])
           if (!((which(i == cols) - 1) %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", which(i == cols), ".", sep = "")}
         }

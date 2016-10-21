@@ -41,10 +41,13 @@ lgbm.predict(model, x_pred = NA, y_pred = NA, data_has_label = FALSE,
 \item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.}
 }
 \value{
-The predictions.
+The predictions as a vector.
 }
 \description{
 This function allows to run predictions on provided data.
+}
+\details{
+If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 }
 \examples{
 #None yet.

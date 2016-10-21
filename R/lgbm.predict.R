@@ -2,6 +2,8 @@
 #'
 #' This function allows to run predictions on provided data.
 #' 
+#' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
+#' 
 #' @param model Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.
 #' @param x_pred Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.
 #' @param y_pred Type: vector. The validation labels. Defaults to \code{NA}.
@@ -16,7 +18,7 @@
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
 #' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.
 #' 
-#' @return The predictions.
+#' @return The predictions as a vector.
 #' 
 #' @examples 
 #' #None yet.
