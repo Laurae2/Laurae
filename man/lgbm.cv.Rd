@@ -24,7 +24,7 @@ lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
   unicity = FALSE, predictions = TRUE, pred_conf = "lgbm_pred.conf",
-  verbose = TRUE, log_name = NA, log_append = FALSE)
+  verbose = TRUE, log_name = "lgbm_log.txt", log_append = FALSE)
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -121,7 +121,7 @@ lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
-\item{files_exist}{Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.}
+\item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
 \item{train_conf}{Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}}
 
@@ -135,20 +135,21 @@ lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
 
 \item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
 
-\item{verbose}{Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose.txt"}, but the model log is output to \code{log_name}.}
+\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
 
-\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.}
+\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
 
-\item{log_append}{Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.}
+\item{log_append}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.}
 }
 \value{
-A list of LightGBM models whose structure is defined in lgbm.train documentation in Value.
+A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path.
 }
 \description{
 This function allows you to cross-validate a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
+To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
 }
 \details{
 The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_result, train_conf, train_name, val_name, pred_conf}).

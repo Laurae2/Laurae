@@ -10,11 +10,13 @@
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
+#' @importFrom stats na.omit
 #' @import data.table
 
 # Pass tests
 
 globalVariables(c("seed",
+                  "Timing_Metric",
                   "ID",
                   "Gain_Sum",
                   "Feature",

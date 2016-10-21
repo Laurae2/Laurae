@@ -4,6 +4,7 @@
 #' It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 #' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
+#' To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
 #' 
 #' The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_result, train_conf, train_name, val_name, pred_conf}).
 #' 
@@ -64,18 +65,18 @@
 #' @param machine_list_file Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
-#' @param files_exist Type: boolean. Whether the files are already existing. It does not export the files anymore if the training and validation files were already exported previously. Defaults to \code{FALSE}.
+#' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
 #' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param predictions Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
-#' @param verbose Type: boolean. Whether to print a lot of debug messages or not. Using a defined \code{log_name} and \code{verbose = TRUE} is equivalent to tee (output log to stdout and to a file). 0 is FALSE and 1 is TRUE. 2 can be used if you wish to not separate logs per fold (i.e. all log in one file + print in console), and -1 for not printing in console (keep only log). Defaults to \code{TRUE}. Useless as \code{FALSE} when log_name is not set. Might not work when your lgbm_path has a space. When FALSE, the default printing is diverted to \code{"diverted_verbose.txt"}, but the model log is output to \code{log_name}.
-#' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
-#' @param log_append Type: boolean. Whether logging should be appended to the log_name or not (not delete or delete old). Defaults to \code{TRUE}.
+#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
+#' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
+#' @param log_append Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.
 #' 
-#' @return A list of LightGBM models whose structure is defined in lgbm.train documentation in Value.
+#' @return A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path.
 #' 
 #' @examples
 #' \dontrun{
@@ -163,7 +164,7 @@ lgbm.cv <- function(
   predictions = TRUE,
   pred_conf = 'lgbm_pred.conf',
   verbose = TRUE,
-  log_name = NA,
+  log_name = 'lgbm_log.txt',
   log_append = FALSE
 ) {
   
@@ -216,7 +217,7 @@ lgbm.cv <- function(
   
   for (i in 1:length(folds_list)) {
     
-    if (verbose > 0) cat('  \n************  \n', paste('Fold no: ', i), '  \n************  \n', sep = "")
+    if (verbose) cat('  \n************  \n', paste('Fold no: ', i), '  \n************  \n', sep = "")
     
     # Create folds
     x_tr <- DTsubsample(DT = x_train, kept = 1:length(x_train)[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
@@ -275,9 +276,9 @@ lgbm.cv <- function(
       train_conf = ifelse(!unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
       train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
       val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-      verbose = as.logical(verbose),
-      log_name = ifelse(!((!is.na(log_name)) & (verbose %in% c(0, 1))), stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
-      log_append = (log_append & (verbose %in% c(0, 1))),
+      verbose = verbose,
+      log_name = ifelse(!unicity, stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
+      log_append = log_append,
       predictions = predictions,
       pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf)
       )
