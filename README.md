@@ -41,6 +41,10 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 Sometimes you will get strange errors (like a corrupted documentation database) on the first load ever on the package. Restart R to get rid of this issue. It does not show up anymore afterwards.
 
+# Printed text is missing after interrupting LightGBM / xgboost
+
+Write in your R console `sink()` until you get an error.
+
 # What is inside?
 
 | Utility | Function Name(s) |
