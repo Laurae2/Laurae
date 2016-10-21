@@ -6,9 +6,17 @@ Description: This package is for advanced statistics, visualization, and
     modeling.
 Depends:
     R (>= 3.3.0),
-	data.table (>= 1.9.7)
-Imports:
-	stringi (>= 1.1.2)
+	data.table (>= 1.9.7),
+	stringi (>= 1.1.2),
+	Matrix,
+	R.utils,
+	Rtsne,
+	caret,
+	outliers,
+	recommenderlab,
+	stringi,
+	tabplot,
+	xgboost
 License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8
 LazyData: true

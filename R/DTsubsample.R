@@ -13,7 +13,7 @@
 #' @return The subsampled data.table.
 #' 
 #' @examples
-#' library(data.table)
+#' #library(data.table)
 #' DT <- data.frame(matrix(nrow = 5000000, ncol = 10))
 #' DT <- setDT(DT)
 #' DT[is.na(DT)] <- 1
