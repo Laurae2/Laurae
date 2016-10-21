@@ -14,7 +14,8 @@
 
 # Pass tests
 
-globalVariables(c("ID",
+globalVariables(c("seed",
+                  "ID",
                   "Gain_Sum",
                   "Feature",
                   "Freq_Rel_Ratio",

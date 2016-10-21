@@ -4,10 +4,11 @@
 \alias{lgbm.cv}
 \title{LightGBM Cross-Validated Model Training}
 \usage{
-lgbm.cv(y_train, x_train, folds, application = "regression",
-  validation = TRUE, num_iterations = 10, early_stopping_rounds = NA,
-  learning_rate = 0.1, num_leaves = 127, tree_learner = "serial",
-  num_threads = 2, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
+lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
+  fold_cleaning = 50, application = "regression", validation = TRUE,
+  num_iterations = 10, early_stopping_rounds = NA, learning_rate = 0.1,
+  num_leaves = 127, tree_learner = "serial", num_threads = 2,
+  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
   feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
   bagging_freq = 0, bagging_seed = 3, max_bin = 255,
   data_random_seed = 1, data_has_label = TRUE,
@@ -30,7 +31,13 @@ lgbm.cv(y_train, x_train, folds, application = "regression",
 
 \item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features.}
 
-\item{folds}{Type: vector of integers. The fold assigned to each row.}
+\item{folds}{Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.}
+
+\item{stratified}{Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.}
+
+\item{fold_seed}{Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.}
+
+\item{fold_cleaning}{Type: integer. When using cross-validation, data must be subsampled. This parameter controls how aggressive RAM usage should be against speed. The lower this value, the more aggressive the method to keep memory usage as low as possible. Defaults to \code{50}.}
 
 \item{application}{Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.}
 

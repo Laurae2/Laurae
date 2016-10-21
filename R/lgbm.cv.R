@@ -19,7 +19,10 @@
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
-#' @param folds Type: vector of integers. The fold assigned to each row.
+#' @param folds Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.
+#' @param stratified Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.
+#' @param fold_seed Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.
+#' @param fold_cleaning Type: integer. When using cross-validation, data must be subsampled. This parameter controls how aggressive RAM usage should be against speed. The lower this value, the more aggressive the method to keep memory usage as low as possible. Defaults to \code{50}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
@@ -107,7 +110,10 @@
 lgbm.cv <- function(
   y_train,
   x_train,
-  folds,
+  folds = 5,
+  stratified = TRUE,
+  fold_seed = 0,
+  fold_cleaning = 50,
   application = 'regression',
   validation = TRUE,
   num_iterations = 10,
@@ -163,36 +169,67 @@ lgbm.cv <- function(
   
   outputs <- list()
   outputs[["Models"]] <- list()
-  folds_list <- unique(folds)
+  
+  # Attempts to unscramble "folds"
+  if (!is.list(folds)) {
+    # It's not the list case
+    
+    if (length(folds) == 1) {
+      # It's the case of 1 integer value passed
+      folds_list <- kfold(y_train, folds, stratified, seed)
+      
+    } else {
+      # It's not the case of 1 integer value passed
+      
+      if (length(folds) == 2) {
+        # It's the case of 2 integers value passed
+        folds_list <- nkfold(y_train, folds[2], folds[1], stratified, seed)
+        
+      } else {
+        # It's the case of a vector of integers passed, so check length
+        if (!(length(folds) == length(y_train))) {
+          cat("Folds are not matching the training data. (Folds=", length(folds), " vs Train=", length(y_train), ")\n", sep = "")
+          return("Bad fold length!")
+        } else {
+          # Parse folds appropriately
+          folds_list <- list()
+          for (i in 1:unique(folds)) {
+            folds_list[[i]] <- which(folds_list[[i]] == i)
+          }
+          
+        }
+        
+      }
+      
+    }
+  }
   gc(verbose = FALSE)
   
   if (predictions) {
     preds <- numeric(length(folds))
   }
   
-  # Attempts to speed up
-  if (is.data.table(x_train) == FALSE) {
-    setDT(x_train)
-  }
+  # Attempts to speed up - Disabled for now.
+  # if (is.data.table(x_train) == FALSE) {
+  #   setDT(x_train)
+  # }
   
   for (i in 1:length(folds_list)) {
     
-    if (verbose > 0) cat('  \n************  \n', paste('Fold no:',i), '  \n************  \n', sep = "")
+    if (verbose > 0) cat('  \n************  \n', paste('Fold no: ', i), '  \n************  \n', sep = "")
     
     # Create folds
-    x_tr <- DTsubsample(DT = x_train, kept = which(folds != i), low_mem = FALSE, collect = 100, silent = TRUE)
-    #x_tr <- x_train[folds != i,]
+    x_tr <- DTsubsample(DT = x_train, kept = 1:length(x_train)[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
     gc(verbose = FALSE)
-    x_val <- DTsubsample(DT = x_train, kept = which(folds == i), low_mem = FALSE, collect = 100, silent = TRUE)
-    #x_val <- x_train[folds == i,]
+    x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
     gc(verbose = FALSE)
     
     # Train
     outputs[["Models"]][[as.character(i)]] <- lgbm.train(
       x_train = x_tr,
-      y_train = y_train[folds != i],
+      y_train = y_train[-folds_list[[i]]],
       x_val = x_val,
-      y_val = y_train[folds == i],
+      y_val = y_train[folds_list[[i]]],
       application = application,
       validation = validation,
       num_iterations = num_iterations,
