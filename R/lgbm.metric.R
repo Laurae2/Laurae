@@ -2,8 +2,7 @@
 #'
 #' This function allows to get the metric values from a LightGBM log.
 #' 
-#' @param workingdir Type: character. The working directory of the model file. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".
-#' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.
+#' @param model Type: list, vector of characters, character. If a list, it should come from a trained model. If a vector of characters, it must be the model text. If a character, it must be the exact file path to the log file. It cannot work without training with \code{verbose} set to \code{FALSE}.
 #' @param metrics Type: boolean. Whether to return the metrics table (\code{TRUE}) or the best iteration (\code{FALSE}).
 #' @param data.table Type: boolean. Whether to return a data.table (\code{TRUE}) or a data.frame (\code{FALSE}). Defaults to \code{TRUE}. Useless when \code{metrics} is set to \code{FALSE}.
 #' 
@@ -26,13 +25,20 @@
 #' @export
 
 lgbm.metric <- function(
-  workingdir,
-  log_name,
+  model,
   metrics = TRUE,
   data.table = TRUE) {
   
   # Load data
-  model <- readLines(file.path(workingdir, log_name))
+  if (is.list(model)) {
+    # Model was provided
+    model <- readLines(file.path(model[["Path"]], model[["Log"]]))
+  } else {
+    if (length(model) == 1) {
+      # Full path was provided
+      model <- readLines(model)
+    } # Log was provided directly
+  }
   model <- model[grep("iteration", model, ignore.case = TRUE)]
   model <- gsub("LightGBM Info ", "", gsub("\\[|\\]", "", model))
   

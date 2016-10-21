@@ -19,7 +19,9 @@
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
 #' @param y_train Type: vector. The training labels.
-#' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
+#' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.
+#' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
 #' @param folds Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.
 #' @param stratified Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.
 #' @param fold_seed Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.
@@ -44,7 +46,7 @@
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
 #' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
-#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Unused yet.
+#' @param output_result Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.
 #' @param is_pre_partition Type: boolean. Whether data is pre-partitioned for parallel learning. Defaults to \code{FALSE}. Unused.
@@ -66,28 +68,32 @@
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
-#' @param train_conf Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}
-#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}
-#' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}
-#' @param unicity Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.
+#' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
+#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
+#' @param val_name Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
+#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
+#' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param predictions Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
-#' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
+#' @param pred_conf Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.
+#' @param test_conf Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
 #' @param log_append Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.
+#' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' 
-#' @return A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path.
+#' @return A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path. In addition, out of fold predictions \code{Validation} are provided if \code{predictions} is set to \code{TRUE}, and averaged testing predictions \code{Testing} are provided if \code{predictions} is set to \code{TRUE} with a testing set. Also, aggregated feature importance is provided if \code{importance} is set to \code{TRUE}.
 #' 
 #' @examples
 #' \dontrun{
-#' 3-fold cross-validated LightGBM with log on a file.
+#' 3-fold cross-validated LightGBM with log on a file, with predictions and feature importance.
 #' Runs on 2 threads.
 #' 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
 #' 127 leaves for an "approximate equivalent" of depth = 7.
 #' Uses the working dir / temp folder as working directory for the temporary files.
+#' Returns in addition the out of fold predictions, and the feature importance.
 #' trained.cv <- lgbm.cv(y_train = targets,
 #'                       x_train = data[1:1500, ],
-#'                       folds = c(rep(1, 500), rep(2, 500), rep(3, 500)),
+#'                       folds = 3,
 #'                       application = "regression",
 #'                       validation = TRUE,
 #'                       num_iterations = 10,
@@ -103,7 +109,9 @@
 #'                       train_name = 'lgbm_train.csv',
 #'                       val_name = 'lgbm_val.csv',
 #'                       verbose = FALSE,
-#'                       log_name = "houseprice_log_cv.txt")
+#'                       log_name = "houseprice_log_cv.txt",
+#'                       predictions = TRUE,
+#'                       importance = TRUE)
 #' }
 #' 
 #' @export
@@ -111,6 +119,8 @@
 lgbm.cv <- function(
   y_train,
   x_train,
+  x_test = NA,
+  unicity = FALSE,
   folds = 5,
   stratified = TRUE,
   fold_seed = 0,
@@ -160,12 +170,15 @@ lgbm.cv <- function(
   train_conf = 'lgbm_train.conf',
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
-  unicity = FALSE,
+  test_name = 'lgbm_test.csv',
+  test_preds = 'lgbm_predict_test.txt',
   predictions = TRUE,
   pred_conf = 'lgbm_pred.conf',
+  test_conf = 'lgbm_test.conf',
   verbose = TRUE,
   log_name = 'lgbm_log.txt',
-  log_append = FALSE
+  log_append = FALSE,
+  importance = FALSE
 ) {
   
   outputs <- list()
@@ -177,14 +190,14 @@ lgbm.cv <- function(
     
     if (length(folds) == 1) {
       # It's the case of 1 integer value passed
-      folds_list <- kfold(y_train, folds, stratified, seed)
+      folds_list <- kfold(y = y_train, k = folds, stratified = stratified, seed = fold_seed)
       
     } else {
       # It's not the case of 1 integer value passed
       
       if (length(folds) == 2) {
         # It's the case of 2 integers value passed
-        folds_list <- nkfold(y_train, folds[2], folds[1], stratified, seed)
+        folds_list <- nkfold(y = y_train, n = folds[2], k = folds[1], stratified = stratified, seed = fold_seed)
         
       } else {
         # It's the case of a vector of integers passed, so check length
@@ -194,8 +207,9 @@ lgbm.cv <- function(
         } else {
           # Parse folds appropriately
           folds_list <- list()
-          for (i in 1:unique(folds)) {
-            folds_list[[i]] <- which(folds_list[[i]] == i)
+          folds_unique <- unique(folds)
+          for (i in 1:length(folds_unique)) {
+            folds_list[[i]] <- which(folds == folds_unique[i])
           }
           
         }
@@ -207,7 +221,10 @@ lgbm.cv <- function(
   gc(verbose = FALSE)
   
   if (predictions) {
-    preds <- numeric(length(folds))
+    preds <- numeric(length(y_train))
+    if (length(x_test) > 1) {
+      tests <- length(x_test)
+    }
   }
   
   # Attempts to speed up - Disabled for now.
@@ -215,12 +232,18 @@ lgbm.cv <- function(
   #   setDT(x_train)
   # }
   
+  # User does not want to provide x_train as data.table...
+  # if (!is.data.table(x_train)) {
+  #   x_train <- as.data.table(x_train)
+  #   gc(verbose = FALSE)
+  # }
+  
   for (i in 1:length(folds_list)) {
     
     if (verbose) cat('  \n************  \n', paste('Fold no: ', i), '  \n************  \n', sep = "")
     
     # Create folds
-    x_tr <- DTsubsample(DT = x_train, kept = 1:length(x_train)[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
+    x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
     gc(verbose = FALSE)
     x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
     gc(verbose = FALSE)
@@ -276,19 +299,68 @@ lgbm.cv <- function(
       train_conf = ifelse(!unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
       train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
       val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
-      verbose = verbose,
-      log_name = ifelse(!unicity, stri_replace_last_fixed(file.path(workingdir, log_name), ".", paste0("_", i, ".")), log_name),
-      log_append = log_append,
       predictions = predictions,
-      pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf)
+      pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
+      verbose = verbose,
+      log_name = ifelse(!unicity, stri_replace_last_fixed(log_name, ".", paste0("_", i, ".")), log_name),
+      log_append = log_append,
+      importance = importance
       )
+    
+    # Catch predictions
     if (predictions) {
-      preds[folds == i] <- outputs[["Models"]][[as.character(i)]][["Predictions"]]
+      
+      preds[folds_list[[i]]] <- outputs[["Models"]][[i]][["Validation"]]
+      
+      if (length(x_test) > 1) {
+        
+        tests <- tests + (lgbm.predict(
+          model = '',
+          x_pred = x_test,
+          y_pred = NA,
+          data_has_label = FALSE,
+          val_name = test_name,
+          input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
+          output_result = ifelse(!unicity, stri_replace_last_fixed(test_preds, ".", paste0("_", i, ".")), test_preds),
+          lgbm_path = lgbm_path,
+          workingdir = workingdir,
+          files_exist = !(i == 1),
+          pred_conf = ifelse(!unicity, stri_replace_last_fixed(test_conf, ".", paste0("_", i, ".")), test_conf),
+          data.table = exists("data.table"),
+          verbose = verbose) / length(folds_list))
+        
+      }
+      
+    }
+    
+    # Catch importance
+    if (importance) {
+      if (i == 1) {
+        important <- outputs[["Models"]][[i]][["FeatureImp"]][, c("Feature", "Gain", "Freq"), with = FALSE]
+      }
+      important <- rbind(important, outputs[["Models"]][[i]][["FeatureImp"]][, c("Feature", "Gain", "Freq"), with = FALSE])
     }
   }
   
   if (predictions) {
-    outputs[["Predictions"]] <- preds
+    outputs[["Validation"]] <- preds
+    if (length(x_test) > 1) {
+      outputs[["Testing"]] <- tests
+    }
+  }
+  
+  if (importance) {
+    freq_out <- important[, list(Freq = length(Gain), Gain = sum(Gain), Gain_Std = sd(Gain)), by = Feature]
+    freq_out$Gain_Std[is.na(freq_out$Gain_Std)] <- 0
+    freq_out[, Freq_Rel_Ratio := Freq/max(Freq)]
+    freq_out[, Freq_Abs_Ratio := Freq/sum(Freq)]
+    freq_out[, Gain_Rel_Ratio := Gain/max(Gain)]
+    freq_out[, Gain_Abs_Ratio := Gain/sum(Gain)]
+    freq_out[, Gain_Std_Rel_Ratio := Gain_Std/max(Gain_Std)]
+    freq_out[, Gain_Std_Abs_Ratio := Gain_Std/sum(Gain_Std)]
+    setcolorder(freq_out, c("Feature", "Gain", "Gain_Rel_Ratio", "Gain_Abs_Ratio", "Gain_Std", "Gain_Std_Rel_Ratio", "Gain_Std_Abs_Ratio", "Freq", "Freq_Rel_Ratio", "Freq_Abs_Ratio"))
+    freq_out <- freq_out[order(Gain, decreasing = TRUE), ]
+    outputs[["FeatureImp"]] <- freq_out
   }
   
   return(outputs)

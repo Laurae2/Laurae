@@ -4,7 +4,7 @@
 \alias{lgbm.train}
 \title{LightGBM Model Training}
 \usage{
-lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
+lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL, x_test = NA,
   application = "regression", validation = TRUE, num_iterations = 10,
   early_stopping_rounds = NA, learning_rate = 0.1, num_leaves = 127,
   tree_learner = "serial", num_threads = 2, min_data_in_leaf = 100,
@@ -22,8 +22,10 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  verbose = TRUE, log_name = "lgbm_log.txt", log_append = FALSE,
-  predictions = FALSE, pred_conf = "lgbm_pred.conf")
+  test_name = "lgbm_test.csv", test_preds = "lgbm_predict_test.txt",
+  predictions = FALSE, pred_conf = "lgbm_pred.conf",
+  test_conf = "lgbm_test.conf", verbose = TRUE, log_name = "lgbm_log.txt",
+  log_append = FALSE, importance = FALSE)
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -33,6 +35,8 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 \item{y_val}{Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.}
 
 \item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.}
+
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.}
 
 \item{application}{Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.}
 
@@ -118,11 +122,21 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
-\item{train_conf}{Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}}
+\item{train_conf}{Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.}
 
-\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}}
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
 
-\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
+\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}.}
+
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+
+\item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
+
+\item{predictions}{Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.}
+
+\item{pred_conf}{Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.}
+
+\item{test_conf}{Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.}
 
 \item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
 
@@ -130,12 +144,10 @@ lgbm.train(y_train, x_train, y_val = NULL, x_val = NULL,
 
 \item{log_append}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.}
 
-\item{predictions}{Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.}
-
-\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.}
+\item{importance}{Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.}
 }
 \value{
-A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the testing file name even if there were none provided (\code{Test}), the predictions (\code{Predictions}) if \code{Predictions} is set to \code{TRUE}, the name of the log file \code{Log} if \code{verbose} is set to \code{FALSE}, the metrics \code{Metrics} if \code{verbose} is set to \code{FALSE}, and the best iteration (\code{Best}) if \code{verbose} is set to \code{FALSE}. Returns a character variable if LightGBM is not found under lgbm_path.
+A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the testing file name even if there were none provided (\code{Test}), the validation predictions (\code{Validation}) if \code{Predictions} is set to \code{TRUE} with a validation set, the testing predictions (\code{Testing}) if \code{Predictions} is set to \code{TRUE} with a testing set, the name of the log file \code{Log} if \code{verbose} is set to \code{FALSE}, the log file content \code{LogContent} if \code{verbose} is set to \code{FALSE}, the metrics \code{Metrics} if \code{verbose} is set to \code{FALSE}, the best iteration (\code{Best}) if \code{verbose} is set to \code{FALSE}, the column names \code{Columns} if \code{importance} is set to \code{TRUE}, and the feature importance \code{FeatureImp} if \code{importance} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 }
 \description{
 This function allows you to train a LightGBM model.

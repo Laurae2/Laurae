@@ -4,12 +4,10 @@
 \alias{lgbm.metric}
 \title{LightGBM Metric Output}
 \usage{
-lgbm.metric(workingdir, log_name, metrics = TRUE, data.table = TRUE)
+lgbm.metric(model, metrics = TRUE, data.table = TRUE)
 }
 \arguments{
-\item{workingdir}{Type: character. The working directory of the model file. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".}
-
-\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{NA}.}
+\item{model}{Type: list, vector of characters, character. If a list, it should come from a trained model. If a vector of characters, it must be the model text. If a character, it must be the exact file path to the log file. It cannot work without training with \code{verbose} set to \code{FALSE}.}
 
 \item{metrics}{Type: boolean. Whether to return the metrics table (\code{TRUE}) or the best iteration (\code{FALSE}).}
 

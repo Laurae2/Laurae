@@ -4,32 +4,38 @@
 \alias{lgbm.cv}
 \title{LightGBM Cross-Validated Model Training}
 \usage{
-lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
-  fold_cleaning = 50, application = "regression", validation = TRUE,
-  num_iterations = 10, early_stopping_rounds = NA, learning_rate = 0.1,
-  num_leaves = 127, tree_learner = "serial", num_threads = 2,
-  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
-  feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
-  bagging_freq = 0, bagging_seed = 3, max_bin = 255,
-  data_random_seed = 1, data_has_label = TRUE,
-  output_model = "lgbm_model.txt", input_model = NA,
-  output_result = "lgbm_predict.txt", is_sigmoid = TRUE, init_score = "",
-  is_pre_partition = FALSE, is_sparse = TRUE, two_round = FALSE,
-  save_binary = FALSE, sigmoid = 1, is_unbalance = FALSE,
-  max_position = 20, label_gain = c(0, 1, 3, 7, 15, 31, 63),
-  metric = "l2", metric_freq = 1, is_training_metric = FALSE,
+lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
+  stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
+  application = "regression", validation = TRUE, num_iterations = 10,
+  early_stopping_rounds = NA, learning_rate = 0.1, num_leaves = 127,
+  tree_learner = "serial", num_threads = 2, min_data_in_leaf = 100,
+  min_sum_hessian_in_leaf = 10, feature_fraction = 1,
+  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
+  bagging_seed = 3, max_bin = 255, data_random_seed = 1,
+  data_has_label = TRUE, output_model = "lgbm_model.txt",
+  input_model = NA, output_result = "lgbm_predict.txt", is_sigmoid = TRUE,
+  init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
+  two_round = FALSE, save_binary = FALSE, sigmoid = 1,
+  is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
+  31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
   time_out = 120, machine_list_file = "",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   files_exist = FALSE, train_conf = "lgbm_train.conf",
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  unicity = FALSE, predictions = TRUE, pred_conf = "lgbm_pred.conf",
-  verbose = TRUE, log_name = "lgbm_log.txt", log_append = FALSE)
+  test_name = "lgbm_test.csv", test_preds = "lgbm_predict_test.txt",
+  predictions = TRUE, pred_conf = "lgbm_pred.conf",
+  test_conf = "lgbm_test.conf", verbose = TRUE, log_name = "lgbm_log.txt",
+  log_append = FALSE, importance = FALSE)
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
 
-\item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features.}
+\item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.}
+
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.}
+
+\item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
 
 \item{folds}{Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.}
 
@@ -79,7 +85,7 @@ lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
 
 \item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
 
-\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Unused yet.}
+\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}.}
 
 \item{is_sigmoid}{Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.}
 
@@ -123,26 +129,32 @@ lgbm.cv(y_train, x_train, folds = 5, stratified = TRUE, fold_seed = 0,
 
 \item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
-\item{train_conf}{Type: character. The name of the train_conf file for the model. Defaults to \code{'lgbm_train.conf'}}
+\item{train_conf}{Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.}
 
-\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}}
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
 
-\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}}
+\item{val_name}{Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
 
-\item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+
+\item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
 
 \item{predictions}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
 
-\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
+\item{pred_conf}{Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.}
+
+\item{test_conf}{Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.}
 
 \item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
 
 \item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
 
 \item{log_append}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.}
+
+\item{importance}{Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.}
 }
 \value{
-A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path.
+A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path. In addition, out of fold predictions \code{Validation} are provided if \code{predictions} is set to \code{TRUE}, and averaged testing predictions \code{Testing} are provided if \code{predictions} is set to \code{TRUE} with a testing set. Also, aggregated feature importance is provided if \code{importance} is set to \code{TRUE}.
 }
 \description{
 This function allows you to cross-validate a LightGBM model.
@@ -166,14 +178,15 @@ If for some reason you lose the ability to print in the console, run \code{sink(
 }
 \examples{
 \dontrun{
-3-fold cross-validated LightGBM with log on a file.
+3-fold cross-validated LightGBM with log on a file, with predictions and feature importance.
 Runs on 2 threads.
 1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
 127 leaves for an "approximate equivalent" of depth = 7.
 Uses the working dir / temp folder as working directory for the temporary files.
+Returns in addition the out of fold predictions, and the feature importance.
 trained.cv <- lgbm.cv(y_train = targets,
                       x_train = data[1:1500, ],
-                      folds = c(rep(1, 500), rep(2, 500), rep(3, 500)),
+                      folds = 3,
                       application = "regression",
                       validation = TRUE,
                       num_iterations = 10,
@@ -189,7 +202,9 @@ trained.cv <- lgbm.cv(y_train = targets,
                       train_name = 'lgbm_train.csv',
                       val_name = 'lgbm_val.csv',
                       verbose = FALSE,
-                      log_name = "houseprice_log_cv.txt")
+                      log_name = "houseprice_log_cv.txt",
+                      predictions = TRUE,
+                      importance = TRUE)
 }
 
 }
