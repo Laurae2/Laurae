@@ -7,7 +7,7 @@
 #' @param metrics Type: boolean. Whether to return the metrics table (\code{TRUE}) or the best iteration (\code{FALSE}).
 #' @param data.table Type: boolean. Whether to return a data.table (\code{TRUE}) or a data.frame (\code{FALSE}). Defaults to \code{TRUE}. Useless when \code{metrics} is set to \code{FALSE}.
 #' 
-#' @return A data.table (or data.frame) with 3 to 5 columns: \code{c("Iteration", "Total_Time", "Round_Time", "Train_Loss", "Test_Loss")}.
+#' @return A data.table (or data.frame) with 3 to N columns, with at least: \code{c("Iteration", "Total_Time", "Round_Time")}.
 #' 
 #' @examples
 #' \dontrun{

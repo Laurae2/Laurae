@@ -16,7 +16,7 @@ lgbm.metric(workingdir, log_name, metrics = TRUE, data.table = TRUE)
 \item{data.table}{Type: boolean. Whether to return a data.table (\code{TRUE}) or a data.frame (\code{FALSE}). Defaults to \code{TRUE}. Useless when \code{metrics} is set to \code{FALSE}.}
 }
 \value{
-A data.table (or data.frame) with 3 to 5 columns: \code{c("Iteration", "Total_Time", "Round_Time", "Train_Loss", "Test_Loss")}.
+A data.table (or data.frame) with 3 to N columns, with at least: \code{c("Iteration", "Total_Time", "Round_Time")}.
 }
 \description{
 This function allows to get the metric values from a LightGBM log.
