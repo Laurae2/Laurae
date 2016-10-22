@@ -37,7 +37,7 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.}
 
-\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.}
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 

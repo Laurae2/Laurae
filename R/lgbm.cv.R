@@ -21,7 +21,7 @@
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.

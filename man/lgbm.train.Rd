@@ -39,7 +39,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.}
 
-\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.}
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
 \item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
 

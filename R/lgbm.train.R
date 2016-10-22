@@ -21,7 +21,7 @@
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
 #' @param y_val Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
@@ -276,7 +276,7 @@ lgbm.train <- function(
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
       if (!is.na(init_score)) {
-        cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), sep = "")
+        cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
           fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = "nan")
         } else {
@@ -289,7 +289,7 @@ lgbm.train <- function(
       write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
       if (!is.na(init_score)) {
-        cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), sep = "")
+        cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
           write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
         } else {
@@ -364,10 +364,11 @@ lgbm.train <- function(
       data_has_label = FALSE,
       lgbm_path = lgbm_path,
       workingdir = workingdir,
-      data_name = test_name,
       input_model = output_model,
       pred_conf = test_conf,
       verbose = verbose,
+      data_name = test_name,
+      files_exist = files_exist,
       output_preds = test_preds,
       data.table = exists("data.table"))
       
