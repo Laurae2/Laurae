@@ -132,6 +132,7 @@ Run in R: `system('gcc -v')`
 * If you see MinGW, open Git Bash and run:
 
 ```
+mkdir C:/xgboost
 cd C:/xgboost
 git clone --recursive https://github.com/dmlc/xgboost
 cd xgboost
@@ -185,7 +186,7 @@ t=rbinom(n,1,p)
 xgb.train(list(objective="binary:logitraw"), xgb.DMatrix(data=z,label=t), nrounds=10)
 ```
 
-## LightGBM installation (~8 GB in Windows)
+## LightGBM installation (~10 GB in Windows)
 
 This applies to **Windows only**. Linux users can just compile "out of the box" LightGBM with the gcc tool chain
 
@@ -209,6 +210,15 @@ Now the steps:
 * On the bottom right tab (Properties), change the "Active config" to "Release|x64" (default is "Debug_mpi|x64")
 * Compile the solution by pressing Ctrl+Shift+B (or click Build > Build Solution).
 * Should everything be correct, you now have LightGBM compiled under C:\xgboost\LightGBM\windows\x64\Release
+
+If you get an error while building (Windows SDK version blabla), then you will need the correct SDK for your OS.
+
+* Windows 8.1: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk
+* Windows 10: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
+
+Install the SDK and run again the build in Visual Studio.
+
+If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash.
 
 ## data.table
 
