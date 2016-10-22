@@ -4,12 +4,12 @@
 \alias{lgbm.cv}
 \title{LightGBM Cross-Validated Model Training}
 \usage{
-lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
+lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
   data_has_label = TRUE, lgbm_path = "path/to/LightGBM.exe",
   workingdir = getwd(), train_name = "lgbm_train.csv",
   val_name = "lgbm_val.csv", test_name = "lgbm_test.csv",
-  init_score = ifelse(is.null(bias_train), NULL, paste(train_name, ".weight",
-  sep = "")), files_exist = FALSE, save_binary = FALSE,
+  init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep
+  = "")), files_exist = FALSE, save_binary = FALSE,
   train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
   test_conf = "lgbm_test.conf", validation = TRUE, unicity = FALSE,
   folds = 5, stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
@@ -17,9 +17,9 @@ lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
   output_preds = "lgbm_predict.txt", test_preds = "lgbm_predict_test.txt",
   verbose = TRUE, log_name = "lgbm_log.txt", full_quiet = FALSE,
   full_console = FALSE, importance = FALSE,
-  output_model = "lgbm_model.txt", input_model = NULL, num_threads = 2,
+  output_model = "lgbm_model.txt", input_model = NA, num_threads = 2,
   is_sparse = TRUE, two_round = FALSE, application = "regression",
-  learning_rate = 0.1, num_iterations = 10, early_stopping_rounds = NULL,
+  learning_rate = 0.1, num_iterations = 10, early_stopping_rounds = NA,
   num_leaves = 127, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
   max_bin = 255, feature_fraction = 1, feature_fraction_seed = 2,
   bagging_fraction = 1, bagging_freq = 0, bagging_seed = 3,
@@ -35,9 +35,9 @@ lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
 
 \item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.}
 
-\item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NULL}.}
+\item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.}
 
-\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NULL}. Predictions are averaged. Must be unlabeled.}
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
@@ -51,7 +51,7 @@ lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
 
 \item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
 
-\item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = ""))}, which means \code{NULL} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
+\item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
 
 \item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
@@ -97,7 +97,7 @@ lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
 
 \item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
 
-\item{input_model}{Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NULL}. Unused yet.}
+\item{input_model}{Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
 
 \item{num_threads}{Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).}
 
@@ -111,7 +111,7 @@ lgbm.cv(y_train, x_train, bias_train = NULL, x_test = NULL,
 
 \item{num_iterations}{Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.}
 
-\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NULL}.}
+\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.}
 
 \item{num_leaves}{Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.}
 
