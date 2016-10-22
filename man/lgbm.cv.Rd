@@ -8,7 +8,8 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
   data_has_label = TRUE, lgbm_path = "path/to/LightGBM.exe",
   workingdir = getwd(), train_name = "lgbm_train.csv",
   val_name = "lgbm_val.csv", test_name = "lgbm_test.csv",
-  files_exist = FALSE, save_binary = FALSE,
+  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight",
+  sep = "")), files_exist = FALSE, save_binary = FALSE,
   train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
   test_conf = "lgbm_test.conf", validation = TRUE, unicity = FALSE,
   folds = 5, stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
@@ -20,11 +21,11 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
   is_sparse = TRUE, two_round = FALSE, application = "regression",
   learning_rate = 0.1, num_iterations = 10, early_stopping_rounds = NA,
   num_leaves = 127, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
-  init_score = NA, max_bin = 255, feature_fraction = 1,
-  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
-  bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
-  is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
-  31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
+  max_bin = 255, feature_fraction = 1, feature_fraction_seed = 2,
+  bagging_fraction = 1, bagging_freq = 0, bagging_seed = 3,
+  is_sigmoid = TRUE, sigmoid = 1, is_unbalance = FALSE,
+  max_position = 20, label_gain = c(0, 1, 3, 7, 15, 31, 63),
+  metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), tree_learner = "serial",
   is_pre_partition = FALSE, data_random_seed = 1, num_machines = 1,
   local_listen_port = 12400, time_out = 120, machine_list_file = "")
@@ -49,6 +50,8 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 \item{val_name}{Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
 
 \item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+
+\item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
 
 \item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
@@ -115,8 +118,6 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 \item{min_data_in_leaf}{Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.}
 
 \item{min_sum_hessian_in_leaf}{Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.}
-
-\item{init_score}{Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{NA}.}
 
 \item{max_bin}{Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.}
 

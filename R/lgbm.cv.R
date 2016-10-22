@@ -28,6 +28,7 @@
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
 #' @param val_name Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
 #' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
+#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.,
 #' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
@@ -61,7 +62,6 @@
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param min_data_in_leaf Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.
 #' @param min_sum_hessian_in_leaf Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.
-#' @param init_score Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{NA}.
 #' @param max_bin Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.
 #' @param feature_fraction Type: numeric (0, 1). Column subsampling percentage. For instance, 0.5 means selecting 50\% of features randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}.
 #' @param feature_fraction_seed Type: integer. Random starting seed for the column subsampling (\code{feature_fraction}). Defaults to \code{2}.
@@ -136,6 +136,7 @@ lgbm.cv <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   test_name = 'lgbm_test.csv',
+  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
   
@@ -183,7 +184,6 @@ lgbm.cv <- function(
   num_leaves = 127,
   min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10.0,
-  init_score = NA,
   
   # Model sampling hyperparameters
   max_bin = 255,
@@ -312,6 +312,7 @@ lgbm.cv <- function(
       # Data files to create/use
       train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
       val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
+      init_score = init_score,
       files_exist = files_exist,
       save_binary = save_binary,
       
@@ -348,7 +349,6 @@ lgbm.cv <- function(
       num_leaves = num_leaves,
       min_data_in_leaf = min_data_in_leaf,
       min_sum_hessian_in_leaf = min_sum_hessian_in_leaf,
-      init_score = init_score,
       
       # Model sampling hyperparameters
       max_bin = max_bin,

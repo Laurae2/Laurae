@@ -28,6 +28,7 @@
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}.
 #' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
+#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.
 #' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
@@ -54,7 +55,6 @@
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param min_data_in_leaf Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.
 #' @param min_sum_hessian_in_leaf Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.
-#' @param init_score Type: string. The file name of initial training scores to start training LightGBM. Defaults to \code{NA}.
 #' @param max_bin Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.
 #' @param feature_fraction Type: numeric (0, 1). Column subsampling percentage. For instance, 0.5 means selecting 50\% of features randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}.
 #' @param feature_fraction_seed Type: integer. Random starting seed for the column subsampling (\code{feature_fraction}). Defaults to \code{2}.
@@ -125,6 +125,7 @@ lgbm.train <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   test_name = 'lgbm_test.csv',
+  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
   
@@ -163,7 +164,6 @@ lgbm.train <- function(
   num_leaves = 127,
   min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10.0,
-  init_score = NA,
   
   # Model sampling hyperparameters
   max_bin = 255,
@@ -275,7 +275,7 @@ lgbm.train <- function(
       my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
-      if (!init_score) {
+      if (!is.na(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), sep = "")
         if (length(bias_train) == 1) {
           fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = "nan")
@@ -288,7 +288,7 @@ lgbm.train <- function(
       cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "\n", sep = "")
       write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
-      if (!init_score) {
+      if (!is.na(init_score)) {
         cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), sep = "")
         if (length(bias_train) == 1) {
           write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
