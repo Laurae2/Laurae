@@ -4,7 +4,7 @@
 \alias{kfold}
 \title{(Un)Stratified k-fold for any type of label}
 \usage{
-kfold(y, k = 5, stratified = TRUE, seed = 0)
+kfold(y, k = 5, stratified = TRUE, seed = 0, named = TRUE)
 }
 \arguments{
 \item{y}{Type: The label vector.}
@@ -14,6 +14,8 @@ kfold(y, k = 5, stratified = TRUE, seed = 0)
 \item{stratified}{Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.}
 
 \item{seed}{Type: integer. The seed for the random number generator. Defaults to \code{0}.}
+
+\item{named}{Type: boolean. Whether the folds should be named. Defaults to \code{TRUE}.}
 }
 \value{
 A list of vectors for each fold, where an integer represents the row number.

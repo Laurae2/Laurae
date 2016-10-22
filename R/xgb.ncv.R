@@ -64,8 +64,7 @@ xgb.ncv <- function(data,
                     maximize = FALSE,
                     early_stopping_rounds = 50) {
   
-  set.seed(seed)
-  folds <- createMultiFolds(label, k = nfolds, times = ntimes)
+  folds <- nkfold(y = label, n = ntimes, k = nfolds, stratified = TRUE, seed = seed, named = TRUE)
   
   score_list <- data.frame(folds = seq(1, NROW(names(folds))), scores = rep(0, NROW(names(folds))), rounds = rep(0, NROW(names(folds))))
   

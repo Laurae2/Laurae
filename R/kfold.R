@@ -6,6 +6,7 @@
 #' @param k Type: integer. The amount of folds to create. Causes issues if \code{length(y) < k} (e.g more folds than samples). Defaults to \code{5}.
 #' @param stratified Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.
 #' @param seed Type: integer. The seed for the random number generator. Defaults to \code{0}.
+#' @param named Type: boolean. Whether the folds should be named. Defaults to \code{TRUE}.
 #' 
 #' @return A list of vectors for each fold, where an integer represents the row number.
 #' 
@@ -46,7 +47,7 @@
 #' 
 #' @export
 
-kfold <- function(y, k = 5, stratified = TRUE, seed = 0) {
+kfold <- function(y, k = 5, stratified = TRUE, seed = 0, named = TRUE) {
   
   set.seed(seed)
   
@@ -79,7 +80,11 @@ kfold <- function(y, k = 5, stratified = TRUE, seed = 0) {
     }
     
     out <- split(seq(along = y), foldVector)
-    names(out) <- NULL
+    if (named) {
+      names(out) <- paste("Fold", sprintf(paste("%0", floor(log10(k) + 1), "d", sep = ""), 1:k), sep = "")
+    } else {
+      names(out) <- NULL
+    }
     return(out)
     
   } else {
@@ -93,6 +98,9 @@ kfold <- function(y, k = 5, stratified = TRUE, seed = 0) {
       folded[[i]] <- c(folded[[i]], folded[[i]])
     }
     
+    if (named) {
+      names(folded) <- paste("Fold", sprintf(paste("%0", floor(log10(k) + 1), "d", sep = ""), 1:k), sep = "")
+    }
     return(folded)
     
   }

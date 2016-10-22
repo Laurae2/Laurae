@@ -4,7 +4,7 @@
 \alias{nkfold}
 \title{(Un)Stratified Repeated k-fold for any type of label}
 \usage{
-nkfold(y, n = 2, k = 5, stratified = TRUE, seed = 0)
+nkfold(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE)
 }
 \arguments{
 \item{y}{Type: The label vector.}
@@ -16,6 +16,8 @@ nkfold(y, n = 2, k = 5, stratified = TRUE, seed = 0)
 \item{stratified}{Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.}
 
 \item{seed}{Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.}
+
+\item{named}{Type: boolean. Whether the folds should be named. Defaults to \code{TRUE}.}
 }
 \value{
 A list of vectors for each fold, where an integer represents the row number.

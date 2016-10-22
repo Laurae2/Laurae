@@ -75,7 +75,6 @@ globalVariables(c("Timing_Metric",
 requireNamespace("Matrix")
 requireNamespace("R.utils")
 requireNamespace("Rtsne")
-requireNamespace("caret")
 requireNamespace("outliers")
 requireNamespace("recommenderlab")
 requireNamespace("tabplot")
