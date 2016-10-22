@@ -4,36 +4,63 @@
 \alias{lgbm.cv}
 \title{LightGBM Cross-Validated Model Training}
 \usage{
-lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
-  stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
-  application = "regression", validation = TRUE, num_iterations = 10,
-  early_stopping_rounds = NA, learning_rate = 0.1, num_leaves = 127,
-  tree_learner = "serial", num_threads = 2, min_data_in_leaf = 100,
-  min_sum_hessian_in_leaf = 10, feature_fraction = 1,
+lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
+  data_has_label = TRUE, lgbm_path = "path/to/LightGBM.exe",
+  workingdir = getwd(), train_name = "lgbm_train.csv",
+  val_name = "lgbm_val.csv", test_name = "lgbm_test.csv",
+  files_exist = FALSE, save_binary = FALSE,
+  train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
+  test_conf = "lgbm_test.conf", validation = TRUE, unicity = FALSE,
+  folds = 5, stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
+  predictions = TRUE, collect_preds = TRUE, separate_tests = TRUE,
+  output_preds = "lgbm_predict.txt", test_preds = "lgbm_predict_test.txt",
+  verbose = TRUE, log_name = "lgbm_log.txt", full_quiet = FALSE,
+  full_console = FALSE, importance = FALSE,
+  output_model = "lgbm_model.txt", input_model = NA, num_threads = 2,
+  is_sparse = TRUE, two_round = FALSE, application = "regression",
+  learning_rate = 0.1, num_iterations = 10, early_stopping_rounds = NA,
+  num_leaves = 127, min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10,
+  init_score = NA, max_bin = 255, feature_fraction = 1,
   feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
-  bagging_seed = 3, max_bin = 255, data_random_seed = 1,
-  data_has_label = TRUE, output_model = "lgbm_model.txt",
-  input_model = NA, output_result = "lgbm_predict.txt", is_sigmoid = TRUE,
-  init_score = "", is_pre_partition = FALSE, is_sparse = TRUE,
-  two_round = FALSE, save_binary = FALSE, sigmoid = 1,
+  bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
-  ndcg_at = c(1, 2, 3, 4, 5), num_machines = 1, local_listen_port = 12400,
-  time_out = 120, machine_list_file = "",
-  lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
-  files_exist = FALSE, train_conf = "lgbm_train.conf",
-  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  test_name = "lgbm_test.csv", test_preds = "lgbm_predict_test.txt",
-  predictions = TRUE, pred_conf = "lgbm_pred.conf",
-  test_conf = "lgbm_test.conf", verbose = TRUE, log_name = "lgbm_log.txt",
-  log_append = FALSE, importance = FALSE)
+  ndcg_at = c(1, 2, 3, 4, 5), tree_learner = "serial",
+  is_pre_partition = FALSE, data_random_seed = 1, num_machines = 1,
+  local_listen_port = 12400, time_out = 120, machine_list_file = "")
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
 
 \item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.}
 
+\item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.}
+
 \item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged.}
+
+\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
+
+\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
+
+\item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
+
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
+
+\item{val_name}{Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
+
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+
+\item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
+
+\item{save_binary}{Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.,}
+
+\item{train_conf}{Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.}
+
+\item{pred_conf}{Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.}
+
+\item{test_conf}{Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.}
+
+\item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.}
 
 \item{unicity}{Type: boolean. Whether to overwrite each train/validation file. If not, adds a tag to each file. Defaults to \code{TRUE}.}
 
@@ -45,25 +72,53 @@ lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
 
 \item{fold_cleaning}{Type: integer. When using cross-validation, data must be subsampled. This parameter controls how aggressive RAM usage should be against speed. The lower this value, the more aggressive the method to keep memory usage as low as possible. Defaults to \code{50}.}
 
+\item{predictions}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
+
+\item{collect_preds}{Type: boolean. Whether out of fold predictions should NOT be returned fold by fold in a list. Do not set it to \code{TRUE} if you have overlapping folds, else the latest predictions might overwrite the previous written predictions. Defaults to \code{TRUE}.}
+
+\item{separate_tests}{Type: boolean. Whether testing predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.}
+
+\item{output_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Original name is \code{output_result}.}
+
+\item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
+
+\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
+
+\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
+
+\item{full_quiet}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{FALSE}.}
+
+\item{full_console}{Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.}
+
+\item{importance}{Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.}
+
+\item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
+
+\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
+
+\item{num_threads}{Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).}
+
+\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.}
+
+\item{two_round}{Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.}
+
 \item{application}{Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.}
 
-\item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.}
+\item{learning_rate}{Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.}
 
 \item{num_iterations}{Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.}
 
 \item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.}
 
-\item{learning_rate}{Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.}
-
 \item{num_leaves}{Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.}
-
-\item{tree_learner}{Type: character. The type of learner use, between \code{'serial'} (single machine tree learner), \code{'feature'} (feature parallel tree learner), \code{'data'} (data parallel tree learner). Defaults to \code{'serial'}. Other learners are not supported yet. (?)}
-
-\item{num_threads}{Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).}
 
 \item{min_data_in_leaf}{Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.}
 
 \item{min_sum_hessian_in_leaf}{Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.}
+
+\item{init_score}{Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{NA}.}
+
+\item{max_bin}{Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.}
 
 \item{feature_fraction}{Type: numeric (0, 1). Column subsampling percentage. For instance, 0.5 means selecting 50\% of features randomly for each iteration. Lower values potentially decrease overfitting, while training faster. Defaults to \code{1.0}.}
 
@@ -75,29 +130,7 @@ lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
 
 \item{bagging_seed}{Type: integer. Random starting seed for the row subsampling (\code{bagging_fraction}). Defaults to \code{3}.}
 
-\item{max_bin}{Type: integer. The maximum number of bins created per feature. Lower values potentially decrease overfitting. Defaults to \code{255}.}
-
-\item{data_random_seed}{Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.}
-
-\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
-
-\item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
-
-\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.}
-
-\item{output_result}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}.}
-
 \item{is_sigmoid}{Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.}
-
-\item{init_score}{Type: string. The file name of initial scores to start training LightGBM. Defaults to \code{''}. Automatic creation of the initial scores is not implemented yet.}
-
-\item{is_pre_partition}{Type: boolean. Whether data is pre-partitioned for parallel learning. Defaults to \code{FALSE}. Unused.}
-
-\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.}
-
-\item{two_round}{Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.}
-
-\item{save_binary}{Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.,}
 
 \item{sigmoid}{Type: numeric. "The sigmoid parameter". Defaults to \code{1.0}.}
 
@@ -115,6 +148,12 @@ lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
 
 \item{ndcg_at}{Type: vector of integers. Evaluate NDCG metric at these values. Defaults to \code{c(1, 2, 3, 4, 5)}.}
 
+\item{tree_learner}{Type: character. The type of learner use, between \code{'serial'} (single machine tree learner), \code{'feature'} (feature parallel tree learner), \code{'data'} (data parallel tree learner). Defaults to \code{'serial'}.}
+
+\item{is_pre_partition}{Type: boolean. Whether data is pre-partitioned for parallel learning. Defaults to \code{FALSE}.}
+
+\item{data_random_seed}{Type: integer. Random starting seed for the parallel learner. Defaults to \code{1}.}
+
 \item{num_machines}{Type: integer. When using parallel learning, the number of machines to use. Defaults to \code{1}.}
 
 \item{local_listen_port}{Type: integer. The TCP listening port for the local machines. Allow this port in the firewall before training. \code{12400}.}
@@ -122,36 +161,6 @@ lgbm.cv(y_train, x_train, x_test = NA, unicity = FALSE, folds = 5,
 \item{time_out}{Type: integer. The socket time-out in minutes. Defaults to \code{120}.}
 
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
-
-\item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
-
-\item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
-
-\item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
-
-\item{train_conf}{Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.}
-
-\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
-
-\item{val_name}{Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
-
-\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
-
-\item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
-
-\item{predictions}{Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.}
-
-\item{pred_conf}{Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.}
-
-\item{test_conf}{Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.}
-
-\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
-
-\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
-
-\item{log_append}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{TRUE}.}
-
-\item{importance}{Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.}
 }
 \value{
 A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path. In addition, out of fold predictions \code{Validation} are provided if \code{predictions} is set to \code{TRUE}, and averaged testing predictions \code{Testing} are provided if \code{predictions} is set to \code{TRUE} with a testing set. Also, aggregated feature importance is provided if \code{importance} is set to \code{TRUE}.
@@ -164,7 +173,7 @@ The speed increase to create the train and test files can exceed 100x over write
 To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
 }
 \details{
-The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_result, train_conf, train_name, val_name, pred_conf}).
+The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).
 
 \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{FALSE}.
 
@@ -186,25 +195,24 @@ Uses the working dir / temp folder as working directory for the temporary files.
 Returns in addition the out of fold predictions, and the feature importance.
 trained.cv <- lgbm.cv(y_train = targets,
                       x_train = data[1:1500, ],
-                      folds = 3,
-                      application = "regression",
-                      validation = TRUE,
-                      num_iterations = 10,
-                      learning_rate = 0.1,
-                      num_leaves = 127,
-                      tree_learner = "serial",
-                      num_threads = 2,
                       lgbm_path = "C:/LightGBM/windows/x64/Release/lightgbm.exe",
                       workingdir = file.path(getwd(), "temp"),
                       files_exist = FALSE,
-                      unicity = FALSE,
                       train_conf = 'lgbm_train.conf',
                       train_name = 'lgbm_train.csv',
                       val_name = 'lgbm_val.csv',
+                      validation = TRUE,
+                      unicity = FALSE,
+                      folds = 3,
                       verbose = FALSE,
                       log_name = "houseprice_log_cv.txt",
                       predictions = TRUE,
-                      importance = TRUE)
+                      importance = TRUE,
+                      num_threads = 2,
+                      application = "regression",
+                      num_iterations = 10,
+                      learning_rate = 0.1,
+                      num_leaves = 127)
 }
 
 }
