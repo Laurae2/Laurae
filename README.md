@@ -20,17 +20,16 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF |
 | Matrix | No | read_sparse_csv |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
 | tabplot | No | tableplot_jpg |
-| caret | No | xgb.ncv |
 | stringi | No | lightgbm.cv |
-| base | No | kfold, nkfold, lgbm.find |
 | ggplot2 | No | lgbm.fi.plot |
+| None so far | No | kfold, nkfold, lgbm.find |
 
 # Installing dependencies?
 
