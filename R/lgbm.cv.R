@@ -22,15 +22,15 @@
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
-#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NULL}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NULL}. Predictions are averaged. Must be unlabeled.
+#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.
 #' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
 #' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
-#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = ""))}, which means \code{NULL} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
+#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.,
 #' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
@@ -53,14 +53,14 @@
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
-#' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NULL}. Unused yet.
+#' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
-#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NULL}.
+#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param min_data_in_leaf Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.
 #' @param min_sum_hessian_in_leaf Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.
@@ -126,8 +126,8 @@ lgbm.cv <- function(
   # Data-related
   y_train,
   x_train,
-  bias_train = NULL,
-  x_test = NULL,
+  bias_train = NA,
+  x_test = NA,
   data_has_label = TRUE,
   
   # LightGBM I/O-related
@@ -138,7 +138,7 @@ lgbm.cv <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   test_name = 'lgbm_test.csv',
-  init_score = ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = "")),
+  init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
   
@@ -171,7 +171,7 @@ lgbm.cv <- function(
   
   # Model storage
   output_model = 'lgbm_model.txt',
-  input_model = NULL,
+  input_model = NA,
   
   # Speed and RAM parameters
   num_threads = 2,
@@ -182,7 +182,7 @@ lgbm.cv <- function(
   application = 'regression',
   learning_rate = 0.1,
   num_iterations = 10,
-  early_stopping_rounds = NULL,
+  early_stopping_rounds = NA,
   num_leaves = 127,
   min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10.0,
@@ -337,7 +337,7 @@ lgbm.cv <- function(
       
       # Model storage
       output_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", fold_shortcut, ".")), output_model),
-      input_model = ifelse(is.null(!input_model), NULL, ifelse(!unicity, stri_replace_last_fixed(input_model, ".", paste0("_", fold_shortcut, ".")), input_model)),
+      input_model = ifelse(is.na(!input_model), NA, ifelse(!unicity, stri_replace_last_fixed(input_model, ".", paste0("_", fold_shortcut, ".")), input_model)),
       
       # Speed and RAM parameters
       num_threads = num_threads,
@@ -397,7 +397,7 @@ lgbm.cv <- function(
         
         tests_preds <- lgbm.predict(
           model = '',
-          y_pred = NULL,
+          y_pred = NA,
           x_pred = x_test,
           data_has_label = FALSE,
           lgbm_path = lgbm_path,
