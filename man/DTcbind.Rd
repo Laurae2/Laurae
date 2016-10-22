@@ -11,7 +11,7 @@ DTcbind(dt1, dt2, low_mem = FALSE, collect = 0, silent = FALSE)
 
 \item{dt2}{Type: data.table. The data.table to "copy" on \code{dt1}}
 
-\item{low_mem}{Type: boolean. Unallows dt2 twice in memory by deleting \code{dt2} (WARNING: empties your \code{dt2}) to save memory when set to \code{TRUE}. Setting it to \code{FALSE} allow \code{dt2} to reside twice in memory, therefore memory usage increases. Defaults to \code{FALSE}.}
+\item{low_mem}{Type: boolean. Unallows \code{dt2} twice in memory by deleting \code{dt2} (WARNING: empties your \code{dt2}) to save memory when set to \code{TRUE}. Setting it to \code{FALSE} allow \code{dt2} to reside twice in memory, therefore memory usage increases. Defaults to \code{FALSE}.}
 
 \item{collect}{Type: integer. Forces a garbage collect every \code{collect} iterations to clear up memory. Setting this to \code{1} along with \code{low_mem} = \code{TRUE} leads to the lowest possible memory usage one can ever get to merge two data.tables. It also prints verbose information about the process everytime it garbage collects. Setting this to \code{0} leads to no garbage collect. Lower values increases the time required to bind the data.tables. Defauls to \code{0}.}
 
