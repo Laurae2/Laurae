@@ -14,44 +14,46 @@
 #' 
 #' Then, you are up to choose what you want, including hyperparameters to verbosity control.
 #' 
+#' To get the metric table, you MUST use \code{verbose = FALSE}. It cannot be fetched without. \code{sink()} does not work.
+#' 
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
-#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
+#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NULL}.
 #' @param y_val Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NULL}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
 #' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_val.csv'}.
 #' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
-#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
+#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = ""))}, which means \code{NULL} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
-#' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.
+#' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.
 #' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
 #' @param pred_conf Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.
 #' @param test_conf Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.
-#' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.
+#' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{ifelse(is.null(y_val), FALSE, TRUE)}, which means if \code{y_val} is the default value (unfilled), \code{validation} is \code{FALSE} else \code{TRUE}. Multi-validation data is not supported yet.
 #' @param predictions Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.
 #' @param output_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Original name is \code{output_result}.
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
-#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{FALSE}.
+#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}.
+#' @param input_model Type: character. The file name of input model. If defined, LightGBM will resume training from that file. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). Defaults to \code{NULL}.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
-#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.
+#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NULL}.
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param min_data_in_leaf Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.
 #' @param min_sum_hessian_in_leaf Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.
@@ -111,10 +113,10 @@ lgbm.train <- function(
   # Data-related
   y_train,
   x_train,
-  bias_train = NA,
+  bias_train = NULL,
   y_val = NULL,
   x_val = NULL,
-  x_test = NA,
+  x_test = NULL,
   data_has_label = TRUE,
   
   # LightGBM-related
@@ -125,7 +127,7 @@ lgbm.train <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   test_name = 'lgbm_test.csv',
-  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = "")),
+  init_score = ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
   
@@ -135,7 +137,7 @@ lgbm.train <- function(
   test_conf = 'lgbm_test.conf',
   
   # Prediction-related
-  validation = TRUE,
+  validation = ifelse(is.null(y_val), FALSE, TRUE),
   predictions = FALSE,
   output_preds = 'lgbm_predict_result.txt',
   test_preds = 'lgbm_predict_test.txt',
@@ -149,7 +151,7 @@ lgbm.train <- function(
   
   # Model storage
   output_model = 'lgbm_model.txt',
-  input_model = NA,
+  input_model = NULL,
   
   # Speed and RAM parameters
   num_threads = 2,
@@ -160,7 +162,7 @@ lgbm.train <- function(
   application = 'regression',
   learning_rate = 0.1,
   num_iterations = 10,
-  early_stopping_rounds = NA,
+  early_stopping_rounds = NULL,
   num_leaves = 127,
   min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10.0,
@@ -228,7 +230,7 @@ lgbm.train <- function(
   write(paste0('data="',file.path(workingdir, train_name), '"'), fileConn, append = TRUE)
   if (validation) write(paste0('valid="',file.path(workingdir, val_name), '"'), fileConn, append = TRUE)
   write(paste0('num_iterations=', num_iterations), fileConn, append = TRUE)
-  if (!is.na(early_stopping_rounds)) write(paste0('early_stopping_rounds=', early_stopping_rounds), fileConn, append = TRUE)
+  if (!is.null(early_stopping_rounds)) write(paste0('early_stopping_rounds=', early_stopping_rounds), fileConn, append = TRUE)
   write(paste0('learning_rate=', learning_rate), fileConn, append = TRUE)
   write(paste0('num_leaves=', num_leaves), fileConn, append = TRUE)
   write(paste0('tree_learner=', tree_learner), fileConn, append = TRUE)
@@ -244,9 +246,9 @@ lgbm.train <- function(
   write(paste0('data_random_seed=', data_random_seed), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   if (output_model != '') write(paste0('output_model="', file.path(workingdir, output_model), '"'), fileConn, append = TRUE)
-  if (!is.na(input_model)) write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
+  if (!is.null(input_model)) write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
   write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
-  if (!is.na(init_score)) write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
+  if (!is.null(init_score)) write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
   write(paste0('is_pre_partition=', tolower(as.character(is_pre_partition))), fileConn, append = TRUE)
   write(paste0('is_sparse=', tolower(as.character(is_sparse))), fileConn, append = TRUE)
   write(paste0('two_round=', tolower(as.character(two_round))), fileConn, append = TRUE)
@@ -266,6 +268,11 @@ lgbm.train <- function(
   close(fileConn)
   cat('Training configuration file saved to: ', file.path(workingdir, train_conf), "\n", sep = "")
   
+  # Check for weights already existing but not used
+  if (is.null(init_score) & file.exists(paste(file.path(workingdir, train_name), ".weight", sep = ""))) {
+    cat('Renaming an existing and conflicting weight file: ', file.path(workingdir, train_name), ".weight to ", train_name, ".weight_ ...", ifelse(file.rename(paste(file.path(workingdir, train_name), ".weight", sep = ""), paste(file.path(workingdir, train_name), ".weight_", sep = "")), "Success!", "Failure! Keep going on training..."), sep = "")
+  }
+  
   # Export data
   if (!files_exist) {
     if (exists("fwrite") & is.data.table(x_train)) {
@@ -275,7 +282,7 @@ lgbm.train <- function(
       my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan")
-      if (!is.na(init_score)) {
+      if (!is.null(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
           fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = "nan")
@@ -288,7 +295,7 @@ lgbm.train <- function(
       cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "\n", sep = "")
       write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       gc(verbose = FALSE) # In case of memory explosion
-      if (!is.na(init_score)) {
+      if (!is.null(init_score)) {
         cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
           write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
@@ -327,8 +334,8 @@ lgbm.train <- function(
   output[["Name"]] <- output_model
   output[["lgbm"]] <- file.path(lgbm_path)
   output[["Train"]] <- train_name
-  output[["Valid"]] <- ifelse(length(x_val) == 1, NA, val_name)
-  output[["Test"]] <- ifelse(length(x_test) == 1, NA, test_name)
+  output[["Valid"]] <- ifelse(length(x_val) == 1, NULL, val_name)
+  output[["Test"]] <- ifelse(length(x_test) == 1, NULL, test_name)
   
   if (!verbose) {
     sink()
@@ -339,8 +346,8 @@ lgbm.train <- function(
     
     output[["Validation"]] <- lgbm.predict(
       model = '',
-      y_pred = NA,
-      x_pred = NA,
+      y_pred = NULL,
+      x_pred = NULL,
       data_has_label = TRUE,
       lgbm_path = lgbm_path,
       workingdir = workingdir,
@@ -359,7 +366,7 @@ lgbm.train <- function(
     # Raw
     output[["Testing"]] <- lgbm.predict(
       model = '',
-      y_pred = NA,
+      y_pred = NULL,
       x_pred = x_test,
       data_has_label = FALSE,
       lgbm_path = lgbm_path,

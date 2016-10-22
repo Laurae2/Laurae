@@ -10,27 +10,29 @@
 #' 
 #' \code{train_conf}, \code{train_name}, and \code{val_name} defines respectively the configuration file name, the train file name, and the validation file name. They are created under this name when \code{files_exist} is set to \code{FALSE}.
 #' 
-#' \code{unicity} defines whether to create separate files (if \code{TRUE}) or to save space by writing over the same file (if \code{FALSE}). Predicting does not work with \code{FALSE}.
+#' \code{unicity} defines whether to create separate files (if \code{TRUE}) or to save space by writing over the same file (if \code{FALSE}). Predicting does not work with \code{FALSE}. Files are taking the names you provided (or the default ones) while adding a "_X" to the file name before the file extension if \code{unicity = FALSE}.
 #' 
 #' Once you filled these variables (and if they were appropriate), you should fill \code{y_train, x_train}. If you need model validation, fill also \code{y_val, x_val}. y is your label (a vector), while x is your data.table (preferred) or a data.frame or a matrix.
 #' 
 #' Then, you are up to choose what you want, including hyperparameters to verbosity control.
 #' 
+#' To get the metric tables, you MUST use \code{verbose = FALSE}. It cannot be fetched without. \code{sink()} does not work.
+#' 
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
 #' @param y_train Type: vector. The training labels.
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
-#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
+#' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NULL}.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NULL}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
-#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
-#' @param val_name Type: character. The name of the validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
+#' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.
+#' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
 #' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
-#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
+#' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = ""))}, which means \code{NULL} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
-#' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.,
+#' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.,
 #' @param train_conf Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.
 #' @param pred_conf Type: character. The name of the prediction configuration file for the model. Defaults to \code{'lgbm_pred.conf'}.
 #' @param test_conf Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.
@@ -47,18 +49,18 @@
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
-#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{FALSE}.
+#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
-#' @param input_model Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
+#' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NULL}. Unused yet.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
 #' @param num_iterations Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.
-#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.
+#' @param early_stopping_rounds Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NULL}.
 #' @param num_leaves Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.
 #' @param min_data_in_leaf Type: integer. Minimum number of data in one leaf. Higher values potentially decrease overfitting. Defaults to \code{100}.
 #' @param min_sum_hessian_in_leaf Type: numeric. Minimum sum of hessians in one leaf to allow a split. Higher values potentially decrease overfitting. Defaults to \code{10.0}.
@@ -124,8 +126,8 @@ lgbm.cv <- function(
   # Data-related
   y_train,
   x_train,
-  bias_train = NA,
-  x_test = NA,
+  bias_train = NULL,
+  x_test = NULL,
   data_has_label = TRUE,
   
   # LightGBM I/O-related
@@ -136,7 +138,7 @@ lgbm.cv <- function(
   train_name = 'lgbm_train.csv',
   val_name = 'lgbm_val.csv',
   test_name = 'lgbm_test.csv',
-  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = "")),
+  init_score = ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
   
@@ -169,7 +171,7 @@ lgbm.cv <- function(
   
   # Model storage
   output_model = 'lgbm_model.txt',
-  input_model = NA,
+  input_model = NULL,
   
   # Speed and RAM parameters
   num_threads = 2,
@@ -180,7 +182,7 @@ lgbm.cv <- function(
   application = 'regression',
   learning_rate = 0.1,
   num_iterations = 10,
-  early_stopping_rounds = NA,
+  early_stopping_rounds = NULL,
   num_leaves = 127,
   min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10.0,
@@ -287,7 +289,8 @@ lgbm.cv <- function(
   
   for (i in 1:length(folds_list)) {
     
-    if (verbose) cat('  \n************  \n', paste('Fold no: ', i), '  \n************  \n', sep = "")
+    fold_shortcut <- sprintf(paste("%0", floor(log10(length(folds_list)) + 1), "d", sep = ""), i)
+    if (verbose) cat('  \n**************  \n', paste('Fold no: ', fold_shortcut), ' / ', length(folds_list), '  \n**************  \n', sep = "")
     
     # Create folds
     x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
@@ -310,31 +313,31 @@ lgbm.cv <- function(
       workingdir = workingdir,
       
       # Data files to create/use
-      train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", i, ".")), train_name),
-      val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", i, ".")), val_name),
+      train_name = ifelse(!unicity, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, ".")), train_name),
+      val_name = ifelse(!unicity, stri_replace_last_fixed(val_name, ".", paste0("_", fold_shortcut, ".")), val_name),
       init_score = init_score,
       files_exist = files_exist,
       save_binary = save_binary,
       
       # Configuration files to create/user
-      train_conf = ifelse(!unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", i, ".")), train_conf),
-      pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", i, ".")), pred_conf),
+      train_conf = ifelse(!unicity, stri_replace_last_fixed(train_conf, ".", paste0("_", fold_shortcut, ".")), train_conf),
+      pred_conf = ifelse(!unicity, stri_replace_last_fixed(pred_conf, ".", paste0("_", fold_shortcut, ".")), pred_conf),
       
       # Prediction-related
       validation = validation,
       predictions = predictions,
-      output_preds = ifelse(!unicity, stri_replace_last_fixed(output_preds, ".", paste0("_", i, ".")), output_preds),
+      output_preds = ifelse(!unicity, stri_replace_last_fixed(output_preds, ".", paste0("_", fold_shortcut, ".")), output_preds),
       
       # Analysis-related
       verbose = verbose,
-      log_name = ifelse(!unicity, stri_replace_last_fixed(log_name, ".", paste0("_", i, ".")), log_name),
+      log_name = ifelse(!unicity, stri_replace_last_fixed(log_name, ".", paste0("_", fold_shortcut, ".")), log_name),
       full_quiet = full_quiet,
       full_console = full_console,
       importance = importance,
       
       # Model storage
-      output_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
-      input_model = ifelse(is.na(!input_model), NA, ifelse(!unicity, stri_replace_last_fixed(input_model, ".", paste0("_", i, ".")), input_model)),
+      output_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", fold_shortcut, ".")), output_model),
+      input_model = ifelse(is.null(!input_model), NULL, ifelse(!unicity, stri_replace_last_fixed(input_model, ".", paste0("_", fold_shortcut, ".")), input_model)),
       
       # Speed and RAM parameters
       num_threads = num_threads,
@@ -394,17 +397,17 @@ lgbm.cv <- function(
         
         tests_preds <- lgbm.predict(
           model = '',
-          y_pred = NA,
+          y_pred = NULL,
           x_pred = x_test,
           data_has_label = FALSE,
           lgbm_path = lgbm_path,
           workingdir = workingdir,
-          input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", i, ".")), output_model),
-          pred_conf = ifelse(!unicity, stri_replace_last_fixed(test_conf, ".", paste0("_", i, ".")), test_conf),
+          input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", fold_shortcut, ".")), output_model),
+          pred_conf = ifelse(!unicity, stri_replace_last_fixed(test_conf, ".", paste0("_", fold_shortcut, ".")), test_conf),
           verbose = verbose,
           data_name = test_name,
           files_exist = (!(i == 1) | files_exist),
-          output_preds = ifelse(!unicity, stri_replace_last_fixed(test_preds, ".", paste0("_", i, ".")), test_preds),
+          output_preds = ifelse(!unicity, stri_replace_last_fixed(test_preds, ".", paste0("_", fold_shortcut, ".")), test_preds),
           data.table = exists("data.table"))
         
         if (separate_tests) {

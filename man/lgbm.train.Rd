@@ -4,21 +4,22 @@
 \alias{lgbm.train}
 \title{LightGBM Model Training}
 \usage{
-lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
-  x_test = NA, data_has_label = TRUE, lgbm_path = "path/to/LightGBM.exe",
-  workingdir = getwd(), train_name = "lgbm_train.csv",
-  val_name = "lgbm_val.csv", test_name = "lgbm_test.csv",
-  init_score = ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight",
-  sep = "")), files_exist = FALSE, save_binary = FALSE,
-  train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
-  test_conf = "lgbm_test.conf", validation = TRUE, predictions = FALSE,
+lgbm.train(y_train, x_train, bias_train = NULL, y_val = NULL,
+  x_val = NULL, x_test = NULL, data_has_label = TRUE,
+  lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
+  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
+  test_name = "lgbm_test.csv", init_score = ifelse(is.null(bias_train),
+  NULL, paste(train_name, ".weight", sep = "")), files_exist = FALSE,
+  save_binary = FALSE, train_conf = "lgbm_train.conf",
+  pred_conf = "lgbm_pred.conf", test_conf = "lgbm_test.conf",
+  validation = ifelse(is.null(y_val), FALSE, TRUE), predictions = FALSE,
   output_preds = "lgbm_predict_result.txt",
   test_preds = "lgbm_predict_test.txt", verbose = TRUE,
   log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
-  importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
+  importance = FALSE, output_model = "lgbm_model.txt", input_model = NULL,
   num_threads = 2, is_sparse = TRUE, two_round = FALSE,
   application = "regression", learning_rate = 0.1, num_iterations = 10,
-  early_stopping_rounds = NA, num_leaves = 127, min_data_in_leaf = 100,
+  early_stopping_rounds = NULL, num_leaves = 127, min_data_in_leaf = 100,
   min_sum_hessian_in_leaf = 10, max_bin = 255, feature_fraction = 1,
   feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
   bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
@@ -33,13 +34,13 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features.}
 
-\item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.}
+\item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NULL}.}
 
 \item{y_val}{Type: vector. The validation labels. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.}
 
 \item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NULL}. Unused when \code{validation} is \code{TRUE}.}
 
-\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NULL}. Predictions are averaged. Must be unlabeled.}
 
 \item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
@@ -53,11 +54,11 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
 
-\item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train[1]), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
+\item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.null(bias_train), NULL, paste(train_name, ".weight", sep = ""))}, which means \code{NULL} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
 
 \item{files_exist}{Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.}
 
-\item{save_binary}{Type: boolean. Whether data should be saved as binary files for faster load. Defaults to \code{FALSE}.}
+\item{save_binary}{Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.}
 
 \item{train_conf}{Type: character. The name of the training configuration file for the model. Defaults to \code{'lgbm_train.conf'}.}
 
@@ -65,7 +66,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{test_conf}{Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.}
 
-\item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{TRUE}. Multi-validation data is not supported yet.}
+\item{validation}{Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{ifelse(is.null(y_val), FALSE, TRUE)}, which means if \code{y_val} is the default value (unfilled), \code{validation} is \code{FALSE} else \code{TRUE}. Multi-validation data is not supported yet.}
 
 \item{predictions}{Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.}
 
@@ -77,7 +78,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
 
-\item{full_quiet}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Defaults to \code{FALSE}.}
+\item{full_quiet}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.}
 
 \item{full_console}{Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.}
 
@@ -85,7 +86,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{output_model}{Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.}
 
-\item{input_model}{Type: characer. The file name of input model. If defined, LightGBM will resume training from that file. Defaults to \code{NA}.}
+\item{input_model}{Type: character. The file name of input model. If defined, LightGBM will resume training from that file. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). Defaults to \code{NULL}.}
 
 \item{num_threads}{Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).}
 
@@ -99,7 +100,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NULL, x_val = NULL,
 
 \item{num_iterations}{Type: integer. The number of boosting iterations LightGBM will perform. Defaults to \code{10}.}
 
-\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NA}.}
+\item{early_stopping_rounds}{Type: integer. The number of boosting iterations whose validation metric is lower than the best is required for LightGBM to automatically stop. Defaults to \code{NULL}.}
 
 \item{num_leaves}{Type: integer. The number of leaves in one tree. Roughly, a recommended value is \code{n^2 - 1}, \code{n} being the theoretical depth if each tree were identical. Lower values lowers tree complexity, while higher values increases tree complexity. Defaults to \code{127}.}
 
@@ -169,6 +170,8 @@ The most important parameters are \code{lgbm_path} and \code{workingdir}: they s
 Once you filled these variables (and if they were appropriate), you should fill \code{y_train, x_train}. If you need model validation, fill also \code{y_val, x_val}. y is your label (a vector), while x is your data.table (preferred) or a data.frame or a matrix.
 
 Then, you are up to choose what you want, including hyperparameters to verbosity control.
+
+To get the metric table, you MUST use \code{verbose = FALSE}. It cannot be fetched without. \code{sink()} does not work.
 
 If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 }
