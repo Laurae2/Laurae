@@ -66,7 +66,11 @@ globalVariables(c("Timing_Metric",
                   "coord_flip",
                   "labs",
                   "scale_fill_gradient",
-                  "scale_alpha_continuous"))
+                  "scale_alpha_continuous",
+                  "scale_x_discrete",
+                  "scale_y_continuous",
+                  "scale_y_log10",
+                  "theme_bw"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")

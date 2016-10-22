@@ -98,6 +98,9 @@
 
 xgb.opt.depth <- function(initial = 8, min_depth = 1, max_depth = 25, patience = 2, sd_effect = 0.001, worst_score = 0, learner = NA, better = max_better) {
   
+  # Get rid of NOTE, does not delete any variable
+  Laurae.xgb.opt.depth.df = Laurae.xgb.opt.depth.iter = Laurae.xgb.opt.depth.best = NULL
+  
   # initial = starting point of the optimizer
   # min_depth = minimum depth allowed
   # max_depth = maximum depth allowed

@@ -4,13 +4,22 @@
 \alias{lgbm.fi.plot}
 \title{LightGBM Feature Importance Plotting}
 \usage{
-lgbm.fi.plot(model, n_best = 50, is.cv = FALSE, multipresence = TRUE,
+lgbm.fi.plot(model, n_best = 50, no_log = TRUE, low = "white",
+  high = "red", rescaler = "log", is.cv = FALSE, multipresence = TRUE,
   plot = TRUE)
 }
 \arguments{
 \item{model}{Type: list, data.table, or data.frame. The trained model (with feature importance), or the feature importance table. If a list is provided, the trained model must have had \code{importance} set to \code{TRUE} during training. Otherwise, compute manually the feature importance via \code{lgbm.fi}, and feed the output table to this function argument.}
 
 \item{n_best}{Type: integer. The maximum amount of features to plot. Defaults to \code{50}.}
+
+\item{no_log}{Type: boolean. Whether to NOT apply a log10 scale to the plot. Defaults to \code{TRUE}.}
+
+\item{low}{Type: character. The color when the relative gain is \code{0}. Defaults to \code{"white"}.}
+
+\item{high}{Type: character. The color when the relative gain is \code{1}. Defaults to \code{"red"}.}
+
+\item{rescaler}{Type: character. The transformation of the color scale. Defaults to \code{"log"}. Choose between \code{"asn"}, \code{"atanh"}, \code{"boxcox"}, \code{"exp"}, \code{"identity"} (linear scale), \code{"log"}, \code{"log10"}, \code{"log1p"}, \code{"log2"}, \code{"logit"}, \code{"probability"}, \code{"probit"}, \code{"reciprocal"}, \code{"reverse"}, \code{"sqrt"}, or any other ggplot2 transformation object.}
 
 \item{is.cv}{Type: boolean. Whether the input is issued from a cross-validation or not. Defaults to \code{FALSE}.}
 
@@ -26,9 +35,10 @@ This function allows to plot the feature importance on a LightGBM model.
 }
 \examples{
 \dontrun{
-# Feature importance on a single model without any tree limit.
+# Feature importance on a single model without any tree limit, 20 best features are plotted.
 feature_imp <- lgbm.fi(model = trained, feature_names = colnames(data), ntreelimit = 0)
-feature_plot <- lgbm.fi.plot(feature_imp, is.cv = FALSE, multipresence = FALSE, plot = FALSE)
+feature_plot <- lgbm.fi.plot(feature_imp, n_best = 20, rescaler = "log",
+is.cv = FALSE, multipresence = FALSE, plot = FALSE)
 print(featuer_plot)
 }
 

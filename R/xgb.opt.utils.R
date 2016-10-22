@@ -46,6 +46,9 @@ my_learner <- function(depth) {
 
 xgb.opt.depth.callback <- function(i, learner, better, sd_effect) {
   
+  # Get rid of NOTE, does not delete any variable
+  Laurae.xgb.opt.depth.df = Laurae.xgb.opt.depth.iter = Laurae.xgb.opt.depth.best = NULL
+  
   cat("\nExploring depth ", sprintf("%02d", Laurae.xgb.opt.depth.iter[i, "Depth"]), ": ")
   Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], c("mean", "sd", "nrounds")] <<- learner(Laurae.xgb.opt.depth.iter[i, "Depth"])
   Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "score"] <<- Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "mean"] + (Laurae.xgb.opt.depth.df[Laurae.xgb.opt.depth.iter[i, "Depth"], "sd"] * sd_effect)
