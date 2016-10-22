@@ -79,7 +79,7 @@ lgbm.predict <- function(
       fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan")
     } else {
       # Fallback if no fwrite
-      if (verbose) cat('Saving test data file to: ', file.path(workingdir, data_name), "\n", sep = "")
+      if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "\n", sep = "")
       if (length(y_pred) > 1) {
         write.table(cbind(y_pred, x_pred), file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
       } else {
