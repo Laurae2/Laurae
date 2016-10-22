@@ -47,11 +47,15 @@ Sometimes you will get strange errors (like a corrupted documentation database) 
 
 Write in your R console `sink()` until you get an error.
 
+# A lot of functions that worked are giving errors.
+
+Write in your R console `sink()` until you get an error.
+
 # What is inside?
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample <br> CSV sparse: read_sparse_csv |
