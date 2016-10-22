@@ -408,8 +408,8 @@ lgbm.cv <- function(
           data.table = exists("data.table"))
         
         if (separate_tests) {
-          tests[[2]] <- tests_preds
-          tests[[1]] <- tests + (tests_preds / length(folds_list))
+          tests[[2]][[i]] <- tests_preds
+          tests[[1]] <- tests[[1]] + (tests_preds / length(folds_list))
         } else {
           tests <- tests + (tests_preds / length(folds_list))
         }
@@ -422,8 +422,9 @@ lgbm.cv <- function(
     if (importance) {
       if (i == 1) {
         important <- outputs[["Models"]][[i]][["FeatureImp"]][, c("Feature", "Gain", "Freq"), with = FALSE]
+      } else {
+        important <- rbind(important, outputs[["Models"]][[i]][["FeatureImp"]][, c("Feature", "Gain", "Freq"), with = FALSE])
       }
-      important <- rbind(important, outputs[["Models"]][[i]][["FeatureImp"]][, c("Feature", "Gain", "Freq"), with = FALSE])
     }
   }
   

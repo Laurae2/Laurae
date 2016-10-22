@@ -59,7 +59,14 @@ globalVariables(c("Timing_Metric",
                   "setcolorder",
                   "fread",
                   ":=",
-                  "setattr"))
+                  "setattr",
+                  "ggplot",
+                  "aes",
+                  "geom_bar",
+                  "coord_flip",
+                  "labs",
+                  "scale_fill_gradient",
+                  "scale_alpha_continuous"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -70,3 +77,4 @@ requireNamespace("recommenderlab")
 requireNamespace("tabplot")
 requireNamespace("xgboost")
 requireNamespace("stringi")
+requireNamespace("ggplot2")

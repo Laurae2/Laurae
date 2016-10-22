@@ -48,12 +48,12 @@ lgbm.metric <- function(
     # Capture the early stopping message
     best_round <- unique(na.omit(as.numeric(unlist(strsplit(unlist(model[length(model)]), "[^0-9]+")))))
     iterations <- best_round[1]
-    if (metrics) return(best_round[length(best_round)])
+    if (!metrics) return(best_round[length(best_round)])
     #best_round <- best_round[length(best_round)]
     model <- model[1:(length(model) - 1)]
   } else {
     iterations <- as.numeric(gsub(".*finished \\s*| iteration.*", "", model[length(model)]))
-    if (metrics) return(iterations)
+    if (!metrics) return(iterations)
   }
   
   # Get timings

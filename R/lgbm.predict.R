@@ -13,7 +13,7 @@
 #' @param input_model Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".
 #' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
 #' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.
-#' @param data_name Type: character. The file output name for the vaildation file. Defaults to \code{ifelse(is.list(model) & is.null(dim(x_pred)), model[["Test"]], 'lgbm_test.csv')}, which means "take the test file name if provided the model list and x_pred is left as is, else take "lgbm_test.csv". Original name is \code{val_name}.
+#' @param data_name Type: character. The file output name for the vaildation file. Defaults to \code{ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]], 'lgbm_test.csv')}, which means "take the validation file name if provided the model list and x_pred is left as is, else take "lgbm_test.csv". Original name is \code{val_name}.
 #' @param files_exist Type: boolean. Whether to NOT create CSV files for the prediction data, if already created. Defaults to \code{TRUE}.
 #' @param output_preds Type: character. The output prediction file. Defaults to \code{'lgbm_predict_result.txt'}. Original name is \code{output_result}.
 #' @param data.table Type: boolean. Whether to use data.table to read data (returns a data.table). Defaults to \code{exists("data.table")}.
@@ -42,7 +42,7 @@ lgbm.predict <- function(
   verbose = TRUE,
   
   # Data files
-  data_name = ifelse(is.list(model) & is.null(dim(x_pred)), model[["Test"]], 'lgbm_test.csv'),
+  data_name = ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]], 'lgbm_test.csv'),
   files_exist = TRUE,
   output_preds = 'lgbm_predict_result.txt',
   data.table = exists("data.table")
