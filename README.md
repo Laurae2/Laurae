@@ -18,11 +18,11 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric |
+| LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, DTcbind, DTsubsample, setDF |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF |
 | Matrix | No | read_sparse_csv |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
@@ -30,6 +30,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | caret | No | xgb.ncv |
 | stringi | No | lightgbm.cv |
 | base | No | kfold, nkfold, lgbm.find |
+| ggplot2 | No | lgbm.fi.plot |
 
 # Installing dependencies?
 
@@ -79,10 +80,12 @@ Write in your R console `sink()` until you get an error.
 
 # TO-DO:
 
+* Add a super fast matrix to data.table converter
 * Refactor LightGBM code
 * Better handling of LightGBM arguments
 * Better handling of LightGBM files
 * Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
+* Add SVMLight format (via dgCMatrix) as input for LightGBM (actually, it supports already SVMLight, you just need to create the appropriate files beforehand)
 
 # To add:
 
