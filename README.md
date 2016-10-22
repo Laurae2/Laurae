@@ -2,7 +2,7 @@
 
 **Proper version is at the end of this page.**
 
-If you already installed this package in the past, and you want to install this package super fast, run in R:
+If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
 
 ```
 library(devtools)
