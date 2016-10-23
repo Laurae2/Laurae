@@ -218,11 +218,11 @@ lgbm.train <- function(
   # }
   
   # Setup working directory for LightGBM
-  cat('Using LightGBM path: ', lgbm_path, "\n", sep = "")
+  cat('Using LightGBM path: ', lgbm_path, "  \n", sep = "")
   
   # Create working directory for LightGBM
   dir.create(file.path(workingdir), showWarnings = FALSE)
-  cat('Working directory of LightGBM: ', file.path(workingdir), "\n", sep = "")
+  cat('Working directory of LightGBM: ', file.path(workingdir), "  \n", sep = "")
   
   # Setup the train configuration file
   #file.copy(paste0(lgbm_path), file.path(workingdir))
@@ -268,7 +268,7 @@ lgbm.train <- function(
   write(paste0('time_out=', time_out), fileConn, append = TRUE)
   if (machine_list_file != '') write(paste0('machine_list_file="', file.path(workingdir, machine_list_file), '"'), fileConn, append = TRUE)
   close(fileConn)
-  cat('Training configuration file saved to: ', file.path(workingdir, train_conf), "\n", sep = "")
+  cat('Training configuration file saved to: ', file.path(workingdir, train_conf), "  \n", sep = "")
   
   # Check for weights already existing but not used
   if (is.na(init_score) & file.exists(paste(file.path(workingdir, train_name), ".weight", sep = ""))) {
@@ -279,13 +279,13 @@ lgbm.train <- function(
   if (!files_exist) {
     if (exists("fwrite") & is.data.table(x_train)) {
       # Uses the super fast CSV writer
-      cat('Saving train data (data.table) file to: ', file.path(workingdir, train_name), sep = "")
+      cat('Saving train data (data.table) file to: ', file.path(workingdir, train_name), "  \n", sep = "")
       my_data <- x_train
       my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
       fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet, quote = FALSE)
       if (!is.na(init_score)) {
-        cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "\n", sep = "")
+        cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
           fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         } else {
@@ -294,11 +294,11 @@ lgbm.train <- function(
       }
     } else {
       # Fallback if no fwrite
-      cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "\n", sep = "")
+      cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "  \n", sep = "")
       write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
       gc(verbose = FALSE) # In case of memory explosion
       if (!is.na(init_score)) {
-        cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "\n", sep = "")
+        cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
           write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
         } else {
@@ -308,14 +308,14 @@ lgbm.train <- function(
     }
     if (length(x_val) > 1) {
       if (exists("fwrite") & is.data.table(x_train)) {
-        cat('Saving validation data (data.table) file to: ', file.path(workingdir, val_name), "\n", sep = "")
+        cat('Saving validation data (data.table) file to: ', file.path(workingdir, val_name), "  \n", sep = "")
         my_data <- x_val
         my_data$datatable_target <- y_val
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
         fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
       } else {
         # Fallback if no fwrite
-        cat('Saving validation data (slow) file to: ', file.path(workingdir, val_name), "\n", sep = "")
+        cat('Saving validation data (slow) file to: ', file.path(workingdir, val_name), "  \n", sep = "")
         write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
         gc(verbose = FALSE) # In case of memory explosion
       }
@@ -328,7 +328,7 @@ lgbm.train <- function(
   } else {
     invisible(system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, train_conf), '"'), stdout = file.path(workingdir, log_name), invisible = !full_console))
   }
-  cat('Model completed, results saved in ', file.path(workingdir), "\n", sep = "")
+  cat('Model completed, results saved in ', file.path(workingdir), "  \n", sep = "")
   
   output <- list()
   output[["Model"]] <- readLines(file.path(workingdir, output_model))

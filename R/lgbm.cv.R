@@ -243,7 +243,7 @@ lgbm.cv <- function(
       } else {
         # It's the case of a vector of integers passed, so check length
         if (!(length(folds) == length(y_train))) {
-          cat("Folds are not matching the training data. (Folds=", length(folds), " vs Train=", length(y_train), ")\n", sep = "")
+          cat("Folds are not matching the training data. (Folds=", length(folds), " vs Train=", length(y_train), ")  \n", sep = "")
           return("Bad fold length!")
         } else {
           # Parse folds appropriately

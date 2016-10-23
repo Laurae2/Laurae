@@ -70,12 +70,12 @@ lgbm.predict <- function(
   if (!files_exist){
     if (exists("fwrite") & is.data.table(x_pred)) {
       # Uses the super fast CSV writer
-      if (verbose) cat('Saving test data (data.table) file to: ', file.path(workingdir, data_name), "\n", sep = "")
+      if (verbose) cat('Saving test data (data.table) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
       my_data <- x_pred
       fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
     } else {
       # Fallback if no fwrite
-      if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "\n", sep = "")
+      if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
       write.table(x_pred, file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
     }
   }
