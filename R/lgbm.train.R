@@ -283,13 +283,13 @@ lgbm.train <- function(
       my_data <- x_train
       my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
-      fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet, quote = FALSE)
+      fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet, quote = FALSE)
       if (!is.na(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
-          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
+          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         } else {
-          fwrite(data.frame(V1 = bias_train), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
+          fwrite(data.frame(V1 = bias_train), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         }
       }
     } else {
@@ -312,7 +312,7 @@ lgbm.train <- function(
         my_data <- x_val
         my_data$datatable_target <- y_val
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
-        fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
+        fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
       } else {
         # Fallback if no fwrite
         cat('Saving validation data (slow) file to: ', file.path(workingdir, val_name), "\n", sep = "")
