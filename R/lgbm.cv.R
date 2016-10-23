@@ -258,6 +258,10 @@ lgbm.cv <- function(
       }
       
     }
+  } else {
+    
+    folds_list <- folds
+    
   }
   gc(verbose = FALSE)
   
