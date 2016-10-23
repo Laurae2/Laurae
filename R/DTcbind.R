@@ -34,7 +34,7 @@
 #' 
 #' @export
 
-DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = FALSE) {
+DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
   
   cols <- colnames(dt2)
   alloc.col(dt1, length(colnames(dt1)) + length(cols))

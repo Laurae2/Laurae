@@ -26,7 +26,7 @@
 #' 
 #' @export
 
-DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, silent = FALSE) {
+DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, silent = TRUE) {
   
   if (remove == TRUE) {
     kept <- (1:nrow(DT))[-kept]
