@@ -60,7 +60,7 @@ lgbm.predict <- function(
   # Export model if necessary
   if (length(model) > 1) {
     if (exists("fwrite")) {
-      fwrite(as.data.table(model[["Model"]]), file.path(workingdir, input_model), col.names = FALSE, quote = FALSE)
+      fwrite(as.data.table(model[["Model"]]), file.path(workingdir, input_model), col.names = FALSE, quote = FALSE, verbose = verbose)
     } else {
       write.table(model[["Model"]], file.path(workingdir, input_model), col.names = FALSE, quote = FALSE, row.names = FALSE)
     }
@@ -76,7 +76,7 @@ lgbm.predict <- function(
         my_data[, datatable_target := y_pred]
       }
       setcolorder(my_data, c("datatable_target", colnames(x_pred)))
-      fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan")
+      fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
     } else {
       # Fallback if no fwrite
       if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "\n", sep = "")

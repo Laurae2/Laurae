@@ -4,12 +4,15 @@
 \alias{DTsubsample}
 \title{data.table subsampling (nearly without) copy}
 \usage{
-DTsubsample(DT, kept, low_mem = FALSE, collect = 0, silent = FALSE)
+DTsubsample(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0,
+  silent = FALSE)
 }
 \arguments{
 \item{DT}{Type: data.table. The data.table to combine on.}
 
 \item{kept}{Type: vector of integers. The rows to select for subsampling.}
+
+\item{remove}{Type: boolean. Whether the argument \code{kept} acts as a removal (keep all rows which are not in \code{kept}). Defaults to \code{FALSE}.}
 
 \item{low_mem}{Type: boolean. Unallows DT (up to) twice in memory by deleting \code{DT} (WARNING: empties your \code{DT}) to save memory when set to \code{TRUE}. Setting it to \code{FALSE} allow \code{DT} to reside (up to) twice in memory, therefore memory usage increases. Defaults to \code{FALSE}.}
 
@@ -21,7 +24,7 @@ DTsubsample(DT, kept, low_mem = FALSE, collect = 0, silent = FALSE)
 The subsampled data.table.
 }
 \description{
-This function attempts to subsample one data.table without making copies. Compared to direct subsamplingh, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
+This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
 }
 \details{
 Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.

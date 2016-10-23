@@ -1,11 +1,12 @@
 #' data.table subsampling (nearly without) copy
 #'
-#' This function attempts to subsample one data.table without making copies. Compared to direct subsamplingh, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
+#' This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
 #' 
 #' Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.
 #' 
 #' @param DT Type: data.table. The data.table to combine on.
 #' @param kept Type: vector of integers. The rows to select for subsampling.
+#' @param remove Type: boolean. Whether the argument \code{kept} acts as a removal (keep all rows which are not in \code{kept}). Defaults to \code{FALSE}.
 #' @param low_mem Type: boolean. Unallows DT (up to) twice in memory by deleting \code{DT} (WARNING: empties your \code{DT}) to save memory when set to \code{TRUE}. Setting it to \code{FALSE} allow \code{DT} to reside (up to) twice in memory, therefore memory usage increases. Defaults to \code{FALSE}.
 #' @param collect Type: integer. Forces a garbage collect every \code{collect} iterations to clear up memory. Setting this to \code{1} along with \code{low_mem} = \code{TRUE} leads to the lowest possible memory usage one can ever get to merge two data.tables. It also prints verbose information about the process everytime it garbage collects. Setting this to \code{0} leads to no garbage collect. Lower values increases the time required to subsample the data.table. Defauls to \code{0}.
 #' @param silent Type: boolean. Force silence during garbage collection iterations at no speed cost. Defaults to \code{TRUE}.
@@ -25,7 +26,11 @@
 #' 
 #' @export
 
-DTsubsample <- function(DT, kept, low_mem = FALSE, collect = 0, silent = FALSE) {
+DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, silent = FALSE) {
+  
+  if (remove == TRUE) {
+    kept <- (1:nrow(DT))[-kept]
+  }
   
   cols <- colnames(DT)
   DT_sub = data.table(V1 = DT[[cols[1]]][kept])
