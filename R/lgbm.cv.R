@@ -296,7 +296,9 @@ lgbm.cv <- function(
   for (i in 1:length(folds_list)) {
     
     fold_shortcut <- sprintf(paste("%0", floor(log10(length(folds_list)) + 1), "d", sep = ""), i)
-    if (!full_quiet) cat('  \n  \n**************  \n', paste('Fold no: ', fold_shortcut), ' / ', length(folds_list), '  \n**************  \n', sep = "")
+    if (!full_quiet) {
+      cat(paste0('  \n  \n**************  \n', paste('Fold no: ', fold_shortcut), ' / ', length(folds_list), '  \n**************  \n'))
+    }
     
     # Create folds
     x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
