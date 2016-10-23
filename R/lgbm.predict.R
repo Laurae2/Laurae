@@ -72,22 +72,14 @@ lgbm.predict <- function(
       # Uses the super fast CSV writer
       if (verbose) cat('Saving test data (data.table) file to: ', file.path(workingdir, data_name), "\n", sep = "")
       my_data <- x_pred
-      if (length(y_pred) > 1) {
-        my_data[, datatable_target := y_pred]
-      }
-      setcolorder(my_data, c("datatable_target", colnames(x_pred)))
       fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
     } else {
       # Fallback if no fwrite
       if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "\n", sep = "")
-      if (length(y_pred) > 1) {
-        write.table(cbind(y_pred, x_pred), file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
-      } else {
-        write.table(x_pred, file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
-      }
-      gc(verbose = FALSE) # In case of memory explosion
+      write.table(x_pred, file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
     }
   }
+  gc(verbose = FALSE) # In case of memory explosion
   
   # Do the prediction stuff
   fileConn <- file(file.path(workingdir, pred_conf), "w")
