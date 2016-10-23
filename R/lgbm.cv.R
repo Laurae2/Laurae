@@ -3,8 +3,8 @@
 #' This function allows you to cross-validate a LightGBM model.
 #' It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-#' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
-#' To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
+#' The speed increase to create the train and test files can exceed 1,000x over write.table in certain cases.
+#' To store evaluation metrics throughout the training, you MUST run this function with \code{verbose = FALSE}.
 #' 
 #' The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).
 #' 
@@ -25,6 +25,7 @@
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
 #' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
+#' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"nan"} if you want to specify "missing", but it is recommended to use something else like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"nan"} if LightGBM dumps some of your features you wish to keep. Defaults to \code{"nan"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.
@@ -49,7 +50,7 @@
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
-#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
+#' @param full_quiet Type: boolean. Whether file writing is quiet or not. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
@@ -129,6 +130,7 @@ lgbm.cv <- function(
   bias_train = NA,
   x_test = NA,
   data_has_label = TRUE,
+  NA_value = "nan",
   
   # LightGBM I/O-related
   lgbm_path = 'path/to/LightGBM.exe',
@@ -307,6 +309,7 @@ lgbm.cv <- function(
       x_val = x_val,
       y_val = y_train[folds_list[[i]]],
       data_has_label = data_has_label,
+      NA_value = NA_value,
       
       # LightGBM-related
       lgbm_path = lgbm_path,

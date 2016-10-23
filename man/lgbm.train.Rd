@@ -5,14 +5,15 @@
 \title{LightGBM Model Training}
 \usage{
 lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
-  x_test = NA, data_has_label = TRUE, lgbm_path = "path/to/LightGBM.exe",
-  workingdir = getwd(), train_name = "lgbm_train.csv",
-  val_name = "lgbm_val.csv", test_name = "lgbm_test.csv",
-  init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep
-  = "")), files_exist = FALSE, save_binary = FALSE,
-  train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
-  test_conf = "lgbm_test.conf", validation = ifelse(is.na(y_val), FALSE,
-  TRUE), predictions = FALSE, output_preds = "lgbm_predict_result.txt",
+  x_test = NA, data_has_label = TRUE, NA_value = "nan",
+  lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
+  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
+  test_name = "lgbm_test.csv", init_score = ifelse(is.na(bias_train), NA,
+  paste(train_name, ".weight", sep = "")), files_exist = FALSE,
+  save_binary = FALSE, train_conf = "lgbm_train.conf",
+  pred_conf = "lgbm_pred.conf", test_conf = "lgbm_test.conf",
+  validation = ifelse(is.na(y_val), FALSE, TRUE), predictions = FALSE,
+  output_preds = "lgbm_predict_result.txt",
   test_preds = "lgbm_predict_test.txt", verbose = TRUE,
   log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
   importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
@@ -42,6 +43,8 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 \item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
 \item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
+
+\item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"nan"} if you want to specify "missing", but it is recommended to use something else like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"nan"} if LightGBM dumps some of your features you wish to keep. Defaults to \code{"nan"}.}
 
 \item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
@@ -77,7 +80,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
 
-\item{full_quiet}{Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.}
+\item{full_quiet}{Type: boolean. Whether file writing is quiet or not. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.}
 
 \item{full_console}{Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.}
 
@@ -158,8 +161,8 @@ A list with the stored trained model (\code{Model}), the path (\code{Path}) of t
 This function allows you to train a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
-To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
+The speed increase to create the train and test files can exceed 1,000x over write.table in certain cases.
+To store evaluation metrics throughout the training, you MUST run this function with \code{verbose = FALSE}.
 }
 \details{
 The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).

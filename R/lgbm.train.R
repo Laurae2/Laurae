@@ -3,8 +3,8 @@
 #' This function allows you to train a LightGBM model.
 #' It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-#' The speed increase to create the train and test files can exceed 100x over write.table in certain cases.
-#' To check evaluation metrics thoughout the training, you MUST run this function with \code{verbose = FALSE}.
+#' The speed increase to create the train and test files can exceed 1,000x over write.table in certain cases.
+#' To store evaluation metrics throughout the training, you MUST run this function with \code{verbose = FALSE}.
 #' 
 #' The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).
 #' 
@@ -25,6 +25,7 @@
 #' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
+#' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"nan"} if you want to specify "missing", but it is recommended to use something else like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"nan"} if LightGBM dumps some of your features you wish to keep. Defaults to \code{"nan"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
@@ -42,7 +43,7 @@
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
-#' @param full_quiet Type: boolean. Whether diverted logging (not the metric logging) should append or not (not delete or delete old). Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
+#' @param full_quiet Type: boolean. Whether file writing is quiet or not. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
@@ -118,6 +119,7 @@ lgbm.train <- function(
   x_val = NA,
   x_test = NA,
   data_has_label = TRUE,
+  NA_value = "nan",
   
   # LightGBM-related
   lgbm_path = 'path/to/LightGBM.exe',
@@ -206,7 +208,7 @@ lgbm.train <- function(
   gc(verbose = FALSE)
   
   if (!verbose) {
-    sink(file = file.path(workingdir, "diverted_verbose.txt"), append = full_quiet, split = as.logical(verbose))
+    sink(file = file.path(workingdir, "diverted_verbose.txt"), append = FALSE, split = FALSE)
   }
   
   # Attempts to speed up - Disabled temporarily
@@ -281,26 +283,26 @@ lgbm.train <- function(
       my_data <- x_train
       my_data$datatable_target <- y_train
       setcolorder(my_data, c("datatable_target", colnames(x_train)))
-      fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
+      fwrite(my_data, file.path = file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet, quote = FALSE)
       if (!is.na(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
-          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
+          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
         } else {
-          fwrite(data.frame(V1 = bias_train), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
+          fwrite(data.frame(V1 = bias_train), file.path = file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
         }
       }
     } else {
       # Fallback if no fwrite
       cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "\n", sep = "")
-      write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+      write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
       gc(verbose = FALSE) # In case of memory explosion
       if (!is.na(init_score)) {
         cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "\n", sep = "")
         if (length(bias_train) == 1) {
-          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
         } else {
-          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
         }
       }
     }
@@ -310,11 +312,11 @@ lgbm.train <- function(
         my_data <- x_val
         my_data$datatable_target <- y_val
         setcolorder(my_data, c("datatable_target", colnames(x_val)))
-        fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
+        fwrite(my_data, file.path = file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = full_quiet)
       } else {
         # Fallback if no fwrite
         cat('Saving validation data (slow) file to: ', file.path(workingdir, val_name), "\n", sep = "")
-        write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
+        write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
         gc(verbose = FALSE) # In case of memory explosion
       }
     }
