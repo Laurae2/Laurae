@@ -9,6 +9,14 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
+Running in a Virtual Machine? Use the following alternative:
+
+```
+library(devtools)
+install_git("git://github.com/Laurae2/Laurae.git")
+
+```
+
 # Laurae
 Advanced Toolbox for Data Science for R by Laurae
 
@@ -283,4 +291,11 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
-Getting a package error while running install_github? Make sure you have the package outlined in the error, which is required by devtools.
+Running in a Virtual Machine? Use the following alternative:
+
+```
+library(devtools)
+install_git("git://github.com/Laurae2/Laurae.git")
+```
+
+Getting a package error while running install_github/install_git which is not "could not connect to server"? Make sure you have the package outlined in the error, which is required by devtools.
