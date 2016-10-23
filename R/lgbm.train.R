@@ -322,6 +322,8 @@ lgbm.train <- function(
     }
   }
   
+  cat("Starting to work on model as of ", format(Sys.time(), "%a %b %d %Y %X"), "  \n", sep = "")
+  
   gc(verbose = FALSE)
   if (verbose) {
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose, invisible = !full_console)
@@ -400,6 +402,8 @@ lgbm.train <- function(
     output[["FeatureImp"]] <- lgbm.fi(model = output, feature_names = output[["Columns"]], ntreelimit = 0)
     gc(verbose = FALSE)
   }
+  
+  cat("Ended to work on model as of ", format(Sys.time(), "%a %b %d %Y %X"), "  \n", sep = "")
   
   return(output)
   

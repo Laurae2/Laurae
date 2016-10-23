@@ -297,7 +297,7 @@ lgbm.cv <- function(
     
     fold_shortcut <- sprintf(paste("%0", floor(log10(length(folds_list)) + 1), "d", sep = ""), i)
     if (!full_quiet) {
-      cat(paste0('  \n  \n**************  \n', paste('Fold no: ', fold_shortcut), ' / ', length(folds_list), '  \n**************  \n'))
+      cat(paste0('  \n  \n***************  \n', paste('Fold no: ', fold_shortcut), ' / ', length(folds_list), '  \n***************  \n'))
     }
     
     # Create folds
