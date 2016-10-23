@@ -274,7 +274,7 @@ lgbm.cv <- function(
     if (length(x_test) > 1) {
       if (separate_tests) {
         tests <- list()
-        tests[[1]] <- length(x_test)
+        tests[[1]] <- numeric(length(x_test))
         tests[[2]] <- list()
       } else {
         tests <- length(x_test)
