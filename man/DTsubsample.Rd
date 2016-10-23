@@ -5,7 +5,7 @@
 \title{data.table subsampling (nearly without) copy}
 \usage{
 DTsubsample(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0,
-  silent = FALSE)
+  silent = TRUE)
 }
 \arguments{
 \item{DT}{Type: data.table. The data.table to combine on.}
@@ -24,7 +24,7 @@ DTsubsample(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0,
 The subsampled data.table.
 }
 \description{
-This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
+This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 1.1X memory efficiency. In most cases, you get a NEGATIVE memory efficiency even with frequent garbage collects. Use this only if you are working with super large datasets that fills up your RAM.
 }
 \details{
 Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.

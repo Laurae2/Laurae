@@ -4,7 +4,7 @@
 \alias{DTcbind}
 \title{data.table column binding (nearly without) copy}
 \usage{
-DTcbind(dt1, dt2, low_mem = FALSE, collect = 0, silent = FALSE)
+DTcbind(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE)
 }
 \arguments{
 \item{dt1}{Type: data.table. The data.table to combine on.}
@@ -24,7 +24,7 @@ Nothing (the merged data.table is in \code{dt1} itself)
 This function attempts to cbind two data.tables without making copies. Compared to cbind, this can result to up to 3X memory efficiency. By default, a 2X memory efficiency is minimal with frequent garbage collects.
 }
 \details{
-Warning: \code{dt1} and \code{dt2} are pointers only even if you pass the objects to this function. This is how memory efficiency is achieved.
+Warning: \code{dt1} and \code{dt2} are pointers only even if you pass the objects to this function. This is how memory efficiency is achieved. \code{dt1} gets overwritten on the fly.
 }
 \examples{
 #library(data.table)

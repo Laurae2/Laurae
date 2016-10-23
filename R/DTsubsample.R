@@ -1,6 +1,6 @@
 #' data.table subsampling (nearly without) copy
 #'
-#' This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 2X memory efficiency. By default, a 1.5X memory efficiency is minimal with frequent garbage collects.
+#' This function attempts to subsample one data.table without making copies. Compared to direct subsampling, this can result to up to 1.1X memory efficiency. In most cases, you get a NEGATIVE memory efficiency even with frequent garbage collects. Use this only if you are working with super large datasets that fills up your RAM.
 #' 
 #' Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.
 #' 
