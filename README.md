@@ -199,7 +199,7 @@ xgb.train(list(objective="binary:logitraw"), xgb.DMatrix(data=z,label=t), nround
 
 This applies to **Windows only**. Linux users can just compile "out of the box" LightGBM with the gcc tool chain
 
-LightGBM use Visual Studio (2013 or higher) to build in Windows. If you do not have Visual Studio, follow this: download Visual Studio 2015 Community. It is free. When installing Visual Studio Community, use the default installation method. Otherwise, you might have random errors on the UI if you try a minimal installation. Prepare at least 8GB of free drive space.
+LightGBM use Visual Studio (2013 or higher) to build in Windows. If you do not have Visual Studio, follow this: download Visual Studio 2015 Community. It is free. When installing Visual Studio Community, use the default installation method. Otherwise, you might have random errors on the UI if you try a minimal installation. Prepare at least 8GB of free drive space. Install it with the Visual C++ additions (custom install, select the first box which has 3 subboxes - it should say you will install the Windows SDK blablabla - ignore the update failure error at the end).
 
 Once you are done installing Visual Studio 2015 Community, reboot your computer.
 
@@ -222,7 +222,7 @@ Now the steps:
 
 If you get an error while building (Windows SDK version blabla), then you will need the correct SDK for your OS. Start Visual Studio from scratch, click "New Project", select "Visual C++" and click "Install Visual C++ 2015 Tools for Windows Desktop". Then, attempt to build LightGBM.
 
-If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash. If it still does not compile in Visual Studio, try adjusting the PATH to include the appropriate Windows SDK path. Restart Visual Studio and try compiling again.
+If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash. If it still does not compile in Visual Studio, try adjusting the PATH to include the appropriate Windows SDK path. Restart Visual Studio and try compiling again. Another way: uninstall Visual Studio (using the installer), reboot, and reinstall using Custom install (and select all Visual C++ things, it must be the first box with 3 subboxes to check - which will tell you it will install the SDK etc.). Then, you should be able to compile it perfectly.
 
 Once you compiled it (and after you installed everything else you need, like the Laurae package), create a folder named "test" in "C:/" (or any appropriate folder you have), and try to run the following in R (you will get two prompts: the first for the "temporary" directory you created, and the second for the LightGBM executable to select):
 
