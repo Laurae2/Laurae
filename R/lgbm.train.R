@@ -41,9 +41,9 @@
 #' @param predictions Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.
 #' @param output_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Original name is \code{output_result}.
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
-#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the default printing is diverted to \code{'diverted_verbose.txt'} and the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
+#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
 #' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
-#' @param full_quiet Type: boolean. Whether file writing is quiet or not. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
+#' @param full_quiet Type: boolean. Whether file writing is quiet or not. When set to \code{TRUE}, the default printing is diverted to \code{'diverted_verbose.txt'}. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
 #' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
@@ -207,7 +207,7 @@ lgbm.train <- function(
   
   gc(verbose = FALSE)
   
-  if (!verbose) {
+  if (full_quiet) {
     sink(file = file.path(workingdir, "diverted_verbose.txt"), append = FALSE, split = FALSE)
   }
   
@@ -339,7 +339,7 @@ lgbm.train <- function(
   output[["Valid"]] <- ifelse(length(x_val) == 1, NA, val_name)
   output[["Test"]] <- ifelse(length(x_test) == 1, NA, test_name)
   
-  if (!verbose) {
+  if (full_quiet) {
     sink()
   }
   
