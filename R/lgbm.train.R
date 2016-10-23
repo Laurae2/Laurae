@@ -25,7 +25,7 @@
 #' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
 #' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
-#' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"nan"} if you want to specify "missing", but it is recommended to use something else like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"nan"} if LightGBM dumps some of your features you wish to keep. Defaults to \code{"nan"}.
+#' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{'lgbm_train.csv'}.
@@ -119,7 +119,7 @@ lgbm.train <- function(
   x_val = NA,
   x_test = NA,
   data_has_label = TRUE,
-  NA_value = "nan",
+  NA_value = "na",
   
   # LightGBM-related
   lgbm_path = 'path/to/LightGBM.exe',

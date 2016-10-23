@@ -5,7 +5,7 @@
 \title{LightGBM Model Training}
 \usage{
 lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
-  x_test = NA, data_has_label = TRUE, NA_value = "nan",
+  x_test = NA, data_has_label = TRUE, NA_value = "na",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
   test_name = "lgbm_test.csv", init_score = ifelse(is.na(bias_train), NA,
@@ -44,7 +44,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
-\item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"nan"} if you want to specify "missing", but it is recommended to use something else like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"nan"} if LightGBM dumps some of your features you wish to keep. Defaults to \code{"nan"}.}
+\item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.}
 
 \item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.}
 
