@@ -35,15 +35,15 @@ setDT(df2)
 df1[is.na(df1)] <- 1
 gc()
 df2[is.na(df2)] <- 2
+colnames(df1) <- paste("x", colnames(df1), sep = "")
 gc() # look memory usage
 # open a task manager to check current RAM usage
-DTcbind(df1, df2, low_mem = TRUE, collect = 10, silent = FALSE)
+df1 <- DTcbind(df1, df2, low_mem = TRUE, collect = 20, silent = FALSE)
 # check RAM usage in a task manager: it is identical to what we had previously!
 gc() # gives no gain
 df3 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 setDT(df3)
 # look on task manager the current RAM usage
-# if you are a hero with enough RAM (3GB+ recommended), uncomment the line below and run it
 #df1 <- cbind(df1, df3) # RAM usage explodes!
 
 }

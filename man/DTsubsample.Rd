@@ -37,8 +37,8 @@ DT[is.na(DT)] <- 1
 colnames(DT) <- paste(colnames(DT), "xx", sep = "")
 kept <- 1:4000000
 DT_sub <- DTsubsample(DT, sample(5e6, 4e6, FALSE), collect = 5, silent = TRUE)
-# if you are a hero with enough RAM (2GB+ recommended), uncomment the line below and run it
-# DT_sub <- DT[sample(5e6, 4e6, FALSE), ]
+#DT_sub <- DT[sample(5e6, 4e6, FALSE), ] #works good
+DT_sub <- DTsubsample(DT, sample(4e6, 3e6, FALSE), low_mem = TRUE, collect = 5, silent = TRUE)
 
 }
 

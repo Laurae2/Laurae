@@ -27,8 +27,8 @@ Warning: \code{DT} is a pointer only even if you pass the object to this functio
 DT <- data.frame(matrix(nrow = 50, ncol = 10))
 DT <- setDT(DT)
 colnames(DT) <- paste(colnames(DT), "xx", sep = "")
-DTcolsample(DT, kept = 1:8, remove = FALSE)
-DTcolsample(DT, kept = 1:6, remove = TRUE)
+DT <- DTcolsample(DT, kept = 1:8, remove = FALSE)
+DT <- DTcolsample(DT, kept = 1:6, remove = TRUE)
 
 }
 

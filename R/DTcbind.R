@@ -21,22 +21,22 @@
 #' df1[is.na(df1)] <- 1
 #' gc()
 #' df2[is.na(df2)] <- 2
+#' colnames(df1) <- paste("x", colnames(df1), sep = "")
 #' gc() # look memory usage
 #' # open a task manager to check current RAM usage
-#' DTcbind(df1, df2, low_mem = TRUE, collect = 10, silent = FALSE)
+#' df1 <- DTcbind(df1, df2, low_mem = TRUE, collect = 20, silent = FALSE)
 #' # check RAM usage in a task manager: it is identical to what we had previously!
 #' gc() # gives no gain
 #' df3 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' setDT(df3)
 #' # look on task manager the current RAM usage
-#' # if you are a hero with enough RAM (3GB+ recommended), uncomment the line below and run it
 #' #df1 <- cbind(df1, df3) # RAM usage explodes!
 #' 
 #' @export
 
 DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
   
-  cols <- colnames(dt2)
+  cols <- copy(colnames(dt2))
   alloc.col(dt1, length(colnames(dt1)) + length(cols))
   
   if (collect == 0) {
@@ -45,14 +45,14 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
     if (low_mem == TRUE) {
       # delete old
       for (i in cols) {
-        set(dt1, j = i, value = dt2[[i]])
-        dt2[[i]] <- NULL
+        dt1[, (i) := dt2[[i]]]
+        dt2[, (i) := NULL]
       }
       
     } else {
       # not fast
       for (i in cols) {
-        set(dt1, j = i, value = dt2[[i]])
+        dt1[, (i) := dt2[[i]]]
       }
       
     }
@@ -60,22 +60,26 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
   } else {
     # Do garbage collect
     
+    j <- 0
+    
     if (silent == FALSE) {
       # not silent
       
       if (low_mem == TRUE) {
         # delete old
         for (i in cols) {
-          set(dt1, j = i, value = dt2[[i]])
-          dt2[[i]] <- NULL
-          if (!(which(i == cols) %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", which(i == cols), ".", sep = "")}
+          j <- j + 1
+          dt1[, (i) := dt2[[i]]]
+          dt2[, (i) := NULL]
+          if (!(j %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", j, ".", sep = "")}
         }
         
       } else {
         # not fast
         for (i in cols) {
-          set(dt1, j = i, value = dt2[[i]])
-          if (!(which(i == cols) %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", which(i == cols), ".", sep = "")}
+          j <- j + 1
+          dt1[, (i) := dt2[[i]]]
+          if (!(j %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", j, ".", sep = "")}
         }
         
       }
@@ -85,21 +89,26 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
       if (low_mem == TRUE) {
         # delete old
         for (i in cols) {
-          set(dt1, j = i, value = dt2[[i]])
-          dt2[[i]] <- NULL
-          if (!(which(i == cols) %% collect)) {gc(verbose = FALSE)}
+          j <- j + 1
+          dt1[, (i) := dt2[[i]]]
+          dt2[, (i) := NULL]
+          if (!(j %% collect)) {gc(verbose = FALSE)}
         }
         
       } else {
         # not fast
         for (i in cols) {
-          set(dt1, j = i, value = dt2[[i]])
-          if (!(which(i == cols) %% collect)) {gc(verbose = FALSE)}
+          j <- j + 1
+          dt1[, (i) := dt2[[i]]]
+          if (!(j %% collect)) {gc(verbose = FALSE)}
         }
         
       }
       
     }
+    
   }
+  
+  return(dt1)
   
 }

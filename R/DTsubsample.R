@@ -21,8 +21,8 @@
 #' colnames(DT) <- paste(colnames(DT), "xx", sep = "")
 #' kept <- 1:4000000
 #' DT_sub <- DTsubsample(DT, sample(5e6, 4e6, FALSE), collect = 5, silent = TRUE)
-#' # if you are a hero with enough RAM (2GB+ recommended), uncomment the line below and run it
-#' # DT_sub <- DT[sample(5e6, 4e6, FALSE), ]
+#' #DT_sub <- DT[sample(5e6, 4e6, FALSE), ] #works good
+#' DT_sub <- DTsubsample(DT, sample(4e6, 3e6, FALSE), low_mem = TRUE, collect = 5, silent = TRUE)
 #' 
 #' @export
 
@@ -40,7 +40,7 @@ DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, 
   alloc.col(DT_sub, length(cols))
   
   if (low_mem == TRUE) {
-    DT[[i]] <- NULL
+    DT[[cols[1]]] <- NULL
   }
   
   if (collect == 0) {
@@ -48,7 +48,7 @@ DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, 
     
     if (low_mem == TRUE) {
       # delete old
-      for (i in cols) {
+      for (i in cols[2:length(cols)]) {
         set(DT_sub, j = i, value = DT[[i]][kept])
         DT[[i]] <- NULL
       }
@@ -69,7 +69,7 @@ DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, 
       
       if (low_mem == TRUE) {
         # delete old
-        for (i in cols) {
+        for (i in cols[2:length(cols)]) {
           set(DT_sub, j = i, value = DT[[i]][kept])
           DT[[i]] <- NULL
           if (!((which(i == cols) - 1) %% collect)) {gc(verbose = FALSE); cat("\rIteration: ", which(i == cols), ".", sep = "")}
@@ -88,7 +88,7 @@ DTsubsample <- function(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0, 
       
       if (low_mem == TRUE) {
         # delete old
-        for (i in cols) {
+        for (i in cols[2:length(cols)]) {
           set(DT_sub, j = i, value = DT[[i]][kept])
           DT[[i]] <- NULL
           if (!((which(i == cols) - 1) %% collect)) {gc(verbose = FALSE)}
