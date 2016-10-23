@@ -211,12 +211,7 @@ Now the steps:
 * Compile the solution by pressing Ctrl+Shift+B (or click Build > Build Solution).
 * Should everything be correct, you now have LightGBM compiled under C:\xgboost\LightGBM\windows\x64\Release
 
-If you get an error while building (Windows SDK version blabla), then you will need the correct SDK for your OS.
-
-* Windows 8.1: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk
-* Windows 10: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk
-
-Install the SDK and run again the build in Visual Studio.
+If you get an error while building (Windows SDK version blabla), then you will need the correct SDK for your OS. Start Visual Studio from scratch, click "New Project", select "Visual C++" and click "Install Visual C++ 2015 Tools for Windows Desktop". Then, attempt to build LightGBM.
 
 If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash.
 
