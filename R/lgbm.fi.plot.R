@@ -61,14 +61,14 @@ lgbm.fi.plot <- function(model, n_best = 50, no_log = TRUE, low = "white", high 
   if (is.cv & multipresence) {
     # CV + multipresence
     
-    plotted <- ggplot(data = as.data.frame(my_model[, c("Feature", "Gain_Rel_Ratio", "Freq_Rel_Ratio")]), aes(x = Feature, y = Gain_Rel_Ratio, fill = Gain_Rel_Ratio)) + geom_bar(stat = "identity", position = "identity") + theme_bw() + coord_flip() + labs(title = paste("Cross-Validated Feature Importance with Multipresence (Folds=", max_freq,")", sep = ""), y = "Gain") + scale_fill_gradient(name = "Relative Gain", low = low, high = high, trans = rescaler, breaks = c(0.005, 0.01, 0.025, 0.10, 0.33), labels = c("0.5%", "1%", "2.5%", "10%", "33%"))
+    plotted <- ggplot(data = as.data.frame(my_model[, c("Feature", "Gain_Rel_Ratio")]), aes(x = Feature, y = Gain_Rel_Ratio, fill = Gain_Rel_Ratio)) + geom_bar(stat = "identity", position = "identity") + theme_bw() + coord_flip() + labs(title = paste("Cross-Validated Feature Importance with Multipresence (Folds=", max_freq,")", sep = ""), y = "Gain") + scale_x_discrete(limits = sorted_features) + scale_fill_gradient(name = "Relative Gain", low = low, high = high, trans = rescaler, breaks = c(0.005, 0.01, 0.025, 0.10, 0.33), labels = c("0.5%", "1%", "2.5%", "10%", "33%"))
     
   } else {
     
     if (is.cv) {
       # CV alone
       
-      plotted <- ggplot(data = as.data.frame(my_model[, c("Feature", "Gain_Rel_Ratio", "Freq_Rel_Ratio")]), aes(x = Feature, y = Gain_Rel_Ratio, fill = Gain_Rel_Ratio, alpha = Freq_Rel_Ratio)) + geom_bar(stat = "identity", position = "identity") + theme_bw() + coord_flip() + labs(title = "Cross-Validated Feature Importance", y = "Gain") + scale_fill_gradient(name = "Relative Gain", low = low, high = high, trans = rescaler, breaks = c(0.005, 0.01, 0.025, 0.10, 0.33), labels = c("0.5%", "1%", "2.5%", "10%", "33%")) + scale_alpha_continuous(name = "Fold Presence", limits = c(0, 1))
+      plotted <- ggplot(data = as.data.frame(my_model[, c("Feature", "Gain_Rel_Ratio", "Freq_Rel_Ratio")]), aes(x = Feature, y = Gain_Rel_Ratio, fill = Gain_Rel_Ratio, alpha = Freq_Rel_Ratio)) + geom_bar(stat = "identity", position = "identity") + theme_bw() + coord_flip() + labs(title = "Cross-Validated Feature Importance", y = "Gain") + scale_x_discrete(limits = sorted_features) + scale_fill_gradient(name = "Relative Gain", low = low, high = high, trans = rescaler, breaks = c(0.005, 0.01, 0.025, 0.10, 0.33), labels = c("0.5%", "1%", "2.5%", "10%", "33%")) + scale_alpha_continuous(name = "Fold Presence", limits = c(0, 1))
       
     } else {
       # no CV
