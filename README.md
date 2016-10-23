@@ -28,7 +28,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF, DTfillNA |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
 | Matrix | No | read_sparse_csv |
@@ -65,7 +65,7 @@ Write in your R console `sink()` until you get an error.
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Visualizations | tableplots: tableplot_jpg |
-| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample <br> CSV sparse: read_sparse_csv |
+| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
 | --- | --- | --- |
@@ -85,7 +85,8 @@ Write in your R console `sink()` until you get an error.
 | lgbm.find | LightGBM Path Helper | Helps you usign a GUI to find and write the correct path for input to LightGBM functions. |
 | setDF | Low memory DT coercion to DF | (Already available in data.table) Coerces a data.table to data.frame using the least possible memory. Actually, it uses about 0 extra memory. |
 | DTcbind | Low memory DT cbind | Column bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to cbind, this reduce peak memory usage by 3X, and sometimes by more. |
-| DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. With extreme settings, it uses only the original data.table + 2 rows of memory. Compared to direct subsampling, this reduce peak memory usage by 2X, and sometimes by more. |
+| DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. It should not do lower memory usage than direct subsampling. Sometimes, you can get a slight efficiency of up to 5%. |
+| DTfillNA | Low memory DT Missing Value filling | Fills the missing values of a data.table using the least possible memory. Compared to direct usages (DT[is.na(DT)] <- value), this function consumes up to 3X less (and typically 2X less). You can even create a new data.table or overwrite the original one. Also, this function works on data.frame, and can even overwrite the original data.frame. |
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
 
