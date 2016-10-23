@@ -213,7 +213,40 @@ Now the steps:
 
 If you get an error while building (Windows SDK version blabla), then you will need the correct SDK for your OS. Start Visual Studio from scratch, click "New Project", select "Visual C++" and click "Install Visual C++ 2015 Tools for Windows Desktop". Then, attempt to build LightGBM.
 
-If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash.
+If Visual Studio fails to load the "project", delete LightGBM folder and clone LightGBM repository again in Git Bash. If it still does not compile in Visual Studio, try adjusting the PATH to include the appropriate Windows SDK path. Restart Visual Studio and try compiling again.
+
+Once you compiled it (and after you installed everything else you need, like the Laurae package), create a folder named "test" in "C:/" (or any appropriate folder you have), and try to run the following in R (you will get two prompts: the first for the "temporary" directory you created, and the second for the LightGBM executable to select):
+
+```
+setwd(choosedir(caption = "Select the temporary folder"))
+library(Laurae)
+library(stringi)
+
+DT <- data.table(Split1 = c(rep(0, 50), rep(1, 50)), Split2 = rep(c(rep(0, 25), rep(0.5, 25)), 2))
+DT$Split5 <- rep(c(rep(0, 5), rep(0.05, 5), rep(0, 10), rep(0.05, 5)), 4)
+label <- as.numeric((DT$Split2 == 0) & (DT$Split1 == 0) & (DT$Split3 == 0) & (DT$Split4 == 0) | ((DT$Split2 == 0.5) & (DT$Split1 == 1) & (DT$Split3 == 0.25) & (DT$Split4 == 0.1) & (DT$Split5 == 0)) | ((DT$Split1 == 0) & (DT$Split2 == 0.5)))
+
+trained <- lgbm.train(y_train = label,
+                      x_train = DT,
+                      bias_train = NA,
+                      application = "binary",
+                      num_iterations = 1,
+                      early_stopping_rounds = 1,
+                      learning_rate = 1,
+                      num_leaves = 16,
+                      min_data_in_leaf = 1,
+                      min_sum_hessian_in_leaf = 1,
+                      tree_learner = "serial",
+                      num_threads = 1,
+                      lgbm_path = lgbm.find(),
+                      workingdir = getwd(),
+                      validation = FALSE,
+                      files_exist = FALSE,
+                      verbose = TRUE,
+                      is_training_metric = TRUE,
+                      save_binary = TRUE,
+                      metric = "binary_logloss")
+```
 
 ## data.table
 
