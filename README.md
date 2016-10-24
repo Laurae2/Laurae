@@ -26,7 +26,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| LightGBM | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
+| LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF, DTfillNA |
 | outliers | No | rule_single, rule_double |
@@ -39,9 +39,11 @@ If I am not missing stuff (please make a pull request if something is missing th
 | ggplot2 | No | lgbm.fi.plot |
 | None so far | No | kfold, nkfold, lgbm.find |
 
+LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722ca7ef1139c946fb608bf
+
 # Installing dependencies?
 
-* For LightGBM, please use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository (as of 10/20/2016, it has now a correct early_stopping implementation)
+* For LightGBM, please use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository (as of 10/20/2016, it has now a correct early_stopping implementation). Then follow the installation steps (https://github.com/Microsoft/LightGBM/wiki/Installation-Guide). Stable version which is aligned with Laurae package uses `git clone --recursive https://github.com/Laurae2/LightGBM`
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
 * data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
@@ -203,12 +205,14 @@ LightGBM use Visual Studio (2013 or higher) to build in Windows. If you do not h
 
 Once you are done installing Visual Studio 2015 Community, reboot your computer.
 
-Now, or if you skipped the installation step, clone LightGBM repository by doing in Git Bash:
+Now, or if you skipped the installation step, clone the latest LightGBM repository by doing in Git Bash:
 
 ```
 cd C:/xgboost
 git clone --recursive https://github.com/Microsoft/LightGBM
 ```
+
+If you want the stable version aligned to Laurae package, use `git clone --recursive https://github.com/Laurae2/LightGBM` instead.
 
 Now the steps:
 
