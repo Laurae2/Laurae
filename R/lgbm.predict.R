@@ -11,7 +11,8 @@
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{ifelse(is.list(model), model[["File"]], getwd())}, which means "take the model LightGBM path if provided the model list, else take the default working directory".
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".
 #' @param input_model Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".
-#' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}
+#' @param pred_conf Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.
+#' @param predict_leaf_index Type: boolean. Should LightGBM predict leaf indexes instead of pure predictions? Defaults to \code{FALSE}.
 #' @param verbose Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.
 #' @param data_name Type: character. The file output name for the vaildation file. Defaults to \code{ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]], 'lgbm_test.csv')}, which means "take the validation file name if provided the model list and x_pred is left as is, else take "lgbm_test.csv". Original name is \code{val_name}.
 #' @param files_exist Type: boolean. Whether to NOT create CSV files for the prediction data, if already created. Defaults to \code{TRUE}.
@@ -39,6 +40,7 @@ lgbm.predict <- function(
   # Model files
   input_model = ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt'),
   pred_conf = 'lgbm_pred.conf',
+  predict_leaf_index = FALSE,
   verbose = TRUE,
   
   # Data files
@@ -88,6 +90,7 @@ lgbm.predict <- function(
   if (input_model != '') write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
   if (output_preds != '') write(paste0('output_result="', file.path(workingdir, output_preds), '"'), fileConn, append = TRUE)
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
+  write(paste0('predict_leaf_index=', tolower(as.character(predict_leaf_index))), fileConn, append = TRUE)
   close(fileConn)
   
   if (!verbose) sink()

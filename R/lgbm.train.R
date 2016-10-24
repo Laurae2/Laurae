@@ -39,6 +39,7 @@
 #' @param test_conf Type: character. The name of the testing prediction configuration file for the model. Defaults to \code{'lgbm_test.conf'}.
 #' @param validation Type: boolean. Whether LightGBM performs validation during the training, by outputting metrics for the validation data. Defaults to \code{ifelse(is.na(y_val), FALSE, TRUE)}, which means if \code{y_val} is the default value (unfilled), \code{validation} is \code{FALSE} else \code{TRUE}. Multi-validation data is not supported yet.
 #' @param predictions Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.
+#' @param predict_leaf_index Type: boolean. When \code{predictions} is \code{TRUE}, should LightGBM predict leaf indexes? Defaults to \code{FALSE}. Largely recommended to keep it \code{FALSE} unless you know what you are doing.
 #' @param output_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Original name is \code{output_result}.
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
 #' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
@@ -49,6 +50,7 @@
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
 #' @param input_model Type: character. The file name of input model. If defined, LightGBM will resume training from that file. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). Defaults to \code{NA}.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
+#' @param histogram_pool_size Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.
 #' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
@@ -141,6 +143,7 @@ lgbm.train <- function(
   # Prediction-related
   validation = ifelse(is.na(y_val), FALSE, TRUE),
   predictions = FALSE,
+  predict_leaf_index = FALSE,
   output_preds = 'lgbm_predict_result.txt',
   test_preds = 'lgbm_predict_test.txt',
   
@@ -157,6 +160,7 @@ lgbm.train <- function(
   
   # Speed and RAM parameters
   num_threads = 2,
+  histogram_pool_size = -1,
   is_sparse = TRUE,
   two_round = FALSE,
   
@@ -237,6 +241,7 @@ lgbm.train <- function(
   write(paste0('num_leaves=', num_leaves), fileConn, append = TRUE)
   write(paste0('tree_learner=', tree_learner), fileConn, append = TRUE)
   write(paste0('num_threads=', num_threads), fileConn, append = TRUE)
+  write(paste0('histogram_pool_size=', histogram_pool_size), fileConn, append = TRUE)
   write(paste0('min_data_in_leaf=', min_data_in_leaf), fileConn, append = TRUE)
   write(paste0('min_sum_hessian_in_leaf=', min_sum_hessian_in_leaf), fileConn, append = TRUE)
   write(paste0('feature_fraction=', feature_fraction), fileConn, append = TRUE)
@@ -357,6 +362,7 @@ lgbm.train <- function(
       workingdir = workingdir,
       input_model = output_model,
       pred_conf = pred_conf,
+      predict_leaf_index = predict_leaf_index,
       verbose = verbose,
       data_name = val_name,
       files_exist = TRUE,
@@ -377,6 +383,7 @@ lgbm.train <- function(
       workingdir = workingdir,
       input_model = output_model,
       pred_conf = test_conf,
+      predict_leaf_index = predict_leaf_index,
       verbose = verbose,
       data_name = test_name,
       files_exist = files_exist,

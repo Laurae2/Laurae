@@ -44,6 +44,7 @@
 #' @param fold_seed Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.
 #' @param fold_cleaning Type: integer. When using cross-validation, data must be subsampled. This parameter controls how aggressive RAM usage should be against speed. The lower this value, the more aggressive the method to keep memory usage as low as possible. Defaults to \code{50}.
 #' @param predictions Type: boolean. Whether cross-validated predictions should be returned. Defaults to \code{TRUE}.
+#' @param predict_leaf_index Type: boolean. When \code{predictions} is \code{TRUE}, should LightGBM predict leaf indexes? Defaults to \code{FALSE}. It is nearly mandatory to keep it \code{FALSE} unless you know what you are doing, as then you should use \code{separate_folds} to nto have a mix of non sense predictions.
 #' @param collect_preds Type: boolean. Whether out of fold predictions should NOT be returned fold by fold in a list. Do not set it to \code{TRUE} if you have overlapping folds, else the latest predictions might overwrite the previous written predictions. Defaults to \code{TRUE}.
 #' @param separate_tests Type: boolean. Whether testing predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.
 #' @param output_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Original name is \code{output_result}.
@@ -56,6 +57,7 @@
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
 #' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
+#' @param histogram_pool_size Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.
 #' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
@@ -159,6 +161,7 @@ lgbm.cv <- function(
   
   # Prediction-related
   predictions = TRUE,
+  predict_leaf_index = FALSE,
   collect_preds = TRUE,
   separate_tests = TRUE,
   output_preds = 'lgbm_predict.txt',
@@ -177,6 +180,7 @@ lgbm.cv <- function(
   
   # Speed and RAM parameters
   num_threads = 2,
+  histogram_pool_size = -1,
   is_sparse = TRUE,
   two_round = FALSE,
   
@@ -335,6 +339,7 @@ lgbm.cv <- function(
       # Prediction-related
       validation = validation,
       predictions = predictions,
+      predict_leaf_index = predict_leaf_index,
       output_preds = ifelse(!unicity, stri_replace_last_fixed(output_preds, ".", paste0("_", fold_shortcut, ".")), output_preds),
       
       # Analysis-related
@@ -350,6 +355,7 @@ lgbm.cv <- function(
       
       # Speed and RAM parameters
       num_threads = num_threads,
+      histogram_pool_size = histogram_pool_size,
       is_sparse = is_sparse,
       two_round = two_round,
       
@@ -413,6 +419,7 @@ lgbm.cv <- function(
           workingdir = workingdir,
           input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", fold_shortcut, ".")), output_model),
           pred_conf = ifelse(!unicity, stri_replace_last_fixed(test_conf, ".", paste0("_", fold_shortcut, ".")), test_conf),
+          predict_leaf_index = predict_leaf_index,
           verbose = verbose,
           data_name = test_name,
           files_exist = (!(i == 1) | files_exist),

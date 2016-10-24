@@ -13,16 +13,16 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
   save_binary = FALSE, train_conf = "lgbm_train.conf",
   pred_conf = "lgbm_pred.conf", test_conf = "lgbm_test.conf",
   validation = ifelse(is.na(y_val), FALSE, TRUE), predictions = FALSE,
-  output_preds = "lgbm_predict_result.txt",
+  predict_leaf_index = FALSE, output_preds = "lgbm_predict_result.txt",
   test_preds = "lgbm_predict_test.txt", verbose = TRUE,
   log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
   importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
-  num_threads = 2, is_sparse = TRUE, two_round = FALSE,
-  application = "regression", learning_rate = 0.1, num_iterations = 10,
-  early_stopping_rounds = NA, num_leaves = 127, min_data_in_leaf = 100,
-  min_sum_hessian_in_leaf = 10, max_bin = 255, feature_fraction = 1,
-  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
-  bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
+  num_threads = 2, histogram_pool_size = -1, is_sparse = TRUE,
+  two_round = FALSE, application = "regression", learning_rate = 0.1,
+  num_iterations = 10, early_stopping_rounds = NA, num_leaves = 127,
+  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10, max_bin = 255,
+  feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
+  bagging_freq = 0, bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), tree_learner = "serial",
@@ -72,6 +72,8 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{predictions}{Type: boolean. Should LightGBM compute predictions after training the model? Defaults to \code{FALSE}.}
 
+\item{predict_leaf_index}{Type: boolean. When \code{predictions} is \code{TRUE}, should LightGBM predict leaf indexes? Defaults to \code{FALSE}. Largely recommended to keep it \code{FALSE} unless you know what you are doing.}
+
 \item{output_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_result.txt'}. Original name is \code{output_result}.}
 
 \item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
@@ -91,6 +93,8 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 \item{input_model}{Type: character. The file name of input model. If defined, LightGBM will resume training from that file. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). Defaults to \code{NA}.}
 
 \item{num_threads}{Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).}
+
+\item{histogram_pool_size}{Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.}
 
 \item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.}
 

@@ -8,9 +8,9 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, data_has_label = FALSE,
   lgbm_path = ifelse(is.list(model), model[["lgbm"]], getwd()),
   workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
   input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
-  pred_conf = "lgbm_pred.conf", verbose = TRUE,
-  data_name = ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]],
-  "lgbm_test.csv"), files_exist = TRUE,
+  pred_conf = "lgbm_pred.conf", predict_leaf_index = FALSE,
+  verbose = TRUE, data_name = ifelse(is.list(model) & is.null(dim(x_pred)),
+  model[["Valid"]], "lgbm_test.csv"), files_exist = TRUE,
   output_preds = "lgbm_predict_result.txt",
   data.table = exists("data.table"))
 }
@@ -29,7 +29,9 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, data_has_label = FALSE,
 
 \item{input_model}{Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".}
 
-\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}}
+\item{pred_conf}{Type: character. The name of the pred_conf file for the model. Defaults to \code{'lgbm_pred.conf'}.}
+
+\item{predict_leaf_index}{Type: boolean. Should LightGBM predict leaf indexes instead of pure predictions? Defaults to \code{FALSE}.}
 
 \item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.}
 
