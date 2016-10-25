@@ -98,7 +98,7 @@ lgbm.predict <- function(
   
   if (!verbose) {
     # Write to text file
-    write.table(system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = TRUE), file.path(workingdir, "diverted_verbose.txt"), row.names = FALSE, col.names = FALSE)
+    write.table(system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = TRUE), file.path(workingdir, "diverted_verbose.txt"), row.names = FALSE, col.names = FALSE, quote = FALSE)
   } else {
     # Print to console
     system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = FALSE)
