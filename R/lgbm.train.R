@@ -253,7 +253,7 @@ lgbm.train <- function(
   write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   if (output_model != '') write(paste0('output_model="', file.path(workingdir, output_model), '"'), fileConn, append = TRUE)
   if (!is.na(input_model)) write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
-  write(paste0('log_file="', file.path(workingdir, log_file), '"'), fileConn, append = TRUE)
+  if (!is.na(input_model)) write(paste0('log_file="', file.path(workingdir, log_file), '"'), fileConn, append = TRUE)
   write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
   if (!is.na(init_score)) write(paste0('init_score="',file.path(workingdir, init_score),'"'), fileConn, append = TRUE)
   write(paste0('is_pre_partition=', tolower(as.character(is_pre_partition))), fileConn, append = TRUE)
