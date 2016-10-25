@@ -11,7 +11,7 @@ nkfold(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE)
 
 \item{n}{Type: integer. The amount of repeated fold computations to perform. Defaults to \code{2}.}
 
-\item{k}{Type: integer. The amount of folds to create. Causes issues if \code{length(y) < k} (e.g more folds than samples). Defaults to \code{5}.}
+\item{k}{Type: integer or vector of integers. The amount of folds to create. Causes issues if \code{length(y) < k} (e.g more folds than samples). If a vector of integers is supplied, then for each k-fold in the repeat N, k[N] is selected as the number of folds. Defaults to \code{5}.}
 
 \item{stratified}{Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.}
 
@@ -59,6 +59,10 @@ folds <- nkfold(y = data, n = 2, k = 5, stratified = FALSE)
 for (i in 1:length(folds)) {
   print(mean(data[folds[[i]]]))
 }
+
+# Stratified Repeated 3-5-10 fold Cross-Validation all in one
+data <- c(rep(0, 250), rep(1, 250), rep(2, 250))
+str(nkfold(data, n = 3, k = c(3, 5, 10)))
 
 }
 

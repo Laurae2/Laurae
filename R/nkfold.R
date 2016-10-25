@@ -4,7 +4,7 @@
 #' 
 #' @param y Type: The label vector.
 #' @param n Type: integer. The amount of repeated fold computations to perform. Defaults to \code{2}.
-#' @param k Type: integer. The amount of folds to create. Causes issues if \code{length(y) < k} (e.g more folds than samples). Defaults to \code{5}.
+#' @param k Type: integer or vector of integers. The amount of folds to create. Causes issues if \code{length(y) < k} (e.g more folds than samples). If a vector of integers is supplied, then for each k-fold in the repeat N, k[N] is selected as the number of folds. Defaults to \code{5}.
 #' @param stratified Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.
 #' @param seed Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.
 #' @param named Type: boolean. Whether the folds should be named. Defaults to \code{TRUE}.
@@ -46,20 +46,26 @@
 #'   print(mean(data[folds[[i]]]))
 #' }
 #' 
+#' # Stratified Repeated 3-5-10 fold Cross-Validation all in one
+#' data <- c(rep(0, 250), rep(1, 250), rep(2, 250))
+#' str(nkfold(data, n = 3, k = c(3, 5, 10)))
+#' 
 #' @export
 
 nkfold <- function(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE) {
   
   folds <- list()
-  for (i in 1:n) {
-    folded <- kfold(y = y, k = k, stratified = stratified, seed = ifelse(length(seed) == 1, seed + i - 1, seed[i]), named = FALSE)
-    for (j in 1:k) {
-      folds[[length(folds) + 1]] <- folded[[j]]
-    }
+  
+  if (length(k) == 1) {
+    k <- rep(k, n)
   }
   
-  if (named) {
-    names(folds) <- paste("Rep", sprintf(paste("%0", floor(log10(n) + 1), "d", sep = ""), rep(1:n, each = k)), paste("Fold", sprintf(paste("%0", floor(log10(k) + 1), "d", sep = ""), rep(1:k), n), sep = ""), sep = "")
+  for (i in 1:n) {
+    folded <- kfold(y = y, k = k[i], stratified = stratified, seed = ifelse(length(seed) == 1, seed + i - 1, seed[i]), named = FALSE)
+    for (j in 1:k[i]) {
+      folds[[length(folds) + 1]] <- folded[[j]]
+      names(folds)[length(folds)] <- paste("Rep", sprintf(paste("%0", floor(log10(n) + 1), "d", sep = ""), i), "Fold", sprintf(paste("%0", floor(log10(max(k)) + 1), "d", sep = ""), j), sep = "")
+    }
   }
   
   return(folds)

@@ -281,7 +281,7 @@ lgbm.cv <- function(
         tests[[1]] <- numeric(length(x_test))
         tests[[2]] <- list()
       } else {
-        tests <- length(x_test)
+        tests <- numeric(length(x_test))
       }
     }
   }
