@@ -15,7 +15,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
   validation = ifelse(is.na(y_val), FALSE, TRUE), predictions = FALSE,
   predict_leaf_index = FALSE, output_preds = "lgbm_predict_result.txt",
   test_preds = "lgbm_predict_test.txt", verbose = TRUE,
-  log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
+  log_file = "lgbm_log.txt", full_quiet = FALSE, get_metrics = TRUE,
   importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
   num_threads = 2, histogram_pool_size = -1, is_sparse = TRUE,
   two_round = FALSE, application = "regression", learning_rate = 0.1,
@@ -78,13 +78,13 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{test_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.}
 
-\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!}
+\item{verbose}{Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}.}
 
-\item{log_name}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
+\item{log_file}{Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.}
 
 \item{full_quiet}{Type: boolean. Whether file writing is quiet or not. When set to \code{TRUE}, the default printing is diverted to \code{'diverted_verbose.txt'}. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.}
 
-\item{full_console}{Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.}
+\item{get_metrics}{Type: boolean. Should LightGBM return a metric table? Defaults to \code{TRUE}.}
 
 \item{importance}{Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.}
 
@@ -159,14 +159,13 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
 }
 \value{
-A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the validation file name even if there were none provided (\code{Valid}), the testing file name even if there were none provided (\code{Test}), the validation predictions (\code{Validation}) if \code{Predictions} is set to \code{TRUE} with a validation set, the testing predictions (\code{Testing}) if \code{Predictions} is set to \code{TRUE} with a testing set, the name of the log file \code{Log} if \code{verbose} is set to \code{FALSE}, the log file content \code{LogContent} if \code{verbose} is set to \code{FALSE}, the metrics \code{Metrics} if \code{verbose} is set to \code{FALSE}, the best iteration (\code{Best}) if \code{verbose} is set to \code{FALSE}, the column names \code{Columns} if \code{importance} is set to \code{TRUE}, and the feature importance \code{FeatureImp} if \code{importance} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
+A list with the stored trained model (\code{Model}), the path (\code{Path}) of the trained model, the name (\code{Name}) of the trained model file, the LightGBM path (\code{lgbm}) which trained the model, the training file name (\code{Train}), the validation file name even if there were none provided (\code{Valid}), the testing file name even if there were none provided (\code{Test}), the validation predictions (\code{Validation}) if \code{Predictions} is set to \code{TRUE} with a validation set, the testing predictions (\code{Testing}) if \code{Predictions} is set to \code{TRUE} with a testing set, the name of the log file \code{Log} if \code{get_metrics} is set to \code{FALSE}, the log file content \code{LogContent} if \code{get_metrics} is set to \code{FALSE}, the metrics \code{Metrics} if \code{get_metrics} is set to \code{FALSE}, the best iteration (\code{Best}) if \code{get_metrics} is set to \code{FALSE}, the column names \code{Columns} if \code{importance} is set to \code{TRUE}, and the feature importance \code{FeatureImp} if \code{importance} is set to \code{TRUE}. Returns a character variable if LightGBM is not found under lgbm_path.
 }
 \description{
 This function allows you to train a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 The speed increase to create the train and test files can exceed 1,000x over write.table in certain cases.
-To store evaluation metrics throughout the training, you MUST run this function with \code{verbose = FALSE}.
 }
 \details{
 The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).
@@ -177,7 +176,7 @@ Once you filled these variables (and if they were appropriate), you should fill 
 
 Then, you are up to choose what you want, including hyperparameters to verbosity control.
 
-To get the metric table, you MUST use \code{verbose = FALSE}. It cannot be fetched without. \code{sink()} does not work.
+\code{sink()} does not work.
 
 If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 }

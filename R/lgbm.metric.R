@@ -43,6 +43,7 @@ lgbm.metric <- function(
   model <- gsub("LightGBM Info ", "", gsub("\\[|\\]", "", model))
   model <- gsub("LightGBM Error ", "", gsub("\\[|\\]", "", model))
   model <- gsub("LightGBM Fatel ", "", gsub("\\[|\\]", "", model))
+  model <- gsub("LightGBM Fatal ", "", gsub("\\[|\\]", "", model))
   
   if (substr(model[length(model)], 1, 5) == "Early") {
     # Capture the early stopping message
