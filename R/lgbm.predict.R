@@ -95,7 +95,11 @@ lgbm.predict <- function(
   
   if (!verbose) sink()
   
-  system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), show.output.on.console = verbose)
+  if (verbose) {
+    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = !verbose)
+  } else {
+    invisible(system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, pred_conf), '"'), stdout = file.path(workingdir, "diverted_verbose.txt")))
+  }
   
   if (data.table == TRUE) {
     return(fread(file.path(workingdir, output_preds), header = FALSE)$V1)

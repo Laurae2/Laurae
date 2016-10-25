@@ -4,6 +4,7 @@
 #' It is recommended to have your x_train and x_val sets as data.table, and to use the development data.table version.
 #' To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
 #' The speed increase to create the train and test files can exceed 1,000x over write.table in certain cases.
+#' To store evaluation metrics throughout the training, you MUST run this function with \code{verbose = FALSE}.
 #' 
 #' The most important parameters are \code{lgbm_path} and \code{workingdir}: they setup where LightGBM is and where temporary files are going to be stored. \code{lgbm_path} is the full path to LightGBM executable, and includes the executable name and file extension (like \code{C:/Laurae/LightGBM/windows/x64/Release/LightGBM.exe}). \code{workingdir} is the working directory for the temporary files for LightGBM. It creates a lot of necessary files to make LightGBM work (defined by \code{output_model, output_preds, train_conf, train_name, val_name, pred_conf}).
 #' 
@@ -15,7 +16,7 @@
 #' 
 #' Then, you are up to choose what you want, including hyperparameters to verbosity control.
 #' 
-#' \code{sink()} does not work.
+#' To get the metric tables, you MUST use \code{verbose = FALSE}. It cannot be fetched without. \code{sink()} does not work.
 #' 
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
@@ -48,10 +49,10 @@
 #' @param separate_tests Type: boolean. Whether testing predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.
 #' @param output_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Original name is \code{output_result}.
 #' @param test_preds Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict_test.txt'}.
-#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}.
-#' @param log_file Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
+#' @param verbose Type: boolean/integer. Whether to print a lot of debug messages in the console or not. 0 is FALSE and 1 is TRUE. Defaults to \code{TRUE}. When set to \code{FALSE}, the model log is output to \code{log_name} which allows to get metric information from the \code{log_name} parameter!!!
+#' @param log_name Type: character. The logging (sink) file to output (like 'log.txt'). Defaults to \code{'lgbm_log.txt'}.
 #' @param full_quiet Type: boolean. Whether file writing is quiet or not. When set to \code{TRUE}, the default printing is diverted to \code{'diverted_verbose.txt'}. Combined with \code{verbose = FALSE}, the function is fully quiet. Defaults to \code{FALSE}.
-#' @param get_metrics Type: boolean. Should LightGBM return a metric table? Defaults to \code{TRUE}.
+#' @param full_console Type: boolean. Whether a dedicated console should be visible. Defaults to \code{FALSE}.
 #' @param importance Type: boolean. Should LightGBM perform feature importance? Defaults to \code{FALSE}.
 #' @param output_model Type: character. The file name of output model. Defaults to \code{'lgbm_model.txt'}.
 #' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
@@ -110,9 +111,8 @@
 #'                       validation = TRUE,
 #'                       unicity = FALSE,
 #'                       folds = 3,
-#'                       verbose = TRUE,
-#'                       metrics = TRUE,
-#'                       log_file = "houseprice_log_cv.txt",
+#'                       verbose = FALSE,
+#'                       log_name = "houseprice_log_cv.txt",
 #'                       predictions = TRUE,
 #'                       importance = TRUE,
 #'                       num_threads = 2,
@@ -169,9 +169,9 @@ lgbm.cv <- function(
   
   # Analysis-related
   verbose = TRUE,
-  log_file = 'lgbm_log.txt',
+  log_name = 'lgbm_log.txt',
   full_quiet = FALSE,
-  get_metrics = TRUE,
+  full_console = FALSE,
   importance = FALSE,
   
   # Model storage
@@ -344,9 +344,9 @@ lgbm.cv <- function(
       
       # Analysis-related
       verbose = verbose,
-      log_file = ifelse(!unicity, stri_replace_last_fixed(log_file, ".", paste0("_", fold_shortcut, ".")), log_file),
+      log_name = ifelse(!unicity, stri_replace_last_fixed(log_name, ".", paste0("_", fold_shortcut, ".")), log_name),
       full_quiet = full_quiet,
-      get_metrics = get_metrics,
+      full_console = full_console,
       importance = importance,
       
       # Model storage
