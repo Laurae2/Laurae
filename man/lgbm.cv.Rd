@@ -12,19 +12,19 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
   paste(train_name, ".weight", sep = "")), files_exist = FALSE,
   save_binary = FALSE, train_conf = "lgbm_train.conf",
   pred_conf = "lgbm_pred.conf", test_conf = "lgbm_test.conf",
-  validation = TRUE, unicity = FALSE, folds = 5, stratified = TRUE,
-  fold_seed = 0, fold_cleaning = 50, predictions = TRUE,
-  predict_leaf_index = FALSE, collect_preds = TRUE, separate_tests = TRUE,
-  output_preds = "lgbm_predict.txt", test_preds = "lgbm_predict_test.txt",
-  verbose = TRUE, log_name = "lgbm_log.txt", full_quiet = FALSE,
-  full_console = FALSE, importance = FALSE,
-  output_model = "lgbm_model.txt", input_model = NA, num_threads = 2,
-  histogram_pool_size = -1, is_sparse = TRUE, two_round = FALSE,
-  application = "regression", learning_rate = 0.1, num_iterations = 10,
-  early_stopping_rounds = NA, num_leaves = 127, min_data_in_leaf = 100,
-  min_sum_hessian_in_leaf = 10, max_bin = 255, feature_fraction = 1,
-  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
-  bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
+  validation = TRUE, unicity = FALSE, folds = 5, folds_weight = NA,
+  stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
+  predictions = TRUE, predict_leaf_index = FALSE, separate_val = TRUE,
+  separate_tests = TRUE, output_preds = "lgbm_predict.txt",
+  test_preds = "lgbm_predict_test.txt", verbose = TRUE,
+  log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
+  importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
+  num_threads = 2, histogram_pool_size = -1, is_sparse = TRUE,
+  two_round = FALSE, application = "regression", learning_rate = 0.1,
+  num_iterations = 10, early_stopping_rounds = NA, num_leaves = 127,
+  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10, max_bin = 255,
+  feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
+  bagging_freq = 0, bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), tree_learner = "serial",
@@ -72,6 +72,8 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{folds}{Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.}
 
+\item{folds_weight}{Type: vector of numerics. The weights assigned to each fold. If no weight is supplied (\code{NA}), the weights are automatically set to \code{rep(1/length(folds))} for an average (does not mix well with folds with different sizes). When the folds are automatically created by supplying \code{fold} a vector of two integers, then the weights are automatically computed. Defaults to \code{NA}.}
+
 \item{stratified}{Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.}
 
 \item{fold_seed}{Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.}
@@ -82,9 +84,9 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{predict_leaf_index}{Type: boolean. When \code{predictions} is \code{TRUE}, should LightGBM predict leaf indexes? Defaults to \code{FALSE}. It is nearly mandatory to keep it \code{FALSE} unless you know what you are doing, as then you should use \code{separate_folds} to nto have a mix of non sense predictions.}
 
-\item{collect_preds}{Type: boolean. Whether out of fold predictions should NOT be returned fold by fold in a list. Do not set it to \code{TRUE} if you have overlapping folds, else the latest predictions might overwrite the previous written predictions. Defaults to \code{TRUE}.}
+\item{separate_val}{Type: boolean. Whether out of fold predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.}
 
-\item{separate_tests}{Type: boolean. Whether testing predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.}
+\item{separate_tests}{Type: boolean. Whether weighted testing predictions should be returned separately as raw as possible (a list with the predictions, and another ilst with the averaged predictions). Defaults to \code{TRUE}.}
 
 \item{output_preds}{Type: character. The file name of the prediction results for the model. Defaults to \code{'lgbm_predict.txt'}. Original name is \code{output_result}.}
 
@@ -171,7 +173,7 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 \item{machine_list_file}{Type: character. The file that contains the machine list for parallel learning. A line in that file much correspond to one IP and one port for one machine, separated by space instead of a colon (\code{:}). Defaults to \code{''}.}
 }
 \value{
-A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path. In addition, out of fold predictions \code{Validation} are provided if \code{predictions} is set to \code{TRUE}, and averaged testing predictions \code{Testing} are provided if \code{predictions} is set to \code{TRUE} with a testing set. Also, aggregated feature importance is provided if \code{importance} is set to \code{TRUE}.
+A list of LightGBM models whose structure is defined in lgbm.train documentation in Value. Returns a list of character variables if LightGBM is not found under lgbm_path. In addition, weighted out of fold predictions \code{Validation} are provided if \code{predictions} is set to \code{TRUE}, and weighted averaged testing predictions \code{Testing} are provided if \code{predictions} is set to \code{TRUE} with a testing set, and weights \code{Weights} if \code{predictions} is set to \code{TRUE}. Also, aggregated feature importance is provided if \code{importance} is set to \code{TRUE}.
 }
 \description{
 This function allows you to cross-validate a LightGBM model.

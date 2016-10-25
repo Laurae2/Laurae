@@ -8,8 +8,9 @@
 #' @param stratified Type: boolean. Whether the folds should be stratified (keep the same label proportions) or not. Defaults to \code{TRUE}.
 #' @param seed Type: integer or vector of integers. The seed for the random number generator. If a vector of integer is provided, its length should be at least longer than \code{n}. Otherwise (if an integer is supplied), it starts each fold with the provided seed, and adds 1 to the seed for every repeat. Defaults to \code{0}.
 #' @param named Type: boolean. Whether the folds should be named. Defaults to \code{TRUE}.
+#' @param weight Type: boolean. Whether to return the weights of each fold so their sum is equal to \code{1}. Defaults to \code{TRUE}.
 #' 
-#' @return A list of vectors for each fold, where an integer represents the row number.
+#' @return A list of vectors for each fold, where an integer represents the row number, or a list of list containing \code{Folds} and \code{Weights} if \code{weight = TRUE}.
 #' 
 #' @examples
 #' # Reproducible Stratified Repeated folds
@@ -52,7 +53,7 @@
 #' 
 #' @export
 
-nkfold <- function(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE) {
+nkfold <- function(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE, weight = FALSE) {
   
   folds <- list()
   
@@ -60,13 +61,34 @@ nkfold <- function(y, n = 2, k = 5, stratified = TRUE, seed = 0, named = TRUE) {
     k <- rep(k, n)
   }
   
-  for (i in 1:n) {
-    folded <- kfold(y = y, k = k[i], stratified = stratified, seed = ifelse(length(seed) == 1, seed + i - 1, seed[i]), named = FALSE)
-    for (j in 1:k[i]) {
-      folds[[length(folds) + 1]] <- folded[[j]]
-      names(folds)[length(folds)] <- paste("Rep", sprintf(paste("%0", floor(log10(n) + 1), "d", sep = ""), i), "Fold", sprintf(paste("%0", floor(log10(max(k)) + 1), "d", sep = ""), j), sep = "")
+  if (weight) {
+    
+    list_weight <- numeric(0)
+    nmind <- 0
+    for (i in 1:n) {
+      folded <- kfold(y = y, k = k[i], stratified = stratified, seed = ifelse(length(seed) == 1, seed + i - 1, seed[i]), named = FALSE)
+      for (j in 1:k[i]) {
+        nmind <- nmind + 1
+        folds[[length(folds) + 1]] <- folded[[j]]
+        names(folds)[length(folds)] <- paste("Rep", sprintf(paste("%0", floor(log10(n) + 1), "d", sep = ""), i), "Fold", sprintf(paste("%0", floor(log10(max(k)) + 1), "d", sep = ""), j), sep = "")
+        list_weight[nmind] <- 1 / k[i] / n
+      }
     }
+    
+    folds <- list(Folds = folds, Weights = list_weight)
+    
+  } else {
+    
+    for (i in 1:n) {
+      folded <- kfold(y = y, k = k[i], stratified = stratified, seed = ifelse(length(seed) == 1, seed + i - 1, seed[i]), named = FALSE)
+      for (j in 1:k[i]) {
+        folds[[length(folds) + 1]] <- folded[[j]]
+        names(folds)[length(folds)] <- paste("Rep", sprintf(paste("%0", floor(log10(n) + 1), "d", sep = ""), i), "Fold", sprintf(paste("%0", floor(log10(max(k)) + 1), "d", sep = ""), j), sep = "")
+      }
+    }
+    
   }
+  
   
   return(folds)
   
