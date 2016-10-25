@@ -95,10 +95,13 @@ lgbm.predict <- function(
   
   if (!verbose) sink()
   
-  if (verbose) {
-    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = !verbose)
+  
+  if (!verbose) {
+    # Write to text file
+    write.table(system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = TRUE), file.path(workingdir, "diverted_verbose.txt"), row.names = FALSE, col.names = FALSE)
   } else {
-    invisible(system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, pred_conf), '"'), stdout = file.path(workingdir, "diverted_verbose.txt")))
+    # Print to console
+    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, pred_conf), '"'), intern = FALSE)
   }
   
   if (data.table == TRUE) {

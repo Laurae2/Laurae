@@ -330,10 +330,12 @@ lgbm.train <- function(
   cat("Starting to work on model as of ", format(Sys.time(), "%a %b %d %Y %X"), "  \n", sep = "")
   
   gc(verbose = FALSE)
-  if (verbose) {
-    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = !verbose, invisible = !full_console)
+  if (!verbose) {
+    # Write to text file
+    write.table(system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = TRUE), file.path(workingdir, log_name), row.names = FALSE, col.names = FALSE)
   } else {
-    invisible(system2(file.path(lgbm_path), args = paste0('config="', file.path(workingdir, train_conf), '"'), stdout = file.path(workingdir, log_name), invisible = !full_console))
+    # Print to console
+    system(paste0('"', file.path(lgbm_path), '" config="', file.path(workingdir, train_conf), '"'), intern = FALSE)
   }
   cat('Model completed, results saved in ', file.path(workingdir), "  \n", sep = "")
   
