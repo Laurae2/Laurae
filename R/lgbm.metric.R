@@ -29,6 +29,7 @@ lgbm.metric <- function(
   metrics = TRUE,
   data.table = TRUE) {
   
+  browser()
   # Load data
   if (is.list(model)) {
     # Model was provided
@@ -44,8 +45,10 @@ lgbm.metric <- function(
   model <- gsub("LightGBM Error ", "", gsub("\\[|\\]", "", model))
   model <- gsub("LightGBM Fatel ", "", gsub("\\[|\\]", "", model))
   model <- gsub("LightGBM Fatal ", "", gsub("\\[|\\]", "", model))
+  model <- gsub("LightGBM Warning ", "", gsub("\\[|\\]", "", model))
+  model <- gsub("LightGBM ", "", gsub("\\[|\\]", "", model))
   
-  if (substr(model[length(model)], 1, 5) == "Early") {
+  if ((substr(model[length(model)], 1, 5) == "Early") | (substr(model[length(model)], 1, 5) == "early")) {
     # Capture the early stopping message
     best_round <- unique(na.omit(as.numeric(unlist(strsplit(unlist(model[length(model)]), "[^0-9]+")))))
     iterations <- best_round[1]
