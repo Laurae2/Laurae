@@ -429,7 +429,7 @@ lgbm.cv <- function(
         preds[[2]][[i]] <- outputs[["Models"]][[i]][["Validation"]]
         preds[[1]][folds_list[[i]]] <- preds[[1]][folds_list[[i]]] + (outputs[["Models"]][[i]][["Validation"]] * folds_weight[i] / preds_occ[folds_list[[i]]])
       } else {
-        preds[folds_list[[i]]] <- preds[folds_list[[i]]] + (outputs[["Models"]][[i]][["Validation"]] * folds_weight[i] / sum(folds_weight))
+        preds[folds_list[[i]]] <- preds[folds_list[[i]]] + (outputs[["Models"]][[i]][["Validation"]] * folds_weight[i] / preds_occ[folds_list[[i]]])
       }
       
       if (length(x_test) > 1) {
