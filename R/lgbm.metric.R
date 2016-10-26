@@ -29,7 +29,6 @@ lgbm.metric <- function(
   metrics = TRUE,
   data.table = TRUE) {
   
-  browser()
   # Load data
   if (is.list(model)) {
     # Model was provided

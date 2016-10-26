@@ -261,7 +261,7 @@ lgbm.cv <- function(
           for (i in 1:length(folds_unique)) {
             folds_list[[i]] <- which(folds == folds_unique[i])
           }
-          if (is.na(folds_weight[1])) {folds_weight <- rep(1/length(folds_unique), folds_unique)}
+          if (is.na(folds_weight[1])) {folds_weight <- rep(1/length(folds_unique), length(folds_unique))}
           
         }
         
