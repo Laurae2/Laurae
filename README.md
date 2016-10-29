@@ -20,6 +20,27 @@ install_git("git://github.com/Laurae2/Laurae.git")
 # Laurae
 Advanced Toolbox for Data Science for R by Laurae
 
+# What can I do with it?
+
+Mostly...
+
+**Supervised Learning:**
+
+* Use LightGBM in R (first wrapper available in R for LightGBM) tuned for maximum I/O without using in-memory dataset moves (which is both a good and bad thing! - 10GB of data takes 4 mins of travel in a HDD) and use feature importance with smart and readable plots
+* Use a repeated cross-validated xgboost (Extreme Gradient Boosting)
+* Throw supervised rules using outliers anywhere you feel it appropriate (univariate, bivariate)
+* Create cross-validated and repeated cross-validated folds for supervised learning with more options for creating them (like batch creation - those ones can be fed into my LightGBM R wrapper for extensive analysis of feature behavior)
+
+**Unsupervised Learning:**
+
+* Auto-tune t-SNE (t-Distributed Stochastic Neighbor Embedding), but it comes already with premade hyperparameters tuned for minimal reproduction loss!
+
+**Improvements & Extras:**
+
+* Improve data.table memory efficiency by up to 3X while keeping a large part of its performance (best of both worlds? isn't that insane?)
+* Load sparse data directly as dgCMatrix (sparse matrix)
+* Plot massive amount of data in an easily readable picture
+
 # What you need?
 
 If I am not missing stuff (please make a pull request if something is missing that must be added):
@@ -28,7 +49,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTsubsample, setDF, DTfillNA |
+| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
 | Matrix | No | read_sparse_csv |
@@ -87,6 +108,7 @@ Write in your R console `sink()` until you get an error.
 | lgbm.find | LightGBM Path Helper | Helps you usign a GUI to find and write the correct path for input to LightGBM functions. |
 | setDF | Low memory DT coercion to DF | (Already available in data.table) Coerces a data.table to data.frame using the least possible memory. Actually, it uses about 0 extra memory. |
 | DTcbind | Low memory DT cbind | Column bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to cbind, this reduce peak memory usage by 3X, and sometimes by more. |
+| DTrbind | Low memory DT rbind | Row bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to rbind, this reduce peak memory usage by 3X, and sometimes by more. |
 | DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. It should not do lower memory usage than direct subsampling. Sometimes, you can get a slight efficiency of up to 5%. |
 | DTfillNA | Low memory DT Missing Value filling | Fills the missing values of a data.table using the least possible memory. Compared to direct usages (DT[is.na(DT)] <- value), this function consumes up to 3X less (and typically 2X less). You can even create a new data.table or overwrite the original one. Also, this function works on data.frame, and can even overwrite the original data.frame. |
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
