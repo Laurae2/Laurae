@@ -3,6 +3,7 @@
 export(DTcbind)
 export(DTcolsample)
 export(DTfillNA)
+export(DTrbind)
 export(DTsubsample)
 export(kfold)
 export(lgbm.cv)
