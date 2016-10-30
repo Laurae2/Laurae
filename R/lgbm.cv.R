@@ -335,7 +335,7 @@ lgbm.cv <- function(
       gc(verbose = FALSE)
     } else {
       x_tr <- x_train[1, ]
-      x_val = x_val[1, ]
+      x_val <- x_train[1, ]
     }
     
     # Train
