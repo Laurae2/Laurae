@@ -328,10 +328,15 @@ lgbm.cv <- function(
     }
     
     # Create folds
-    x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-    gc(verbose = FALSE)
-    x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-    gc(verbose = FALSE)
+    if (!files_exist) {
+      x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
+      gc(verbose = FALSE)
+      x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
+      gc(verbose = FALSE)
+    } else {
+      x_tr <- NA
+      x_val = NA
+    }
     
     # Train
     outputs[["Models"]][[as.character(i)]] <- lgbm.train(
