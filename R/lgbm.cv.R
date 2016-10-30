@@ -334,8 +334,8 @@ lgbm.cv <- function(
       x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
       gc(verbose = FALSE)
     } else {
-      x_tr <- NA
-      x_val = NA
+      x_tr <- x_train[1, ]
+      x_val = x_val[1, ]
     }
     
     # Train
