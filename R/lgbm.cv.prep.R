@@ -122,14 +122,14 @@ lgbm.cv.prep <- function(
     }
     
     # Create folds
-    x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-    x_tr$datatable_target <- y_train[-folds_list[[i]]]
+    x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
+    x_tr[, datatable_target := y_train[-folds_list[[i]]]]
     setcolorder(x_tr, c("datatable_target", colnames(x_tr)[-ncol(x_tr)]))
     fwrite(x_tr, file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
     rm(x_tr)
     gc(verbose = FALSE)
-    x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-    x_val$datatable_target <- y_train[folds_list[[i]]]
+    x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
+    x_val[, datatable_target := y_train[folds_list[[i]]]]
     setcolorder(x_val, c("datatable_target", colnames(x_val)[-ncol(x_val)]))
     fwrite(x_val, file.path(workingdir, stri_replace_last_fixed(val_name, ".", paste0("_", fold_shortcut, "."))), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
     rm(x_val)
