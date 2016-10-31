@@ -412,7 +412,9 @@ lgbm.train <- function(
     gc(verbose = FALSE)
   }
   
-  cat("Ended to work on model as of ", format(Sys.time(), "%a %b %d %Y %X"), "  \n", sep = "")
+  if (!full_quiet) {
+    cat("Ended to work on model as of ", format(Sys.time(), "%a %b %d %Y %X"), "  \n", sep = "")
+  }
   
   return(output)
   
