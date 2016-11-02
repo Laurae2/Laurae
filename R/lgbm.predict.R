@@ -74,7 +74,7 @@ lgbm.predict <- function(
       # Uses the super fast CSV writer
       if (verbose) cat('Saving test data (data.table) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
       my_data <- x_pred
-      fwrite(my_data, file.path = file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
+      fwrite(my_data, file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
     } else {
       # Fallback if no fwrite
       if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
