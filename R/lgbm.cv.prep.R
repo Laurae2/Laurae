@@ -141,7 +141,7 @@ lgbm.cv.prep <- function(
     if (verbose) {
       cat("Exporting now the test set...\n")
     }
-    fwrite(x_test, file.path(workingdir, test_name, ".csv"), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+    fwrite(x_test, file.path(workingdir, test_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
   }
   
   folded <- list()
