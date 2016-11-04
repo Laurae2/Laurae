@@ -300,9 +300,9 @@ lgbm.train <- function(
       if (!is.na(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
-          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
+          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         } else {
-          fwrite(data.frame(V1 = bias_train), file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
+          fwrite(data.frame(V1 = bias_train), file.path(workingdir, init_score), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         }
       }
     } else {
@@ -317,9 +317,9 @@ lgbm.train <- function(
       if (!is.na(init_score)) {
         cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
-          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
         } else {
-          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
         }
       }
     }
