@@ -2,12 +2,15 @@
 #'
 #' This function allows you to prepare the cross-validatation of a LightGBM model.
 #' It is recommended to have your x_train and x_val sets as data.table (or data.frame), and the data.table development version. To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-#' Does not handle weights or groups.
+#' SVMLight conversion requires Laurae's sparsity package, which can be installed using \code{devtools:::install_github("Laurae2/sparsity")}.
+#' Does not handle weights or groups. The label will be always the last column.
 #' 
-#' @param y_train Type: vector. The training labels.
+#' @param y_train Type: vector. The training labels. They will be set as the last column and named \code{datatable_target}.
 #' @param x_train Type: data.table. The training features.
 #' @param x_test Type: data.table. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.
-#' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
+#' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.
+#' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.
+#' @param header Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
 #' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.
@@ -42,7 +45,9 @@ lgbm.cv.prep <- function(
   y_train,
   x_train,
   x_test = NA,
-  data_has_label = TRUE,
+  SVMLight = FALSE,
+  data_has_label = FALSE,
+  header = TRUE,
   NA_value = "nan",
   
   # LightGBM I/O-related
@@ -121,19 +126,43 @@ lgbm.cv.prep <- function(
       cat(paste0('  \n', paste('Exporting now the fold ', fold_shortcut), ' / ', length(folds_list), '...  \n'))
     }
     
-    # Create folds
-    x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
-    x_tr[, datatable_target := y_train[-folds_list[[i]]]]
-    setcolorder(x_tr, c("datatable_target", colnames(x_tr)[-ncol(x_tr)]))
-    fwrite(x_tr, file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
-    rm(x_tr)
-    gc(verbose = FALSE)
-    x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
-    x_val[, datatable_target := y_train[folds_list[[i]]]]
-    setcolorder(x_val, c("datatable_target", colnames(x_val)[-ncol(x_val)]))
-    fwrite(x_val, file.path(workingdir, stri_replace_last_fixed(val_name, ".", paste0("_", fold_shortcut, "."))), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
-    rm(x_val)
-    gc(verbose = FALSE)
+    if (SVMLight == FALSE) {
+      
+      # Create folds
+      x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
+      if (data_has_label == FALSE) {
+        x_tr[, datatable_target := y_train[-folds_list[[i]]]]
+      }
+      #setcolorder(x_tr, c("datatable_target", colnames(x_tr)[-ncol(x_tr)]))
+      fwrite(x_tr, file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))), col.names = header, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+      rm(x_tr)
+      gc(verbose = FALSE)
+      
+      x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = !verbose)
+      if (data_has_label == FALSE) {
+        x_val[, datatable_target := y_train[folds_list[[i]]]]
+      }
+      #setcolorder(x_val, c("datatable_target", colnames(x_val)[-ncol(x_val)]))
+      fwrite(x_val, file.path(workingdir, stri_replace_last_fixed(val_name, ".", paste0("_", fold_shortcut, "."))), col.names = header, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+      rm(x_val)
+      gc(verbose = FALSE)
+      
+    } else {
+      
+      cat("Exporting the train set...\n")
+      x_tr <- x_train[(1:nrow(x_train))[-folds_list[[i]]], ]
+      write.svmlight(x_tr, y_train[-folds_list[[i]]], file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))))
+      rm(x_tr)
+      gc(verbose = FALSE)
+      
+      cat("Exporting the validation set...\n")
+      x_val <- x_train[folds_list[[i]], ]
+      write.svmlight(x_val, y_train[folds_list[[i]]], file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))))
+      rm(x_val)
+      gc(verbose = FALSE)
+      
+    }
+    
     
   }
   
@@ -141,7 +170,11 @@ lgbm.cv.prep <- function(
     if (verbose) {
       cat("Exporting now the test set...\n")
     }
-    fwrite(x_test, file.path(workingdir, test_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+    if (SVMLight == FALSE) {
+      fwrite(x_test, file.path(workingdir, test_name), col.names = header, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+    } else {
+      write.svmlight(x_test, file = file.path(workingdir, test_name))
+    }
   }
   
   folded <- list()

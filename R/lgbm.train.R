@@ -18,13 +18,15 @@
 #' 
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
-#' @param y_train Type: vector. The training labels.
-#' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features.
+#' @param y_train Type: vector. The training labels. Mandatory even if you put them in \code{x_train}.
+#' @param x_train Type: data.table (preferred), data.frame, or matrix (unsupported). The training features.
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
-#' @param y_val Type: vector. The validation labels. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
-#' @param x_val Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
-#' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
+#' @param y_val Type: vector. The validation labels. Defaults to \code{NA}. Mandatory even if you put them in \code{x_val}. Unused when \code{validation} is \code{TRUE}.
+#' @param x_val Type: data.table (preferred), data.frame, or matrix (unsupported). The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix (unsupported). The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
+#' @param data_has_label Type: boolean. Whether \code{x_train} and \code{x_val} have labels or not. Set this to \code{FALSE} when you already added labels to \code{x_train} and \code{x_val}. Defaults to \code{FALSE}.
+#' @param header Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.
+#' @param label_column Type: integer or character. The reference to the label column. If you specify a character (by name), do not specify the \code{name:} prefix as it will be appended automatically. By default, \code{ncol(x_train) + 1}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
@@ -51,7 +53,7 @@
 #' @param input_model Type: character. The file name of input model. If defined, LightGBM will resume training from that file. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). Defaults to \code{NA}.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param histogram_pool_size Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.
-#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
+#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. When \code{TRUE}, does not allow negative values (it will set them to \code{0}). Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
@@ -120,7 +122,9 @@ lgbm.train <- function(
   y_val = NA,
   x_val = NA,
   x_test = NA,
-  data_has_label = TRUE,
+  data_has_label = FALSE,
+  header = TRUE,
+  label_column = ncol(x_train) + 1,
   NA_value = "na",
   
   # LightGBM-related
@@ -232,8 +236,10 @@ lgbm.train <- function(
   #file.copy(paste0(lgbm_path), file.path(workingdir))
   fileConn <- file(file.path(workingdir, train_conf), "w")
   write(paste0('task=train'), fileConn, append = TRUE)
-  write(paste0('application=',application), fileConn, append = TRUE)
-  write(paste0('data="',file.path(workingdir, train_name), '"'), fileConn, append = TRUE)
+  write(paste0('application=', application), fileConn, append = TRUE)
+  write(paste0('data="', file.path(workingdir, train_name), '"'), fileConn, append = TRUE)
+  write(paste0('header=', tolower(header)))
+  write(paste0('label=', ifelse(is.character(label_column), paste0("name:", label_column), label_column)))
   if (validation) write(paste0('valid="',file.path(workingdir, val_name), '"'), fileConn, append = TRUE)
   write(paste0('num_iterations=', num_iterations), fileConn, append = TRUE)
   if (!is.na(early_stopping_rounds)) write(paste0('early_stopping_rounds=', early_stopping_rounds), fileConn, append = TRUE)
@@ -251,7 +257,7 @@ lgbm.train <- function(
   write(paste0('bagging_seed=', bagging_seed), fileConn, append = TRUE)
   write(paste0('max_bin=', max_bin), fileConn, append = TRUE)
   write(paste0('data_random_seed=', data_random_seed), fileConn, append = TRUE)
-  write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
+  #write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   if (output_model != '') write(paste0('output_model="', file.path(workingdir, output_model), '"'), fileConn, append = TRUE)
   if (!is.na(input_model)) write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
   write(paste0('is_sigmoid=', tolower(as.character(is_sigmoid))), fileConn, append = TRUE)
@@ -286,28 +292,34 @@ lgbm.train <- function(
       # Uses the super fast CSV writer
       cat('Saving train data (data.table) file to: ', file.path(workingdir, train_name), "  \n", sep = "")
       my_data <- x_train
-      my_data$datatable_target <- y_train
-      setcolorder(my_data, c("datatable_target", colnames(x_train)))
-      fwrite(my_data, file.path(workingdir, train_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet, quote = FALSE)
+      if (data_has_label == FALSE) {
+        my_data$datatable_target <- y_train
+      }
+      #setcolorder(my_data, c("datatable_target", colnames(x_train)))
+      fwrite(my_data, file.path(workingdir, train_name), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet, quote = FALSE)
       if (!is.na(init_score)) {
         cat('Saving train weight data (data.table) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
-          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
+          fwrite(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         } else {
-          fwrite(data.frame(V1 = bias_train), file.path(workingdir, init_score), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
+          fwrite(data.frame(V1 = bias_train), file.path(workingdir, init_score), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
         }
       }
     } else {
       # Fallback if no fwrite
       cat('Saving train data (slow) file to: ', file.path(workingdir, train_name), "  \n", sep = "")
-      write.table(cbind(y_train, x_train), file.path(workingdir, train_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+      if (data_has_label == TRUE) {
+        write.table(x_train, file.path(workingdir, train_name), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
+      } else {
+        write.table(cbind(x_train, datatable_target = y_train), file.path(workingdir, train_name), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
+      }
       gc(verbose = FALSE) # In case of memory explosion
       if (!is.na(init_score)) {
         cat('Saving train weight data (slow) file to: ', file.path(workingdir, init_score), "  \n", sep = "")
         if (length(bias_train) == 1) {
-          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+          write.table(data.frame(V1 = rep(bias_train, length(y_train))), file.path(workingdir, init_score), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
         } else {
-          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+          write.table(data.frame(V1 = bias_train), file.path(workingdir, init_score), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
         }
       }
     }
@@ -315,13 +327,19 @@ lgbm.train <- function(
       if (exists("fwrite") & is.data.table(x_train)) {
         cat('Saving validation data (data.table) file to: ', file.path(workingdir, val_name), "  \n", sep = "")
         my_data <- x_val
-        my_data$datatable_target <- y_val
-        setcolorder(my_data, c("datatable_target", colnames(x_val)))
-        fwrite(my_data, file.path(workingdir, val_name), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
+        if (data_has_label == FALSE) {
+          my_data$datatable_target <- y_val
+        }
+        #setcolorder(my_data, c("datatable_target", colnames(x_val)))
+        fwrite(my_data, file.path(workingdir, val_name), col.names = header, sep = ",", na = as.character(NA_value), verbose = !full_quiet)
       } else {
         # Fallback if no fwrite
         cat('Saving validation data (slow) file to: ', file.path(workingdir, val_name), "  \n", sep = "")
-        write.table(cbind(y_val, x_val), file.path(workingdir, val_name), row.names = FALSE, col.names = FALSE, sep = ',', na = as.character(NA_value))
+        if (data_has_label == TRUE) {
+          write.table(x_val, file.path(workingdir, val_name), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
+        } else {
+          write.table(cbind(x_val, datatable_target = y_val), file.path(workingdir, val_name), row.names = FALSE, col.names = header, sep = ',', na = as.character(NA_value))
+        }
         gc(verbose = FALSE) # In case of memory explosion
       }
     }
@@ -360,6 +378,8 @@ lgbm.train <- function(
       y_pred = NA,
       x_pred = NA,
       data_has_label = TRUE,
+      header = header,
+      label_column = label_column,
       lgbm_path = lgbm_path,
       workingdir = workingdir,
       input_model = output_model,
@@ -381,6 +401,8 @@ lgbm.train <- function(
       y_pred = NA,
       x_pred = x_test,
       data_has_label = FALSE,
+      header = header,
+      label_column = label_column,
       lgbm_path = lgbm_path,
       workingdir = workingdir,
       input_model = output_model,

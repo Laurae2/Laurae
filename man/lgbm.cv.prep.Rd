@@ -4,20 +4,25 @@
 \alias{lgbm.cv.prep}
 \title{LightGBM Cross-Validated Model Preparation}
 \usage{
-lgbm.cv.prep(y_train, x_train, x_test = NA, data_has_label = TRUE,
-  NA_value = "nan", workingdir = getwd(), train_name = "lgbm_train.csv",
+lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
+  data_has_label = FALSE, header = TRUE, NA_value = "nan",
+  workingdir = getwd(), train_name = "lgbm_train.csv",
   val_name = "lgbm_val.csv", test_name = "lgbm_test.csv", verbose = TRUE,
   folds = 5, folds_weight = NA, stratified = TRUE, fold_seed = 0,
   fold_cleaning = 50)
 }
 \arguments{
-\item{y_train}{Type: vector. The training labels.}
+\item{y_train}{Type: vector. The training labels. They will be set as the last column and named \code{datatable_target}.}
 
 \item{x_train}{Type: data.table. The training features.}
 
 \item{x_test}{Type: data.table. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.}
 
-\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
+\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
+
+\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.}
+
+\item{header}{Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.}
 
 \item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.}
 
@@ -47,7 +52,8 @@ The \code{folds} and \code{folds_weight} elements in a list. All files are outpu
 \description{
 This function allows you to prepare the cross-validatation of a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table (or data.frame), and the data.table development version. To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-Does not handle weights or groups.
+SVMLight conversion requires Laurae's sparsity package, which can be installed using \code{devtools:::install_github("Laurae2/sparsity")}.
+Does not handle weights or groups. The label will be always the last column.
 }
 \examples{
 \dontrun{

@@ -20,11 +20,13 @@
 #' 
 #' If for some reason you lose the ability to print in the console, run \code{sink()} in the console several times until you get an error.
 #' 
-#' @param y_train Type: vector. The training labels.
-#' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
+#' @param y_train Type: vector. The training labels. Mandatory even if you put them in \code{x_train}.
+#' @param x_train Type: data.table (preferred), data.frame, or matrix (unsupported). The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
-#' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
-#' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
+#' @param x_test Type: data.table (preferred), data.frame, or matrix (unsupported). The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
+#' @param data_has_label Type: boolean. Whether the \code{x_train} has labels or not. Set this to \code{FALSE} when you already added labels to \code{x_train}. Defaults to \code{FALSE}.
+#' @param header Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.
+#' @param label_column Type: integer or character. The reference to the label column. If you specify a character (by name), do not specify the \code{name:} prefix as it will be appended automatically. By default, \code{ncol(x_train) + 1}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
@@ -59,7 +61,7 @@
 #' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param histogram_pool_size Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.
-#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
+#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. When \code{TRUE}, does not allow negative values (it will set them to \code{0}). Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
@@ -76,7 +78,7 @@
 #' @param bagging_seed Type: integer. Random starting seed for the row subsampling (\code{bagging_fraction}). Defaults to \code{3}.
 #' @param is_sigmoid Type: boolean. Whether to use a sigmoid transformation of raw predictions. Defaults to \code{TRUE}.
 #' @param sigmoid Type: numeric. "The sigmoid parameter". Defaults to \code{1.0}.
-#' @param is_unbalance Type: boolean. For binary classification, setting this to TRUE might be useful when the training data is unbalanced. Defaults to \code{FALSE}.
+#' @param is_unbalance Type: boolean. For binary classification, setting this to TRUE might be useful when the training data is unbalanced (the total weights become \code{sum(y_train) * 2} and therefore regularization must be adjusted accordingly). Defaults to \code{FALSE}.
 #' @param max_position Type: integer. For lambdarank, optimize NDCG for that specific value. Defaults to \code{20}.
 #' @param label_gain Type: vector of integers. For lambdarank, relevant gain for labels. Defaults to \code{c(0, 1, 3, 7, 15, 31, 63)}.
 #' @param metric Type: character, or vector of characters. The metric to optimize. There are 6 available: \code{'l1'} (absolute loss), \code{'l2'} (squared loss), \code{'ndcg'} (NDCG), \code{'auc'} (AUC), \code{'binary_logloss'} (logarithmic loss), and \code{'binary_error'} (accuracy). Defaults to \code{'l2'}. Use a vector of characters to pass multiple metrics.
@@ -132,7 +134,9 @@ lgbm.cv <- function(
   x_train,
   bias_train = NA,
   x_test = NA,
-  data_has_label = TRUE,
+  data_has_label = FALSE,
+  header = TRUE,
+  label_column = ncol(x_train) + 1,
   NA_value = "nan",
   
   # LightGBM I/O-related
@@ -347,6 +351,8 @@ lgbm.cv <- function(
       x_val = x_val,
       y_val = y_train[folds_list[[i]]],
       data_has_label = data_has_label,
+      header = header,
+      label_column = label_column,
       NA_value = NA_value,
       
       # LightGBM-related
@@ -444,6 +450,8 @@ lgbm.cv <- function(
           y_pred = NA,
           x_pred = x_test,
           data_has_label = FALSE,
+          header = header,
+          label_column = label_column,
           lgbm_path = lgbm_path,
           workingdir = workingdir,
           input_model = ifelse(!unicity, stri_replace_last_fixed(output_model, ".", paste0("_", fold_shortcut, ".")), output_model),
