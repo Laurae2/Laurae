@@ -24,13 +24,14 @@
 #' @param x_train Type: data.table (preferred), data.frame, or matrix. The training features. Not providing a data.frame or a matrix results in at least 3x memory usage.
 #' @param bias_train Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.
 #' @param x_test Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.
+#' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
-#' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.
-#' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{'lgbm_val.csv'}.
-#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.
+#' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.
 #' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.,
@@ -59,7 +60,7 @@
 #' @param input_model Type: character. The file name of input model. You MUST user a different \code{output_model} file name if you define \code{input_model}. Otherwise, you are overwriting your model (and if your model cannot learn by stopping immediately at the beginning, you would LOSE your model). If defined, LightGBM will resume training from that file. Defaults to \code{NA}. Unused yet.
 #' @param num_threads Type: integer. The number of threads to run for LightGBM. It is recommended to not set it higher than the amount of physical cores in your computer. Defaults to \code{2}. In virtualized environments, it can be better to set it to the maximum amount of threads allocated to the virtual machine (especially VirtualBox).
 #' @param histogram_pool_size Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.
-#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.
+#' @param is_sparse Type: boolean. Whether sparse optimization is enabled. Do not set this to \code{FALSE} unless you want to see your model being underperforming or if you know what you are going to do. Defaults to \code{TRUE}.
 #' @param two_round Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.
 #' @param application Type: character. The label application to learn. Must be either \code{'regression'}, \code{'binary'}, or \code{'lambdarank'}. Defaults to \code{'regression'}.
 #' @param learning_rate Type: numeric. The shrinkage rate applied to each iteration. Lower values lowers overfitting speed, while higher values increases overfitting speed. Defaults to \code{0.1}.
@@ -132,6 +133,7 @@ lgbm.cv <- function(
   x_train,
   bias_train = NA,
   x_test = NA,
+  SVMLight = FALSE,
   data_has_label = TRUE,
   NA_value = "nan",
   
@@ -140,9 +142,9 @@ lgbm.cv <- function(
   workingdir = getwd(),
   
   # Data files to create/user
-  train_name = 'lgbm_train.csv',
-  val_name = 'lgbm_val.csv',
-  test_name = 'lgbm_test.csv',
+  train_name = paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv')),
+  val_name = paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv')),
+  test_name = paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv')),
   init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
@@ -346,6 +348,7 @@ lgbm.cv <- function(
       bias_train = bias_train,
       x_val = x_val,
       y_val = y_train[folds_list[[i]]],
+      SVMLight = SVMLight,
       data_has_label = data_has_label,
       NA_value = NA_value,
       
@@ -443,6 +446,7 @@ lgbm.cv <- function(
           model = '',
           y_pred = NA,
           x_pred = x_test,
+          SVMLight = SVMLight,
           data_has_label = FALSE,
           lgbm_path = lgbm_path,
           workingdir = workingdir,

@@ -6,10 +6,11 @@
 \usage{
 lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
   data_has_label = FALSE, NA_value = "nan", workingdir = getwd(),
-  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  test_name = "lgbm_test.csv", verbose = TRUE, folds = 5,
-  folds_weight = NA, stratified = TRUE, fold_seed = 0,
-  fold_cleaning = 50)
+  train_name = paste("lgbm_train", ifelse(SVMLight, ".svm", ".csv")),
+  val_name = paste("lgbm_val", ifelse(SVMLight, ".svm", ".csv")),
+  test_name = paste("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
+  verbose = TRUE, folds = 5, folds_weight = NA, stratified = TRUE,
+  fold_seed = 0, fold_cleaning = 50)
 }
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
@@ -26,11 +27,11 @@ lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
-\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
+\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
+\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
 
 \item{verbose}{Type: boolean. Whether \code{fwrite} data is output. Defaults to \code{TRUE}.}
 
@@ -50,7 +51,7 @@ The \code{folds} and \code{folds_weight} elements in a list. All files are outpu
 \description{
 This function allows you to prepare the cross-validatation of a LightGBM model.
 It is recommended to have your x_train and x_val sets as data.table (or data.frame), and the data.table development version. To install data.table development version, please run in your R console: \code{install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")}.
-SVMLight conversion requires Laurae's sparsity package, which can be installed using \code{devtools:::install_github("Laurae2/sparsity")}.
+SVMLight conversion requires Laurae's sparsity package, which can be installed using \code{devtools:::install_github("Laurae2/sparsity")}. SVMLight format extension used is \code{.svm}.
 Does not handle weights or groups.
 }
 \examples{

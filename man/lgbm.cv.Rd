@@ -4,27 +4,29 @@
 \alias{lgbm.cv}
 \title{LightGBM Cross-Validated Model Training}
 \usage{
-lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
+lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA, SVMLight = FALSE,
   data_has_label = TRUE, NA_value = "nan",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
-  train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
-  test_name = "lgbm_test.csv", init_score = ifelse(is.na(bias_train), NA,
-  paste(train_name, ".weight", sep = "")), files_exist = FALSE,
-  save_binary = FALSE, train_conf = "lgbm_train.conf",
-  pred_conf = "lgbm_pred.conf", test_conf = "lgbm_test.conf",
-  validation = TRUE, unicity = FALSE, folds = 5, folds_weight = NA,
-  stratified = TRUE, fold_seed = 0, fold_cleaning = 50,
-  predictions = TRUE, predict_leaf_index = FALSE, separate_val = TRUE,
-  separate_tests = TRUE, output_preds = "lgbm_predict.txt",
-  test_preds = "lgbm_predict_test.txt", verbose = TRUE,
-  log_name = "lgbm_log.txt", full_quiet = FALSE, full_console = FALSE,
-  importance = FALSE, output_model = "lgbm_model.txt", input_model = NA,
-  num_threads = 2, histogram_pool_size = -1, is_sparse = TRUE,
-  two_round = FALSE, application = "regression", learning_rate = 0.1,
-  num_iterations = 10, early_stopping_rounds = NA, num_leaves = 127,
-  min_data_in_leaf = 100, min_sum_hessian_in_leaf = 10, max_bin = 255,
-  feature_fraction = 1, feature_fraction_seed = 2, bagging_fraction = 1,
-  bagging_freq = 0, bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
+  train_name = paste("lgbm_train", ifelse(SVMLight, ".svm", ".csv")),
+  val_name = paste("lgbm_val", ifelse(SVMLight, ".svm", ".csv")),
+  test_name = paste("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
+  init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep
+  = "")), files_exist = FALSE, save_binary = FALSE,
+  train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
+  test_conf = "lgbm_test.conf", validation = TRUE, unicity = FALSE,
+  folds = 5, folds_weight = NA, stratified = TRUE, fold_seed = 0,
+  fold_cleaning = 50, predictions = TRUE, predict_leaf_index = FALSE,
+  separate_val = TRUE, separate_tests = TRUE,
+  output_preds = "lgbm_predict.txt", test_preds = "lgbm_predict_test.txt",
+  verbose = TRUE, log_name = "lgbm_log.txt", full_quiet = FALSE,
+  full_console = FALSE, importance = FALSE,
+  output_model = "lgbm_model.txt", input_model = NA, num_threads = 2,
+  histogram_pool_size = -1, is_sparse = TRUE, two_round = FALSE,
+  application = "regression", learning_rate = 0.1, num_iterations = 10,
+  early_stopping_rounds = NA, num_leaves = 127, min_data_in_leaf = 100,
+  min_sum_hessian_in_leaf = 10, max_bin = 255, feature_fraction = 1,
+  feature_fraction_seed = 2, bagging_fraction = 1, bagging_freq = 0,
+  bagging_seed = 3, is_sigmoid = TRUE, sigmoid = 1,
   is_unbalance = FALSE, max_position = 20, label_gain = c(0, 1, 3, 7, 15,
   31, 63), metric = "l2", metric_freq = 1, is_training_metric = FALSE,
   ndcg_at = c(1, 2, 3, 4, 5), tree_learner = "serial",
@@ -40,6 +42,8 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
+\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
+
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
 \item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.}
@@ -48,11 +52,11 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
-\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{'lgbm_train.csv'}.}
+\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{'lgbm_val.csv'}.}
+\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{'lgbm_test.csv'}.}
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
 
 \item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
 
@@ -110,7 +114,7 @@ lgbm.cv(y_train, x_train, bias_train = NA, x_test = NA,
 
 \item{histogram_pool_size}{Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.}
 
-\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.}
+\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Do not set this to \code{FALSE} unless you want to see your model being underperforming or if you know what you are going to do. Defaults to \code{TRUE}.}
 
 \item{two_round}{Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.}
 
