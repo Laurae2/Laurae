@@ -6,8 +6,8 @@
 #' Does not handle weights or groups.
 #' 
 #' @param y_train Type: vector. The training labels.
-#' @param x_train Type: data.table. The training features.
-#' @param x_test Type: data.table. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.
+#' @param x_train Type: data.table or dgCMatrix (with \code{SVMLight = TRUE}). The training features.
+#' @param x_test Type: data.table or dgCMatrix (with \code{SVMLight = TRUE}). The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.
 #' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.

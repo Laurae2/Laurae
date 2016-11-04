@@ -15,9 +15,9 @@ lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
 \arguments{
 \item{y_train}{Type: vector. The training labels.}
 
-\item{x_train}{Type: data.table. The training features.}
+\item{x_train}{Type: data.table or dgCMatrix (with \code{SVMLight = TRUE}). The training features.}
 
-\item{x_test}{Type: data.table. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.}
+\item{x_test}{Type: data.table or dgCMatrix (with \code{SVMLight = TRUE}). The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}.}
 
 \item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
 

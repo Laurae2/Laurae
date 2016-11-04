@@ -6,7 +6,7 @@
 #' 
 #' @param model Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.
 #' @param y_pred Type: vector. The validation labels. Leave it alone unless you know what you are doing. Defaults to \code{NA}.
-#' @param x_pred Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.
+#' @param x_pred Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The validation features. Defaults to \code{NA}.
 #' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{ifelse(is.list(model), model[["File"]], getwd())}, which means "take the model LightGBM path if provided the model list, else take the default working directory".

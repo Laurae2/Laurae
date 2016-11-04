@@ -20,7 +20,7 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, SVMLight = FALSE,
 
 \item{y_pred}{Type: vector. The validation labels. Leave it alone unless you know what you are doing. Defaults to \code{NA}.}
 
-\item{x_pred}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.}
+\item{x_pred}{Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The validation features. Defaults to \code{NA}.}
 
 \item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
 
