@@ -14,7 +14,6 @@ Running in a Virtual Machine? Use the following alternative:
 ```
 library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
-
 ```
 
 # Laurae
@@ -41,15 +40,21 @@ Mostly...
 * Load sparse data directly as dgCMatrix (sparse matrix)
 * Plot massive amount of data in an easily readable picture
 
+**Sparsity SVMLight converter benchmark:**
+
+* Benchmark to convert a dgCMatrix with 2,500,000 rows and 8,500 columns (1.1GB in memory) => 5 minutes
+* I think it needs minimum hours if not days for the other existing converters for such size.
+
 # What you need?
 
 If I am not missing stuff (please make a pull request if something is missing that must be added):
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.fi, lgbm.metric, lgbm.fi.plot |
+| LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
-| data.table | YES | read_sparse_csv, lightgbm.train, lightgbm.predict, lightgbm.cv, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
+| data.table | YES | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
+| sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
 | Matrix | No | read_sparse_csv |
@@ -64,9 +69,10 @@ LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722c
 
 # Installing dependencies?
 
-* For LightGBM, please use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository (as of 10/20/2016, it has now a correct early_stopping implementation). Then follow the installation steps (https://github.com/Microsoft/LightGBM/wiki/Installation-Guide). Stable version which is aligned with Laurae package uses `git clone --recursive https://github.com/Laurae2/LightGBM`
+* For LightGBM (use PR 33 please), please do NOT use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository. Use my stable version which is aligned with Laurae package via `git clone --recursive https://github.com/Laurae2/LightGBM`. Then follow the installation steps (https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
 * data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
+* sparsity: You must use Laurae's sparsity package (SVMLight I/O conversion) which can be found here: https://github.com/Laurae2/sparsity/blob/master/README.md - compilation simply requires writing `devtools:::install_github("Laurae2/sparsity")` (and having Rtools in Windows).
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
 
 # Strange errors on first run
@@ -102,6 +108,7 @@ Write in your R console `sink()` until you get an error.
 | lgbm.train | LightGBM trainer | Trains a LightGBM model. Full verbosity control, with logging to file possible. Allows to predict out of the box during the training on the validation set and a test set. |
 | lgbm.predict | LightGBM predictor | Predicts from a LightGBM model. Use the model working directory if you lost the model variable (which is not needed to predict - you only need the correct model working directory and the model name). |
 | lgbm.cv | LightGBM CV trainer | Cross-Validates a LightGBM model, returns out of fold predictions, ensembled average test predictions (if provided a test set), and cross-validated feature importance. Full verbosity control, with logging to file possible, with predictions given back as return. Subsampling is optimized to maximum to lower memory usage peaks. |
+| lgbm.cv.prep | LightGBM CV preparation helper | Prepares the data for using lgbm.cv. All required data files are output, so you can run lgbm.cv with files_exist = TRUE without the need of other data preparation (which can be long sometimes). Supports SVMLight format. |
 | lgbm.fi | LightGBM Feaure Importance | Computes the feature importance (Gain, Frequence) of a LightGBM model with Sum / Relative Ratio / Absolute Ratio scales. |
 | lgbm.fi.plot | LightGBM Feaure Importance Plot | Pretty plots a LightGBM feature importance table from a trained model, or from a cross-validated model. Use the model for auto-plotting. Try to use different scales to see more appropriately differences in feature importance. You can also use the multipresence parameter to cross-validate features. |
 | lgbm.metric | LightGBM Training Metrics | Computes the training metrics of a logged LightGBM model and finds the best iteration. |
@@ -122,7 +129,7 @@ Write in your R console `sink()` until you get an error.
 * Better handling of LightGBM arguments
 * Better handling of LightGBM files
 * Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
-* Add SVMLight format (via dgCMatrix) as input for LightGBM (actually, it supports already SVMLight, you just need to create the appropriate files beforehand)
+* Add SVMLight format (via dgCMatrix) as input for LightGBM (actually, it supports already SVMLight, you just need to use the helper function first).
 
 # To add:
 
@@ -227,14 +234,14 @@ LightGBM use Visual Studio (2013 or higher) to build in Windows. If you do not h
 
 Once you are done installing Visual Studio 2015 Community, reboot your computer.
 
-Now, or if you skipped the installation step, clone the latest LightGBM repository by doing in Git Bash:
+Now, or if you skipped the installation step, clone the latest (CLEARLY UNRECOMMENDED) LightGBM repository by doing in Git Bash:
 
 ```
 cd C:/xgboost
 git clone --recursive https://github.com/Microsoft/LightGBM
 ```
 
-If you want the stable version aligned to Laurae package, use `git clone --recursive https://github.com/Laurae2/LightGBM` instead.
+If you want the stable (RECOMMENDED) version aligned to Laurae package, use `git clone --recursive https://github.com/Laurae2/LightGBM` instead. You have 99%+ guarantee to have a non-working version if you use the fully bleeding edge devel version of LightGBM with this package (well, most of the things work but it is refusing to train on data most of the times, even via direct command line).
 
 Now the steps:
 
