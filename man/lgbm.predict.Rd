@@ -5,7 +5,6 @@
 \title{LightGBM Prediction}
 \usage{
 lgbm.predict(model, y_pred = NA, x_pred = NA, data_has_label = FALSE,
-  header = TRUE, label_column = ncol(x_pred),
   lgbm_path = ifelse(is.list(model), model[["lgbm"]], getwd()),
   workingdir = ifelse(is.list(model), model[["Path"]], getwd()),
   input_model = ifelse(is.list(model), model[["Name"]], "lgbm_model.txt"),
@@ -22,11 +21,7 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, data_has_label = FALSE,
 
 \item{x_pred}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.}
 
-\item{data_has_label}{Type: boolean. Whether \code{x_pred} has labels or not. Set this to \code{FALSE} when you already added labels to \code{x_pred}. Defaults to \code{FALSE}.}
-
-\item{header}{Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.}
-
-\item{label_column}{Type: integer or character. The reference to the label column. If you specify a character (by name), do not specify the \code{name:} prefix as it will be appended automatically. By default, \code{ncol(x_pred)}.}
+\item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.}
 
 \item{lgbm_path}{Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{ifelse(is.list(model), model[["File"]], getwd())}, which means "take the model LightGBM path if provided the model list, else take the default working directory".}
 

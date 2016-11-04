@@ -7,9 +7,7 @@
 #' @param model Type: list. The model file. If a character vector is provided, it is considered to be the model which is going to be saved as \code{input_model}. If a list is provided, it is used to setup to fetch the correct variables, which you can override by setting the arguments manually. If a single value is provided (like \code{NA}), then it is ignored and uses the other arguments to fetch the model locally.
 #' @param y_pred Type: vector. The validation labels. Leave it alone unless you know what you are doing. Defaults to \code{NA}.
 #' @param x_pred Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}.
-#' @param data_has_label Type: boolean. Whether \code{x_pred} has labels or not. Set this to \code{FALSE} when you already added labels to \code{x_pred}. Defaults to \code{FALSE}.
-#' @param header Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.
-#' @param label_column Type: integer or character. The reference to the label column. If you specify a character (by name), do not specify the \code{name:} prefix as it will be appended automatically. By default, \code{ncol(x_pred)}.
+#' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{ifelse(is.list(model), model[["File"]], getwd())}, which means "take the model LightGBM path if provided the model list, else take the default working directory".
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{ifelse(is.list(model), model[["Path"]], getwd())}, which means "take the model working directory if provided the model list, else take the default working directory".
 #' @param input_model Type: character. The file name of the model. Defaults to \code{ifelse(is.list(model), model[["Name"]], 'lgbm_model.txt')}, which means "take the input model name if provided the model list, else take "lgbm_model.txt".
@@ -34,8 +32,6 @@ lgbm.predict <- function(
   y_pred = NA,
   x_pred = NA,
   data_has_label = FALSE,
-  header = TRUE,
-  label_column = ncol(x_pred),
   
   # LightGBM-related
   lgbm_path = ifelse(is.list(model), model[["lgbm"]], getwd()),
@@ -66,9 +62,9 @@ lgbm.predict <- function(
   # Export model if necessary
   if (length(model) > 1) {
     if (exists("fwrite")) {
-      fwrite(as.data.table(model[["Model"]]), file.path(workingdir, input_model), col.names = header, quote = FALSE, verbose = verbose)
+      fwrite(as.data.table(model[["Model"]]), file.path(workingdir, input_model), col.names = FALSE, quote = FALSE, verbose = verbose)
     } else {
-      write.table(model[["Model"]], file.path(workingdir, input_model), col.names = header, quote = FALSE, row.names = FALSE)
+      write.table(model[["Model"]], file.path(workingdir, input_model), col.names = FALSE, quote = FALSE, row.names = FALSE)
     }
   }
   
@@ -78,11 +74,11 @@ lgbm.predict <- function(
       # Uses the super fast CSV writer
       if (verbose) cat('Saving test data (data.table) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
       my_data <- x_pred
-      fwrite(my_data, file.path(workingdir, data_name), col.names = header, sep = ",", na = "nan", verbose = verbose)
+      fwrite(my_data, file.path(workingdir, data_name), col.names = FALSE, sep = ",", na = "nan", verbose = verbose)
     } else {
       # Fallback if no fwrite
       if (verbose) cat('Saving test data (slow) file to: ', file.path(workingdir, data_name), "  \n", sep = "")
-      write.table(x_pred, file.path(workingdir, data_name), row.names = FALSE, col.names = header, sep = ',', na = "nan")
+      write.table(x_pred, file.path(workingdir, data_name), row.names = FALSE, col.names = FALSE, sep = ',', na = "nan")
     }
   }
   gc(verbose = FALSE) # In case of memory explosion
@@ -91,11 +87,9 @@ lgbm.predict <- function(
   fileConn <- file(file.path(workingdir, pred_conf), "w")
   write(paste0('task=prediction'), fileConn, append = TRUE)
   write(paste0('data="', file.path(workingdir, data_name), '"'), fileConn, append = TRUE)
-  write(paste0('header=', tolower(header)))
-  write(paste0('label=', ifelse(is.character(label_column), paste0("name:", label_column), label_column)))
   if (input_model != '') write(paste0('input_model="', file.path(workingdir, input_model), '"'), fileConn, append = TRUE)
   if (output_preds != '') write(paste0('output_result="', file.path(workingdir, output_preds), '"'), fileConn, append = TRUE)
-  #write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
+  write(paste0('data_has_label=', tolower(as.character(data_has_label))), fileConn, append = TRUE)
   write(paste0('predict_leaf_index=', tolower(as.character(predict_leaf_index))), fileConn, append = TRUE)
   close(fileConn)
   

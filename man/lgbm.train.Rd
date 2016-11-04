@@ -5,8 +5,7 @@
 \title{LightGBM Model Training}
 \usage{
 lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
-  x_test = NA, data_has_label = FALSE, header = TRUE,
-  label_column = ncol(x_train) + 1, NA_value = "na",
+  x_test = NA, data_has_label = TRUE, NA_value = "na",
   lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
   train_name = "lgbm_train.csv", val_name = "lgbm_val.csv",
   test_name = "lgbm_test.csv", init_score = ifelse(is.na(bias_train), NA,
@@ -31,23 +30,19 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
   local_listen_port = 12400, time_out = 120, machine_list_file = "")
 }
 \arguments{
-\item{y_train}{Type: vector. The training labels. Mandatory even if you put them in \code{x_train}.}
+\item{y_train}{Type: vector. The training labels.}
 
-\item{x_train}{Type: data.table (preferred), data.frame, or matrix (unsupported). The training features.}
+\item{x_train}{Type: data.table (preferred), data.frame, or matrix. The training features.}
 
 \item{bias_train}{Type: numeric or vector of numerics. The initial weights of the training data. If a numeric is provided, then the weights are identical for all the training samples. Otherwise, use the vector as weights. Defaults to \code{NA}.}
 
-\item{y_val}{Type: vector. The validation labels. Defaults to \code{NA}. Mandatory even if you put them in \code{x_val}. Unused when \code{validation} is \code{TRUE}.}
+\item{y_val}{Type: vector. The validation labels. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.}
 
-\item{x_val}{Type: data.table (preferred), data.frame, or matrix (unsupported). The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.}
+\item{x_val}{Type: data.table (preferred), data.frame, or matrix. The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.}
 
-\item{x_test}{Type: data.table (preferred), data.frame, or matrix (unsupported). The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
+\item{x_test}{Type: data.table (preferred), data.frame, or matrix. The testing features, if necessary. Not providing a data.frame or a matrix results in at least 3x memory usage. Defaults to \code{NA}. Predictions are averaged. Must be unlabeled.}
 
-\item{data_has_label}{Type: boolean. Whether \code{x_train} and \code{x_val} have labels or not. Set this to \code{FALSE} when you already added labels to \code{x_train} and \code{x_val}. Defaults to \code{FALSE}.}
-
-\item{header}{Type: boolean. Whether headers should be exported. Defaults to \code{TRUE}.}
-
-\item{label_column}{Type: integer or character. The reference to the label column. If you specify a character (by name), do not specify the \code{name:} prefix as it will be appended automatically. By default, \code{ncol(x_train) + 1}.}
+\item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
 \item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.}
 
@@ -101,7 +96,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{histogram_pool_size}{Type: integer. The maximum cache size (in MB) allocated for LightGBM histogram sketching. Values below \code{0} (like \code{-1}) means no limit. Defaults to \code{-1}.}
 
-\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. When \code{TRUE}, does not allow negative values (it will set them to \code{0}). Defaults to \code{TRUE}.}
+\item{is_sparse}{Type: boolean. Whether sparse optimization is enabled. Defaults to \code{TRUE}.}
 
 \item{two_round}{Type: boolean. LightGBM maps data file to memory and load features from memory to maximize speed. If the data is too large to fit in memory, use TRUE. Defaults to \code{FALSE}.}
 
