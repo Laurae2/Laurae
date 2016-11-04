@@ -70,7 +70,8 @@ globalVariables(c("Timing_Metric",
                   "scale_x_discrete",
                   "scale_y_continuous",
                   "scale_y_log10",
-                  "theme_bw"))
+                  "theme_bw",
+                  "write.svmlight"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -81,3 +82,4 @@ requireNamespace("tabplot")
 requireNamespace("xgboost")
 requireNamespace("stringi")
 requireNamespace("ggplot2")
+requireNamespace("sparsity")

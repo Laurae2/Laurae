@@ -17,7 +17,8 @@ Suggests:
 	Rtsne (>= 0.11),
 	outliers (>= 0.14),
 	recommenderlab (>= 0.2),
-	ggplot2 (>= 2.0)
+	ggplot2 (>= 2.0),
+	sparsity
 License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8
 LazyData: true
