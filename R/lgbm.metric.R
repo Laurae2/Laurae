@@ -55,7 +55,7 @@ lgbm.metric <- function(
     #best_round <- best_round[length(best_round)]
     model <- model[1:(length(model) - 1)]
   } else {
-    iterations <- as.numeric(gsub(".*finished iteration ", "", model[length(model)]))
+    iterations <- as.numeric(gsub(".*finished \\s*| iteration.*", "", model[length(model)]))
     if (!metrics) return(iterations)
   }
   
