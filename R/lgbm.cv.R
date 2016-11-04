@@ -331,10 +331,15 @@ lgbm.cv <- function(
     
     # Create folds
     if (!files_exist) {
-      x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-      gc(verbose = FALSE)
-      x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
-      gc(verbose = FALSE)
+      if (SVMLight) {
+        x_tr <- x_train[(1:nrow(x_train))[-folds_list[[i]]], ]
+        x_val <- x_train[folds_list[[i]], ]
+      } else {
+        x_tr <- DTsubsample(DT = x_train, kept = (1:nrow(x_train))[-folds_list[[i]]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
+        gc(verbose = FALSE)
+        x_val <- DTsubsample(DT = x_train, kept = folds_list[[i]], low_mem = FALSE, collect = fold_cleaning, silent = TRUE)
+        gc(verbose = FALSE)
+      }
     } else {
       x_tr <- x_train[1, ]
       x_val <- x_train[1, ]
