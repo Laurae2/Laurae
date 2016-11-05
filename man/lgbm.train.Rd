@@ -5,11 +5,11 @@
 \title{LightGBM Model Training}
 \usage{
 lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
-  x_test = NA, SVMLight = FALSE, data_has_label = TRUE, NA_value = "na",
-  lgbm_path = "path/to/LightGBM.exe", workingdir = getwd(),
-  train_name = paste("lgbm_train", ifelse(SVMLight, ".svm", ".csv")),
-  val_name = paste("lgbm_val", ifelse(SVMLight, ".svm", ".csv")),
-  test_name = paste("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
+  x_test = NA, SVMLight = is(x_train, "dgCMatrix"), data_has_label = TRUE,
+  NA_value = "na", lgbm_path = "path/to/LightGBM.exe",
+  workingdir = getwd(), train_name = paste0("lgbm_train", ifelse(SVMLight,
+  ".svm", ".csv")), val_name = paste0("lgbm_val", ifelse(SVMLight, ".svm",
+  ".csv")), test_name = paste0("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
   init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep
   = "")), files_exist = FALSE, save_binary = FALSE,
   train_conf = "lgbm_train.conf", pred_conf = "lgbm_pred.conf",
@@ -44,7 +44,7 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{x_test}{Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The testing features, if necessary.}
 
-\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
+\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{is(x_train, "dgCMatrix")}.}
 
 \item{data_has_label}{Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.}
 
@@ -54,11 +54,11 @@ lgbm.train(y_train, x_train, bias_train = NA, y_val = NA, x_val = NA,
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
-\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{train_name}{Type: character. The name of the training data file for the model. Defaults to \code{paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{val_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
 
 \item{init_score}{Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.}
 

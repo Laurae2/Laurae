@@ -71,7 +71,8 @@ globalVariables(c("Timing_Metric",
                   "scale_y_continuous",
                   "scale_y_log10",
                   "theme_bw",
-                  "write.svmlight"))
+                  "write.svmlight",
+                  "is"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")

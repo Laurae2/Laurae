@@ -4,11 +4,11 @@
 \alias{lgbm.cv.prep}
 \title{LightGBM Cross-Validated Model Preparation}
 \usage{
-lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
-  data_has_label = FALSE, NA_value = "nan", workingdir = getwd(),
-  train_name = paste("lgbm_train", ifelse(SVMLight, ".svm", ".csv")),
-  val_name = paste("lgbm_val", ifelse(SVMLight, ".svm", ".csv")),
-  test_name = paste("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
+lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = is(x_train,
+  "dgCMatrix"), data_has_label = FALSE, NA_value = "nan",
+  workingdir = getwd(), train_name = paste0("lgbm_train", ifelse(SVMLight,
+  ".svm", ".csv")), val_name = paste0("lgbm_val", ifelse(SVMLight, ".svm",
+  ".csv")), test_name = paste0("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
   verbose = TRUE, folds = 5, folds_weight = NA, stratified = TRUE,
   fold_seed = 0, fold_cleaning = 50)
 }
@@ -27,11 +27,11 @@ lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = FALSE,
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
 
-\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{val_name}{Type: character. The name of the default validation data file for the model. Defaults to \code{paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.}
 
-\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
+\item{test_name}{Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.}
 
 \item{verbose}{Type: boolean. Whether \code{fwrite} data is output. Defaults to \code{TRUE}.}
 

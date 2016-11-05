@@ -4,14 +4,14 @@
 \alias{lgbm.predict}
 \title{LightGBM Prediction}
 \usage{
-lgbm.predict(model, y_pred = NA, x_pred = NA, SVMLight = FALSE,
-  data_has_label = FALSE, lgbm_path = ifelse(is.list(model),
+lgbm.predict(model, y_pred = NA, x_pred = NA, SVMLight = is(x_pred,
+  "dgCMatrix"), data_has_label = FALSE, lgbm_path = ifelse(is.list(model),
   model[["lgbm"]], getwd()), workingdir = ifelse(is.list(model),
   model[["Path"]], getwd()), input_model = ifelse(is.list(model),
   model[["Name"]], "lgbm_model.txt"), pred_conf = "lgbm_pred.conf",
   predict_leaf_index = FALSE, verbose = TRUE,
   data_name = ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]],
-  paste("lgbm_test", ifelse(SVMLight, ".svm", ".csv"))), files_exist = TRUE,
+  paste0("lgbm_test", ifelse(SVMLight, ".svm", ".csv"))), files_exist = TRUE,
   output_preds = "lgbm_predict_result.txt",
   data.table = exists("data.table"))
 }
@@ -22,7 +22,7 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, SVMLight = FALSE,
 
 \item{x_pred}{Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The validation features. Defaults to \code{NA}.}
 
-\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.}
+\item{SVMLight}{Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{is(x_pred, "dgCMatrix")}.}
 
 \item{data_has_label}{Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.}
 
@@ -38,7 +38,7 @@ lgbm.predict(model, y_pred = NA, x_pred = NA, SVMLight = FALSE,
 
 \item{verbose}{Type: boolean. Whether to print to console verbose information. When FALSE, the printing is diverted to \code{"diverted_verbose.txt"}. Defaults to \code{TRUE}. Might not work when your lgbm_path has a space.}
 
-\item{data_name}{Type: character. The file output name for the vaildation file. Defaults to \code{ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]], paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv')))}, which means "take the validation file name if provided the model list and x_pred is left as is, else take "lgbm_test.csv". Original name is \code{val_name}.}
+\item{data_name}{Type: character. The file output name for the vaildation file. Defaults to \code{ifelse(is.list(model) & is.null(dim(x_pred)), model[["Valid"]], paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv')))}, which means "take the validation file name if provided the model list and x_pred is left as is, else take "lgbm_test.csv". Original name is \code{val_name}.}
 
 \item{files_exist}{Type: boolean. Whether to NOT create CSV files for the prediction data, if already created. Defaults to \code{TRUE}.}
 

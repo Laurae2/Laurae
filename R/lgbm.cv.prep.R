@@ -12,9 +12,9 @@
 #' @param data_has_label Type: boolean. Whether the data has labels or not. Do not modify this. Defaults to \code{FALSE}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
-#' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.
-#' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.
-#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param train_name Type: character. The name of the default training data file for the model. Defaults to \code{paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param val_name Type: character. The name of the default validation data file for the model. Defaults to \code{paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.
 #' @param verbose Type: boolean. Whether \code{fwrite} data is output. Defaults to \code{TRUE}.
 #' @param folds Type: integer, vector of two integers, vector of integers, or list. If a integer is supplied, performs a \code{folds}-fold cross-validation. If a vector of two integers is supplied, performs a \code{folds[1]}-fold cross-validation repeated \code{folds[2]} times. If a vector of integers (larger than 2) was provided, each integer value should refer to the fold, of the same length of the training data. Otherwise (if a list was provided), each element of the list must refer to a fold and they will be treated sequentially. Defaults to \code{5}.
 #' @param folds_weight Type: vector of numerics. The weights assigned to each fold. If no weight is supplied (\code{NA}), the weights are automatically set to \code{rep(1/length(folds))} for an average (does not mix well with folds with different sizes). When the folds are automatically created by supplying \code{fold} a vector of two integers, then the weights are automatically computed. Defaults to \code{NA}.
@@ -44,7 +44,7 @@ lgbm.cv.prep <- function(
   y_train,
   x_train,
   x_test = NA,
-  SVMLight = FALSE,
+  SVMLight = is(x_train, "dgCMatrix"),
   data_has_label = FALSE,
   NA_value = "nan",
   
@@ -52,9 +52,9 @@ lgbm.cv.prep <- function(
   workingdir = getwd(),
   
   # Data files to create/user
-  train_name = paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv')),
-  val_name = paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv')),
-  test_name = paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv')),
+  train_name = paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv')),
+  val_name = paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv')),
+  test_name = paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv')),
   verbose = TRUE,
   
   # Validation method

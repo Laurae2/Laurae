@@ -24,14 +24,14 @@
 #' @param y_val Type: vector. The validation labels. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_val Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The validation features. Defaults to \code{NA}. Unused when \code{validation} is \code{TRUE}.
 #' @param x_test Type: data.table (preferred), data.frame, or dgCMatrix (with \code{SVMLight = TRUE}). The testing features, if necessary.
-#' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{FALSE}.
+#' @param SVMLight Type: boolean. Whether the input is a dgCMatrix to be output to SVMLight format. Setting this to \code{TRUE} enforces you must provide labels separately (in \code{y_train}) and headers will be ignored. This is default behavior of SVMLight format. Defaults to \code{is(x_train, "dgCMatrix")}.
 #' @param data_has_label Type: boolean. Whether the training and validation data have labels or not. Do not modify this. Defaults to \code{TRUE}.
 #' @param NA_value Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.
 #' @param lgbm_path Type: character. Where is stored LightGBM? Include only the folder to it. Defaults to \code{'path/to/LightGBM.exe'}.
 #' @param workingdir Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.
-#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.
-#' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.
-#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param train_name Type: character. The name of the training data file for the model. Defaults to \code{paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param val_name Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv'))}.
+#' @param test_name Type: character. The name of the testing data file for the model. Defaults to \code{paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv'))}.
 #' @param init_score Type: string. The file name of initial (bias) training scores to start training LightGBM, which contains \code{bias_train} values. Defaults to \code{ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = ""))}, which means \code{NA} if \code{bias_train} is left default, else appends \code{".weight"} extension to \code{train_name} name.
 #' @param files_exist Type: boolean. Whether the training (and testing) files are already existing. It overwrites files if there are any existing. Defaults to \code{FALSE}.
 #' @param save_binary Type: boolean. Whether data should be saved as binary files for faster load. The name takes automatically the name from the \code{train_name} and adds the extension \code{".bin"}. Defaults to \code{FALSE}.
@@ -121,7 +121,7 @@ lgbm.train <- function(
   y_val = NA,
   x_val = NA,
   x_test = NA,
-  SVMLight = FALSE,
+  SVMLight = is(x_train, "dgCMatrix"),
   data_has_label = TRUE,
   NA_value = "na",
   
@@ -130,9 +130,9 @@ lgbm.train <- function(
   workingdir = getwd(),
   
   # Data files to create/use
-  train_name = paste('lgbm_train', ifelse(SVMLight, '.svm', '.csv')),
-  val_name = paste('lgbm_val', ifelse(SVMLight, '.svm', '.csv')),
-  test_name = paste('lgbm_test', ifelse(SVMLight, '.svm', '.csv')),
+  train_name = paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv')),
+  val_name = paste0('lgbm_val', ifelse(SVMLight, '.svm', '.csv')),
+  test_name = paste0('lgbm_test', ifelse(SVMLight, '.svm', '.csv')),
   init_score = ifelse(is.na(bias_train), NA, paste(train_name, ".weight", sep = "")),
   files_exist = FALSE,
   save_binary = FALSE,
