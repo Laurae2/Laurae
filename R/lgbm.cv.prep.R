@@ -182,6 +182,9 @@ lgbm.cv.prep <- function(
           setcolorder(x_tr, c("datatable_target", colnames(x_tr)[-ncol(x_tr)]))
         }
         fwrite(x_tr, file.path(workingdir, stri_replace_last_fixed(train_name, ".", paste0("_", fold_shortcut, "."))), col.names = FALSE, sep = ",", na = as.character(NA_value), verbose = verbose, quote = FALSE)
+        if (data_has_label == FALSE) {
+          x_tr[, datatable_target := NULL] #data.table pointer strangeness
+        }
         rm(x_tr)
         gc(verbose = FALSE)
         
