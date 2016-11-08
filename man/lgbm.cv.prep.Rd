@@ -6,9 +6,10 @@
 \usage{
 lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = is(x_train,
   "dgCMatrix"), data_has_label = FALSE, NA_value = "nan",
-  workingdir = getwd(), train_name = paste0("lgbm_train", ifelse(SVMLight,
-  ".svm", ".csv")), val_name = paste0("lgbm_val", ifelse(SVMLight, ".svm",
-  ".csv")), test_name = paste0("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
+  workingdir = getwd(), train_all = FALSE, test_all = FALSE,
+  cv_all = TRUE, train_name = paste0("lgbm_train", ifelse(SVMLight, ".svm",
+  ".csv")), val_name = paste0("lgbm_val", ifelse(SVMLight, ".svm", ".csv")),
+  test_name = paste0("lgbm_test", ifelse(SVMLight, ".svm", ".csv")),
   verbose = TRUE, folds = 5, folds_weight = NA, stratified = TRUE,
   fold_seed = 0, fold_cleaning = 50)
 }
@@ -26,6 +27,12 @@ lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = is(x_train,
 \item{NA_value}{Type: numeric or character. What value replaces NAs. Use \code{"na"} if you want to specify "missing". It is not recommended to use something else, even by soemthing like a numeric value out of bounds (like \code{-999} if all your values are greater than \code{-999}). You should change from the default \code{"na"} if they have a real numeric meaning. Defaults to \code{"na"}.}
 
 \item{workingdir}{Type: character. The working directory used for LightGBM. Defaults to \code{getwd()}.}
+
+\item{train_all}{Type: boolean. Whether the full train data should be exported to the requested format for usage with \code{lgbm.train}. Defaults to \code{FALSE}.}
+
+\item{test_all}{Type: boolean. Whether the full test data should be exported to the requested format for usage with \code{lgbm.train}. Defaults to \code{FALSE}.}
+
+\item{cv_all}{Type: boolean. Whether the full cross-validation data should be exported to the requested format for usage with \code{lgbm.cv}. Defaults to \code{TRUE}.}
 
 \item{train_name}{Type: character. The name of the default training data file for the model. Defaults to \code{paste0('lgbm_train', ifelse(SVMLight, '.svm', '.csv'))}.}
 
@@ -46,7 +53,7 @@ lgbm.cv.prep(y_train, x_train, x_test = NA, SVMLight = is(x_train,
 \item{fold_cleaning}{Type: integer. When using cross-validation, data must be subsampled. This parameter controls how aggressive RAM usage should be against speed. The lower this value, the more aggressive the method to keep memory usage as low as possible. Defaults to \code{50}.}
 }
 \value{
-The \code{folds} and \code{folds_weight} elements in a list. All files are output and ready to use for \code{lgbm.cv} with \code{files_exist = TRUE}.
+The \code{folds} and \code{folds_weight} elements in a list if \code{cv_all = TRUE}. All files are output and ready to use for \code{lgbm.cv} with \code{files_exist = TRUE}. If using \code{train_all}, it is ready to be used with \code{lgbm.train} and \code{files_exist = TRUE}. Returns \code{"Success"} if \code{cv_all = FALSE} and the code does not error mid-way.
 }
 \description{
 This function allows you to prepare the cross-validatation of a LightGBM model.
