@@ -16,6 +16,8 @@ library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
+Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
+
 # Laurae
 Advanced Toolbox for Data Science for R by Laurae
 
