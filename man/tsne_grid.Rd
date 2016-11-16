@@ -5,7 +5,7 @@
 \title{t-SNE grid search function}
 \usage{
 tsne_grid(data, output_dims, input_dims = ncol(data),
-  perplexity_range = c(1, floor((ncol(data) - 1)/3)), tries = 10,
+  perplexity_range = c(1, min(floor((nrow(data) - 1)/3)), 1000), tries = 10,
   iterations = 10000, theta = 0, check_duplicates = FALSE, pca = FALSE,
   is_distance = FALSE)
 }
@@ -16,7 +16,7 @@ tsne_grid(data, output_dims, input_dims = ncol(data),
 
 \item{input_dims}{How many input dimensions to use? (defaults to \code{ncol(data)}) - this should be changed when using pca to a value below the default value}
 
-\item{perplexity_range}{What hyperparameter interval to look for? (should be formatted as (min, max)) - defaults to \code{c(1, floor((ncol(data)-1)/3))} - to grid search a seed for a fixed perplexity value, use min = max as inputs - the best pragmatic perpelxity for the lowest loss is typically \code{floor((ncol(data)-1)/3)}}
+\item{perplexity_range}{What hyperparameter interval to look for? (should be formatted as (min, max)) - defaults to \code{c(1, min(floor((nrow(data)-1)/3)), 1000)} - to grid search a seed for a fixed perplexity value, use min = max as inputs - the best pragmatic perpelxity for the lowest loss is typically \code{floor((nrow(data)-1)/3)}. Make sure to avoid very high perplexity (like 1000) on large data (like 10000 observations). You might end up with a never ending tree creation, scaling quadratically (or even worse). By default, it is maxed to 1000.}
 
 \item{tries}{How many seeds to test t-SNE per perplexity value? (this increases linearly the computation time)}
 
