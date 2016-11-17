@@ -126,12 +126,12 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     if ((length(cMin) > 0) & (length(cMax) > 0)) {
       # Has Min/Max
       linCombos <- rbind(diag(cLength), -diag(cLength))
-      linVects <- c(cMax, cMin)
+      linVects <- c(cMax, -cMin)
       constrained <- TRUE
     } else if (length(cMin) > 0) {
       # Hax Min only
       linCombos <- diag(-cLength)
-      linVects <- cMin
+      linVects <- -cMin
       constrained <- TRUE
     } else if (length(cMax) > 0) {
       # Has Max only
