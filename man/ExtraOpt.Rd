@@ -100,7 +100,7 @@ ExtraOpt(Ninit = 50,
          X_train,
          X_test,
          Y_train,
-         Y_test
+         Y_test,
          Nmax = 200,
          cMean = c(2, 4, 6),
          cSD = c(1, 2, 3),
@@ -111,7 +111,7 @@ ExtraOpt(Ninit = 50,
          priorsC = NULL,
          priorsD = NULL,
          autoExp = FALSE,
-         errorCode = -9999,)
+         errorCode = -9999)
 }
 
 }
