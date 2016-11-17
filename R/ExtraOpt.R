@@ -151,7 +151,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     
   }
   
-  if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] Passed continuous tests.  \n", sep = "")}
+  if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Passed continuous tests.  \n", sep = "")}
   
   # Initialization of discrete data: create N*length frame
   if (length(dProb) > 0) {
@@ -196,7 +196,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     
   }
   
-  if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] Passed discrete tests.  \n", sep = "")}
+  if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Passed discrete tests.  \n", sep = "")}
   
   # Prepare prior matrix
   priors <- data.frame(matrix(nrow = Ninit, ncol = (1 + cLength + dLength)))
@@ -215,7 +215,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     stop("No continuous & discrete values were provided.")
   }
   
-  if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] Passed priors tests.  \n", sep = "")}
+  if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Passed priors tests.  \n", sep = "")}
   
   # Create prior initialization values
   if (length(preInit) == 0) {
@@ -239,7 +239,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         priors[i, ] <- c(d, y)
       }
       
-      if (verbose == 2) {cat("[", format(Sys.time(), "%X"), "] Iteration ", i, " loss = ", d, "  \n", sep = "")}
+      #if (verbose == 2) {cat("[", format(Sys.time(), "%X"), "] Iteration ", i, " loss = ", d, "  \n", sep = "")}
       if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Iteration ", i, " loss = ", d," - ", paste(colnames(priors), "=", priors[i, ], collapse = ", ", sep = ""), "  \n", sep = "")}
       
       if (autoExpVar) {temporary_Laurae <<- priors[1:i, ]}
@@ -248,16 +248,16 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     }
   } else {
     priors <- preInit
-    if (verbose == 2) {cat("[", format(Sys.time(), "%X"), "] Loaded pre-initialized priors matrix.  \n", sep = "")}
+    if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Loaded pre-initialized priors matrix.  \n", sep = "")}
   }
   
   
-  if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] --- Computed all priors tests.  \n", sep = "")}
+  if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] --- Computed all priors tests.  \n", sep = "")}
   
   # Clean priors from error code
   priors <- priors[!(priors[, 1] == errorCode), ]
   
-  if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] --- Cleaned all priors tests.  \n", sep = "")}
+  if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] --- Cleaned all priors tests.  \n", sep = "")}
   
   # Prepare to go into loop
   converged <- FALSE
@@ -269,8 +269,6 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
   elites_loss <- numeric(0)
   
   while((nrow(priors) < Nmax) & (converged == FALSE) & (no_imp <= Nimprove)) {
-    
-    if (verbose >= 1) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors), " best = ", ifelse(maximize, max(priors[, 1]), min(priors[, 1])), "  \n", sep = "")}
     
     # Get order of priors
     ranking <- order(priors[, 1], decreasing = maximize)
@@ -334,12 +332,12 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
     priors_elite <- priors[ranking[1:min(length(ranking), elites_converge)], ]
     elites_loss <- c(elites_loss, ifelse(maximize, max(priors[, 1]), min(priors[, 1])))
     
-    if (verbose >= 1) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors), " loss=", max(priors[, 1]), ifelse(cLength > 0, paste(", cThr=", elites_Csd, sep = ""), ""), ifelse(dLength > 0, paste(", dThr=", elites_Dsd, sep = ""), ""), "  \n", sep = "")}
-    if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Elites = ", length(ranking), ". Range = [", min(priors_elite[, 1]), ", ", max(priors_elite[, 1]), "]  \n", sep = "")}
+    if (verbose >= 1) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors), " loss = ", ifelse(maximize, max(priors[, 1]), min(priors[, 1])), ifelse(cLength > 0, paste(", cThr = ", elites_Csd, sep = ""), ""), ifelse(dLength > 0, paste(", dThr = ", elites_Dsd, sep = ""), ""), "  \n", sep = "")}
+    if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] Elites = ", length(ranking), ". Range = [", min(priors_elite[, 1]), ", ", max(priors_elite[, 1]), "]  \n", sep = "")}
     
     # Estimate priors using a model
     modeling <- f_est(priors_elite)
-    if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Elite reconstructed loss = ", modeling$Error, "  \n", sep = "")}
+    if (verbose >= 2) {cat("[", format(Sys.time(), "%X"), "] Elite reconstructed loss = ", modeling$Error, "  \n", sep = "")}
     
     # Attempt to work on new priors
     new_priors <- matrix(nrow = tested_elites, ncol = ncol(priors))
@@ -491,7 +489,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         new_priors[i, ] <- c(d, y)
       }
       
-      if (verbose == 2) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors) + i, " loss = ", d, "  \n", sep = "")}
+      #if (verbose == 2) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors) + i, " loss = ", d, "  \n", sep = "")}
       if (verbose >= 3) {cat("[", format(Sys.time(), "%X"), "] Iteration ", nrow(priors) + i, " loss = ", d, " - ", paste(colnames(new_priors), "=", new_priors[i, ], collapse = ", ", sep = ""), "  \n", sep = "")}
       
       if (autoExpVar) {temporary_Laurae <<- priors}
