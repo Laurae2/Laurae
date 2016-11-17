@@ -16,6 +16,12 @@ library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
+Need all dependencies in one shot?:
+
+```
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car"))
+```
+
 Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
 
 # Laurae
@@ -36,9 +42,15 @@ Mostly...
 
 * Auto-tune t-SNE (t-Distributed Stochastic Neighbor Embedding), but it comes already with premade hyperparameters tuned for minimal reproduction loss!
 
+** Optimization:**
+
+* Do feature selection & hyperparameter optimization using Cross-Entropy optimization & Elite optimization
+* Do the same optimization but with any variable (continuous, ordinal, discrete) for any function using fully personalized callbacks (which is both a great thing and a hassle for the user)
+
 **Improvements & Extras:**
 
 * Improve data.table memory efficiency by up to 3X while keeping a large part of its performance (best of both worlds? isn't that insane?)
+* Improve Cross-Entropy optimization by providing a more powerful frontend (at the expense of the user's necessary knowledge) in order to converge better on feature selection & but slower on hyperparameter optimization of black boxes
 * Load sparse data directly as dgCMatrix (sparse matrix)
 * Plot massive amount of data in an easily readable picture
 
@@ -57,6 +69,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | data.table | YES | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
 | sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| CEoptim | No | ExtraOpt |
+| car | No | .ExtraOpt_plot (demo function) |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
 | Matrix | No | read_sparse_csv |
@@ -122,7 +136,7 @@ Write in your R console `sink()` until you get an error.
 | DTfillNA | Low memory DT Missing Value filling | Fills the missing values of a data.table using the least possible memory. Compared to direct usages (DT[is.na(DT)] <- value), this function consumes up to 3X less (and typically 2X less). You can even create a new data.table or overwrite the original one. Also, this function works on data.frame, and can even overwrite the original data.frame. |
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
-
+| ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. |
 
 # TO-DO:
 
@@ -131,7 +145,6 @@ Write in your R console `sink()` until you get an error.
 * Better handling of LightGBM arguments
 * Better handling of LightGBM files
 * Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
-* Add SVMLight format (via dgCMatrix) as input for LightGBM (actually, it supports already SVMLight, you just need to use the helper function first).
 
 # To add:
 
@@ -315,7 +328,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret"))
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car"))
 ```
 
 ## Laurae
