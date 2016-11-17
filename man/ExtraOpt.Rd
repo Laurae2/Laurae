@@ -8,8 +8,9 @@ ExtraOpt(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate,
   f_prob = .ExtraOpt_prob, preInit = NULL, Ninit = 50L, Nmax = 200,
   Nimprove = 10, elites = 0.9, max_elites = 150, tested_elites = 5,
   elites_converge = 10, CEmax = 200, CEiter = 20, CEelite = 0.1,
-  CEimprove = 3, maximize = TRUE, best = NULL, cMean = NULL,
-  cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001,
+  CEimprove = 3, CEexploration_cont = 2, CEexploration_disc = c(2, 5),
+  maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL,
+  cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001,
   dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL,
   errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL,
   verbose = 1, plot = NULL, debug = FALSE)
@@ -46,6 +47,10 @@ ExtraOpt(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate,
 \item{CEelite}{Type: numeric. The elite alloted for Cross-Entropy optimization of variables post-initialization. The lower the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. \code{CEmax * CEelite} defines the Cross-Entropy elite population, which preferably should be equal to \code{10 * number of variables} for stable updating of the parameter updates. Defaults to \code{0.1}.}
 
 \item{CEimprove}{Type: integer. The maximum number of iterations alloted for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. Defaults to \code{3}.}
+
+\item{CEexploration_cont}{Type: numeric. The multiplication factor of noise for numeric data. Higher values increase the exploration space. Setting it to 0 forces a full convergence mode instead of exploring data. Must be greater than or equal to 0. Defaults to \code{2}.}
+
+\item{CEexploration_disc}{Type: vector of two numerics. Respectively the inverse factor of the noise generator, and the multiplicator of noise for discrete data. Setting one of them to \code{0} nullifies the effect of noise, thus forcing a full convergence mode instead of exploring data. Defaults to \code{c(2, 5)}}
 
 \item{maximize}{Type: boolean. Whether to maximize or not to maximize (minimize). Defaults to \code{TRUE}.}
 

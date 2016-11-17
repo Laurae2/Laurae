@@ -18,6 +18,8 @@
 #' @param CEiter Type: integer. The maximum alloted iterations for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. Defaults to \code{20}.
 #' @param CEelite Type: numeric. The elite alloted for Cross-Entropy optimization of variables post-initialization. The lower the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. \code{CEmax * CEelite} defines the Cross-Entropy elite population, which preferably should be equal to \code{10 * number of variables} for stable updating of the parameter updates. Defaults to \code{0.1}.
 #' @param CEimprove Type: integer. The maximum number of iterations alloted for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. Defaults to \code{3}.
+#' @param CEexploration_cont Type: numeric. The multiplication factor of noise for numeric data. Higher values increase the exploration space. Setting it to 0 forces a full convergence mode instead of exploring data. Must be greater than or equal to 0. Defaults to \code{2}.
+#' @param CEexploration_disc Type: vector of two numerics. Respectively the inverse factor of the noise generator, and the multiplicator of noise for discrete data. Setting one of them to \code{0} nullifies the effect of noise, thus forcing a full convergence mode instead of exploring data. Defaults to \code{c(2, 5)}
 #' @param maximize Type: boolean. Whether to maximize or not to maximize (minimize). Defaults to \code{TRUE}.
 #' @param best Type: numeric. The best value you can get from the loss you will accept to interrupt early the optimizer. Defaults to \code{NULL}.
 #' @param cMean Type: numeric vector. The mean of continuous variables to feed to \code{f_train}.
@@ -75,7 +77,7 @@
 #' 
 #' @export
 
-ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate, f_prob = .ExtraOpt_prob, preInit = NULL, Ninit = 50L, Nmax = 200, Nimprove = 10, elites = 0.90, max_elites = 150, tested_elites = 5, elites_converge = 10, CEmax = 200, CEiter = 20, CEelite = 0.1, CEimprove = 3, maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001, dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL, errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL, verbose = 1, plot = NULL, debug = FALSE) {
+ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate, f_prob = .ExtraOpt_prob, preInit = NULL, Ninit = 50L, Nmax = 200, Nimprove = 10, elites = 0.90, max_elites = 150, tested_elites = 5, elites_converge = 10, CEmax = 200, CEiter = 20, CEelite = 0.1, CEimprove = 3, CEexploration_cont = 2, CEexploration_disc = c(2, 5), maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001, dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL, errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL, verbose = 1, plot = NULL, debug = FALSE) {
   
   # Pass CRAN tests
   temporary_Laurae <- NULL
@@ -292,12 +294,13 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         elites_sd[(i - 1)] <- sd(priors_elite[, i])
         elites_sd[(i - 1)] <- ifelse(is.na(elites_sd[(i - 1)]), 0, elites_sd[(i - 1)])
         elites_Csd <- max(elites_Csd, elites_sd[(i - 1)])
-        elites_sd[(i - 1)] <- ifelse(elites_sd[(i - 1)] == 0, cSD[i - 1], elites_sd[(i - 1)]) # attempt to create noise to unconverge
+        elites_sd[(i - 1)] <- ifelse(elites_sd[(i - 1)] == 0, cSD[i - 1] * (1 + (CEexploration_cont)), elites_sd[(i - 1)] * (1 + (CEexploration_cont))) # attempt to create noise to unconverge
       }
       for (i in (2 + cLength):ncol(priors_elite)) {
         elites_tabulated[[(i - cLength - 1)]] <- tabulate(priors_elite[, i] + 1, nbins = length(dProb[[(i - cLength - 1)]]))
         elites_tabulated[[(i - cLength - 1)]] <- elites_tabulated[[(i - cLength - 1)]] / sum(elites_tabulated[[(i - cLength - 1)]])
         elites_Dsd <- max(elites_Dsd, max(elites_tabulated[[(i - cLength - 1)]]))
+        elites_tabulated[[(i - 1)]] <- abs((1 / CEexploration_disc[1]) * elites_tabulated[[(i - 1)]] - (1 - length(elites_tabulated[[(i - 1)]]))) * CEexploration_disc[2] + elites_tabulated[[(i - 1)]]
       }
       converged <- (elites_Csd < cThr) & (elites_Dsd >= dThr)
       elites_C <- c(elites_C, elites_Csd)
@@ -311,7 +314,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         elites_sd[(i - 1)] <- sd(priors_elite[, i])
         elites_sd[(i - 1)] <- ifelse(is.na(elites_sd[(i - 1)]), 0, elites_sd[(i - 1)])
         elites_Csd <- max(elites_Csd, elites_sd[(i - 1)])
-        elites_sd[(i - 1)] <- ifelse(elites_sd[(i - 1)] == 0, cSD[i - 1], elites_sd[(i - 1)]) # attempt to create noise to unconverge
+        elites_sd[(i - 1)] <- ifelse(elites_sd[(i - 1)] == 0, cSD[i - 1] * (1 + (CEexploration_cont)), elites_sd[(i - 1)] * (1 + (CEexploration_cont))) # attempt to create noise to unconverge
       }
       converged <- (elites_Csd < cThr)
       elites_C <- c(elites_C, elites_Csd)
@@ -323,6 +326,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         elites_tabulated[[(i - 1)]] <- tabulate(priors_elite[, i] + 1, nbins = length(dProb[[(i - 1)]]))
         elites_tabulated[[(i - 1)]] <- elites_tabulated[[(i - 1)]] / sum(elites_tabulated[[(i - 1)]])
         elites_Dsd <- max(elites_Dsd, max(elites_tabulated[[(i - 1)]]))
+        elites_tabulated[[(i - 1)]] <- abs((1 / CEexploration_disc[1]) * elites_tabulated[[(i - 1)]] - (1 - length(elites_tabulated[[(i - 1)]]))) * CEexploration_disc[2] + elites_tabulated[[(i - 1)]]
       }
       converged <- (elites_Dsd >= dThr)
       elites_D <- c(elites_D, elites_Dsd)
