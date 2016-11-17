@@ -11,9 +11,13 @@
 #' @param Nmax Type: integer. The maximum number of iterations alloted to optimize the variables provided against the loss. Once this amount of iterations is reached (excluding error code iterations), the function stops. Defaults to \code{200}.
 #' @param Nimprove Type: integer. The maximum number of iterations alloted to optimize without improvements. Defaults to \code{10}.
 #' @param elites Type: numeric. The percentage of iteration samples retained in the parameter estimator. The larger the \code{elites}, the lower the ability to get stuck at a local optima. However, a very low elite amount would get quickly stuck at a local optima and potentially overfit. After the initialization, a minimum of 5 sampled elites is mandatory. For instance, if \code{Ninit = 100}, then \code{elites >= 0.05}. It should do be higher than \code{1}. If the sampling results in a decimal-valued numeric, it will take the largest value. If the sampling results in a lower than \code{5} numeric, it will shrink back to \code{5}. Defaults to \code{0.90}.
-#' @param max_elites Type: numeric. The maximum allowed number of elite samples. Setting this value low increases the convergence speed, at the expense of exploration. It is not recommended to increase it over \code{5000} as it will slow down severely the next prior optimization. When elites have the same loss, the elite which was computed the earliest takes precedence over all others identical-loss elites (even if their parameters are different). Defaults to \code{150}.
-#' @param tested_elites Type: numeric. The number of elites tested at the same time when trying to find new values. A high value increases the space exploration at the expense of convergence speed. Minimum of \code{1} for small steps but fast convergence speed, supposing the initialization with good enough. Defaults to \code{5}.
-#' @param elites_converge Type: numeric. The number of elites to use to assess convergence via \code{cThr} and \code{dThr}. The larger the \code{elites_converge}, the tighter the convergence requirements. It cannot be higher than the number of \code{tested_elites}. Defaults to \code{10}.
+#' @param max_elites Type: integer. The maximum allowed number of elite samples. Setting this value low increases the convergence speed, at the expense of exploration. It is not recommended to increase it over \code{5000} as it will slow down severely the next prior optimization. When elites have the same loss, the elite which was computed the earliest takes precedence over all others identical-loss elites (even if their parameters are different). Defaults to \code{150}.
+#' @param tested_elites Type: integer. The number of elites tested at the same time when trying to find new values. A high value increases the space exploration at the expense of convergence speed. Minimum of \code{1} for small steps but fast convergence speed, supposing the initialization with good enough. Defaults to \code{5}.
+#' @param elites_converge Type: integer. The number of elites to use to assess convergence via \code{cThr} and \code{dThr}. The larger the \code{elites_converge}, the tighter the convergence requirements. It cannot be higher than the number of \code{tested_elites}. Defaults to \code{10}.
+#' @param CEmax Type: integer. The maximum alloted swarm for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the the exploration space and increases heavily the computation time. Defaults to \code{200}.
+#' @param CEiter Type: integer. The maximum alloted iterations for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. Defaults to \code{20}.
+#' @param CEelite Type: numeric. The elite alloted for Cross-Entropy optimization of variables post-initialization. The lower the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. \code{CEmax * CEelite} defines the Cross-Entropy elite population, which preferably should be equal to \code{10 * number of variables} for stable updating of the parameter updates. Defaults to \code{0.1}.
+#' @param CEimprove Type: integer. The maximum number of iterations alloted for Cross-Entropy optimization of variables post-initialization. The higher the more accurate the potential convergence, but potentially lowers the exploration space and increases heavily the computation time. Defaults to \code{3}.
 #' @param maximize Type: boolean. Whether to maximize or not to maximize (minimize). Defaults to \code{TRUE}.
 #' @param best Type: numeric. The best value you can get from the loss you will accept to interrupt early the optimizer. Defaults to \code{NULL}.
 #' @param cMean Type: numeric vector. The mean of continuous variables to feed to \code{f_train}.
@@ -71,7 +75,7 @@
 #' 
 #' @export
 
-ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate, f_prob = .ExtraOpt_prob, preInit = NULL, Ninit = 50L, Nmax = 200, Nimprove = 10, elites = 0.90, max_elites = 150, tested_elites = 5, elites_converge = 10, maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001, dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL, errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL, verbose = 1, plot = NULL, debug = FALSE) {
+ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate, f_prob = .ExtraOpt_prob, preInit = NULL, Ninit = 50L, Nmax = 200, Nimprove = 10, elites = 0.90, max_elites = 150, tested_elites = 5, elites_converge = 10, CEmax = 200, CEiter = 20, CEelite = 0.1, CEimprove = 3, maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001, dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL, errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL, verbose = 1, plot = NULL, debug = FALSE) {
   
   # Pass CRAN tests
   temporary_Laurae <- NULL
@@ -361,10 +365,10 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
                                                  conMat = linCombos,
                                                  conVec = linVects),
                                discrete = list(probs = elites_tabulated, probThr = (1 - dThr)),
-                               N = ncol(new_priors - 1) * 10,
-                               rho = 0.1,
-                               iterThr = 100,
-                               noImproveThr = 5,
+                               N = CEmax,
+                               rho = CEelite,
+                               iterThr = CEiter,
+                               noImproveThr = CEimprove,
                                verbose = FALSE)
           new_priors[i, ] <- c(optimized$optimum, optimized$optimizer$continuous, optimized$optimizer$discrete)
           continuous[i, ] <- optimized$optimizer$continuous
@@ -383,10 +387,10 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
                                                  sd = elites_sd,
                                                  sdThr = cThr),
                                discrete = list(probs = elites_tabulated, probThr = (1 - dThr)),
-                               N = ncol(new_priors - 1) * 10,
-                               rho = 0.1,
-                               iterThr = 100,
-                               noImproveThr = 5,
+                               N = CEmax,
+                               rho = CEelite,
+                               iterThr = CEiter,
+                               noImproveThr = CEimprove,
                                verbose = FALSE)
           new_priors[i, ] <- c(optimized$optimum, optimized$optimizer$continuous, optimized$optimizer$discrete)
           continuous[i, ] <- optimized$optimizer$continuous
@@ -412,10 +416,10 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
                                                  sdThr = cThr,
                                                  conMat = linCombos,
                                                  conVec = linVects),
-                               N = ncol(new_priors - 1) * 10,
-                               rho = 0.1,
-                               iterThr = 100,
-                               noImproveThr = 5,
+                               N = CEmax,
+                               rho = CEelite,
+                               iterThr = CEiter,
+                               noImproveThr = CEimprove,
                                verbose = FALSE)
           new_priors[i, ] <- c(optimized$optimum, optimized$optimizer$continuous)
           continuous[i, ] <- optimized$optimizer$continuous
@@ -432,10 +436,10 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
                                continuous = list(mean = elites_mean,
                                                  sd = elites_sd,
                                                  sdThr = cThr),
-                               N = ncol(new_priors - 1) * 10,
-                               rho = 0.1,
-                               iterThr = 100,
-                               noImproveThr = 5,
+                               N = CEmax,
+                               rho = CEelite,
+                               iterThr = CEiter,
+                               noImproveThr = CEimprove,
                                verbose = FALSE)
           new_priors[i, ] <- c(optimized$optimum, optimized$optimizer$continuous)
           continuous[i, ] <- optimized$optimizer$continuous
@@ -452,10 +456,10 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
                              f.arg = list(model = modeling$Model),
                              maximize = maximize,
                              discrete = list(probs = elites_tabulated, probThr = (1 - dThr)),
-                             N = ncol(new_priors - 1) * 10,
-                             rho = 0.1,
-                             iterThr = 100,
-                             noImproveThr = 5,
+                             N = CEmax,
+                             rho = CEelite,
+                             iterThr = CEiter,
+                             noImproveThr = CEimprove,
                              verbose = FALSE)
         new_priors[i, ] <- c(optimized$optimum, optimized$optimizer$discrete)
         discrete[i, ] <- optimized$optimizer$discrete
