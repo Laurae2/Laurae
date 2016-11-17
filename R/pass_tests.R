@@ -6,6 +6,7 @@
 #' @importFrom stats optim
 #' @importFrom stats predict
 #' @importFrom stats sd
+#' @importFrom stats rnorm
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
@@ -13,7 +14,7 @@
 #' @importFrom stats na.omit
 #' @import data.table
 
-# Pass tests
+# Pass CRAN tests
 
 globalVariables(c("Timing_Metric",
                   "ID",
@@ -72,7 +73,9 @@ globalVariables(c("Timing_Metric",
                   "scale_y_log10",
                   "theme_bw",
                   "write.svmlight",
-                  "is"))
+                  "is",
+                  "CEoptim",
+                  "scatterplotMatrix"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -84,3 +87,5 @@ requireNamespace("xgboost")
 requireNamespace("stringi")
 requireNamespace("ggplot2")
 requireNamespace("sparsity")
+requireNamespace("CEoptim")
+requireNamespace("car")
