@@ -363,7 +363,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         
         # Constrained version
         for (i in 1:tested_elites) {
-          set.seed(i)
+          set.seed(batch * tested_elites + i)
           optimized <- CEoptim(f_prob,
                                f.arg = list(model = modeling$Model),
                                maximize = maximize,
@@ -387,7 +387,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         
         # Unconstrained version
         for (i in 1:tested_elites) {
-          set.seed(i)
+          set.seed(batch * tested_elites + i)
           optimized <- CEoptim(f_prob,
                                f.arg = list(model = modeling$Model),
                                maximize = maximize,
@@ -415,7 +415,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         
         # Constrained version
         for (i in 1:tested_elites) {
-          set.seed(i)
+          set.seed(batch * tested_elites + i)
           optimized <- CEoptim(f_prob,
                                f.arg = list(model = modeling$Model),
                                maximize = maximize,
@@ -437,7 +437,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         
         # Unconstrained version
         for (i in 1:tested_elites) {
-          set.seed(i)
+          set.seed(batch * tested_elites + i)
           optimized <- CEoptim(f_prob,
                                f.arg = list(model = modeling$Model),
                                maximize = maximize,
@@ -459,7 +459,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
       
       # Do discrete case
       for (i in 1:tested_elites) {
-        set.seed(i)
+        set.seed(batch * tested_elites + i)
         optimized <- CEoptim(f_prob,
                              f.arg = list(model = modeling$Model),
                              maximize = maximize,
@@ -548,17 +548,17 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
   
   if ((cLength > 0) & (dLength > 0)) {
     # Do continuous + discrete case
-    variables[["Continuous"]] <- priors[which.max(priors[, 1]), 2:(1 + cLength)]
-    variables[["Discrete"]] <- priors[which.max(priors[, 1]), (2 + cLength):(ncol(priors))]
+    variables[["Continuous"]] <- as.numeric(priors[which.max(priors[, 1]), 2:(1 + cLength)])
+    variables[["Discrete"]] <- as.integer(priors[which.max(priors[, 1]), (2 + cLength):(ncol(priors))])
     thresh_stats$Cthr <- elites_C
     thresh_stats$Dthr <- elites_D
   } else if (cLength > 0) {
     # Do continuous case
-    variables[["Continuous"]] <- priors[which.max(priors[, 1]), 2:ncol(priors)]
+    variables[["Continuous"]] <- as.numeric(priors[which.max(priors[, 1]), 2:ncol(priors)])
     thresh_stats$Cthr <- elites_C
   } else if (dLength > 0) {
     # Do discrete case
-    variables[["Discrete"]] <- priors[which.max(priors[, 1]), 2:ncol(priors)]
+    variables[["Discrete"]] <- as.integer(priors[which.max(priors[, 1]), 2:ncol(priors)])
     thresh_stats$Dthr <- elites_D
   }
   
