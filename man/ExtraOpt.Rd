@@ -9,11 +9,11 @@ ExtraOpt(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate,
   Nimprove = 10, elites = 0.9, max_elites = 150, tested_elites = 5,
   elites_converge = 10, CEmax = 200, CEiter = 20, CEelite = 0.1,
   CEimprove = 3, CEexploration_cont = 2, CEexploration_disc = c(2, 5),
-  maximize = TRUE, best = NULL, cMean = NULL, cSD = NULL,
-  cOrdinal = NULL, cMin = NULL, cMax = NULL, cThr = 0.001,
-  dProb = NULL, dThr = 0.999, priorsC = NULL, priorsD = NULL,
-  errorCode = -9999, autoExpVar = FALSE, autoExpFile = NULL,
-  verbose = 1, plot = NULL, debug = FALSE)
+  CEexploration_decay = 0.98, maximize = TRUE, best = NULL,
+  cMean = NULL, cSD = NULL, cOrdinal = NULL, cMin = NULL, cMax = NULL,
+  cThr = 0.001, dProb = NULL, dThr = 0.999, priorsC = NULL,
+  priorsD = NULL, errorCode = -9999, autoExpVar = FALSE,
+  autoExpFile = NULL, verbose = 1, plot = NULL, debug = FALSE)
 }
 \arguments{
 \item{f_train}{Type: function. The training function which returns at the end the loss. All arguments provided to \code{ExtraOpt} in \code{...} are provided to \code{f_train}. Defaults to \code{.ExtraOpt_trainer}, which is a sample xgboost trainer.}
@@ -51,6 +51,8 @@ ExtraOpt(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimate,
 \item{CEexploration_cont}{Type: numeric. The multiplication factor of noise for numeric data. Higher values increase the exploration space. Setting it to 0 forces a full convergence mode instead of exploring data. Must be greater than or equal to 0. Defaults to \code{2}.}
 
 \item{CEexploration_disc}{Type: vector of two numerics. Respectively the inverse factor of the noise generator, and the multiplicator of noise for discrete data. Setting one of them to \code{0} nullifies the effect of noise, thus forcing a full convergence mode instead of exploring data. Defaults to \code{c(2, 5)}}
+
+\item{CEexploration_decay}{Type: numeric. The decay factor of noise for continuous and discrete data. Lower values mean faster decay (\code{exp(N-1th batch * (1 - CEexploration_decay))}). Must be between \code{0} (near instant decay) and \code{1} (no decay). Defaults to \code{0.98}.}
 
 \item{maximize}{Type: boolean. Whether to maximize or not to maximize (minimize). Defaults to \code{TRUE}.}
 
