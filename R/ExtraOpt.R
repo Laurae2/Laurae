@@ -300,7 +300,8 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         elites_tabulated[[(i - cLength - 1)]] <- tabulate(priors_elite[, i] + 1, nbins = length(dProb[[(i - cLength - 1)]]))
         elites_tabulated[[(i - cLength - 1)]] <- elites_tabulated[[(i - cLength - 1)]] / sum(elites_tabulated[[(i - cLength - 1)]])
         elites_Dsd <- max(elites_Dsd, max(elites_tabulated[[(i - cLength - 1)]]))
-        elites_tabulated[[(i - 1)]] <- abs((1 / CEexploration_disc[1]) * elites_tabulated[[(i - 1)]] - (1 - length(elites_tabulated[[(i - 1)]]))) * CEexploration_disc[2] + elites_tabulated[[(i - 1)]]
+        elites_tabulated[[(i - cLength - 1)]] <- abs((1 / CEexploration_disc[1]) * elites_tabulated[[(i - cLength - 1)]] - (1 - length(elites_tabulated[[(i - cLength - 1)]]))) * CEexploration_disc[2] + elites_tabulated[[(i - cLength - 1)]]
+        elites_tabulated[[(i - cLength - 1)]] <- elites_tabulated[[(i - cLength - 1)]] / sum(elites_tabulated[[(i - cLength - 1)]])
       }
       converged <- (elites_Csd < cThr) & (elites_Dsd >= dThr)
       elites_C <- c(elites_C, elites_Csd)
@@ -327,6 +328,7 @@ ExtraOpt <- function(f_train = .ExtraOpt_trainer, ..., f_est = .ExtraOpt_estimat
         elites_tabulated[[(i - 1)]] <- elites_tabulated[[(i - 1)]] / sum(elites_tabulated[[(i - 1)]])
         elites_Dsd <- max(elites_Dsd, max(elites_tabulated[[(i - 1)]]))
         elites_tabulated[[(i - 1)]] <- abs((1 / CEexploration_disc[1]) * elites_tabulated[[(i - 1)]] - (1 - length(elites_tabulated[[(i - 1)]]))) * CEexploration_disc[2] + elites_tabulated[[(i - 1)]]
+        elites_tabulated[[(i - 1)]] <- elites_tabulated[[(i - 1)]] / sum(elites_tabulated[[(i - 1)]])
       }
       converged <- (elites_Dsd >= dThr)
       elites_D <- c(elites_D, elites_Dsd)
