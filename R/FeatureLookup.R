@@ -93,7 +93,7 @@ FeatureLookup <- function(data, label, ban = NULL, antiban = FALSE, type = "auto
   }
   
   set.seed(seed)
-  mini_model <- rpart(reformulate(termlabels = paste0("`", colnames(data), "`"), response = "label"),
+  mini_model <- rpart(formula = formula,
                       data = data,
                       method = type,
                       parms = list(split = split),
