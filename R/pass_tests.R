@@ -7,6 +7,7 @@
 #' @importFrom stats predict
 #' @importFrom stats sd
 #' @importFrom stats rnorm
+#' @importFrom stats reformulate
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
@@ -75,7 +76,11 @@ globalVariables(c("Timing_Metric",
                   "write.svmlight",
                   "is",
                   "CEoptim",
-                  "scatterplotMatrix"))
+                  "scatterplotMatrix",
+                  "rpart",
+                  "rpart.control",
+                  "plotcp",
+                  "rpart.plot"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -89,3 +94,5 @@ requireNamespace("ggplot2")
 requireNamespace("sparsity")
 requireNamespace("CEoptim")
 requireNamespace("car")
+requireNamespace("rpart")
+requireNamespace("rpart.plot")
