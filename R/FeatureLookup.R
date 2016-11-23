@@ -86,9 +86,9 @@ FeatureLookup <- function(data, label, ban = NULL, antiban = FALSE, type = "auto
     formula <- reformulate(termlabels = paste0("`", colnames(data), "`"), response = "label")
   } else {
     if (is.numeric(ban)) {
-      formula <- reformulate(termlabels = paste0("`", colnames(data)[-ban * (!antiban)], "`"), response = "label")
+      formula <- reformulate(termlabels = paste0("`", colnames(data)[-ban & (!antiban)], "`"), response = "label")
     } else {
-      formula <- reformulate(termlabels = paste0("`", colnames(data)[(!which(colnames(data)) %in% ban) * (!antiban)], "`"), response = "label")
+      formula <- reformulate(termlabels = paste0("`", colnames(data)[which((!colnames(data) %in% ban) & (!antiban))], "`"), response = "label")
     }
   }
   
