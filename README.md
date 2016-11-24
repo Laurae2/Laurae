@@ -16,10 +16,10 @@ library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
-Need all dependencies in one shot?:
+Need all R dependencies in one shot?:
 
 ```
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car"))
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
 ```
 
 Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
@@ -37,6 +37,7 @@ Mostly...
 * Use a repeated cross-validated xgboost (Extreme Gradient Boosting)
 * Throw supervised rules using outliers anywhere you feel it appropriate (univariate, bivariate)
 * Create cross-validated and repeated cross-validated folds for supervised learning with more options for creating them (like batch creation - those ones can be fed into my LightGBM R wrapper for extensive analysis of feature behavior)
+* Feature Engineering Assistant (mostly non-linear version) using automated decision trees
 
 **Unsupervised Learning:**
 
@@ -70,6 +71,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | data.table | YES | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
 | sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | CEoptim | No | ExtraOpt |
+| rpart | No | FeatureLookup |
+| rpart.plot | No | FeatureLookup |
 | car | No | .ExtraOpt_plot (demo function) |
 | outliers | No | rule_single, rule_double |
 | R.utils | No | rule_single, rule_double |
@@ -137,6 +140,7 @@ Write in your R console `sink()` until you get an error.
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
 | ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. |
+| FeatureLookup | Non-linear Feature Engineering Assistant | Allows to run a cross-validated decision tree using your own specified depth, amount of surrogates, and best potential lookups in order to to create new features based on the resulting decision tree at your own will. |
 
 # TO-DO:
 
@@ -145,6 +149,8 @@ Write in your R console `sink()` until you get an error.
 * Better handling of LightGBM arguments
 * Better handling of LightGBM files
 * Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
+* Add Differential Evolution algorithm for feature selection and hyperparameter simultaneous optimization (add another backend via another interface as it typically takes a lot of time for both)
+* (Attempt to) Add automated non-linear feature creation using decision trees
 
 # To add:
 
@@ -328,7 +334,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car"))
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
 ```
 
 ## Laurae
