@@ -9,7 +9,7 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
-Running in a Virtual Machine? Use the following alternative:
+Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```
 library(devtools)
@@ -19,7 +19,9 @@ install_git("git://github.com/Laurae2/Laurae.git")
 Need all R dependencies in one shot?:
 
 ```
+install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
 install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
+install_github("Laurae2/sparsity")
 ```
 
 Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
@@ -43,7 +45,7 @@ Mostly...
 
 * Auto-tune t-SNE (t-Distributed Stochastic Neighbor Embedding), but it comes already with premade hyperparameters tuned for minimal reproduction loss!
 
-** Optimization:**
+**Optimization:**
 
 * Do feature selection & hyperparameter optimization using Cross-Entropy optimization & Elite optimization
 * Do the same optimization but with any variable (continuous, ordinal, discrete) for any function using fully personalized callbacks (which is both a great thing and a hassle for the user)
@@ -92,7 +94,7 @@ LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722c
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
 * data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
 * sparsity: You must use Laurae's sparsity package (SVMLight I/O conversion) which can be found here: https://github.com/Laurae2/sparsity/blob/master/README.md - compilation simply requires writing `devtools:::install_github("Laurae2/sparsity")` (and having Rtools in Windows).
-* tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")`. The 0.13 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
+* tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")`. The 1.3 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
 
 # Strange errors on first run
 
@@ -326,7 +328,7 @@ The speed up can reach over 1,000x for pure I/O.
 To have "more readable" tableplots for visualizations, you will need to install an old version of the tabplot package. You can do this by running in your R console:
 
 ```
-install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_0.12.tar.gz", repos=NULL, type="source")
+install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
 ```
 
 ## Other packages
@@ -335,6 +337,7 @@ You can install the other packages by running in your R console:
 
 ```
 install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
+install_github("Laurae2/sparsity")
 ```
 
 ## Laurae
@@ -346,7 +349,7 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
-Running in a Virtual Machine? Use the following alternative:
+Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```
 library(devtools)
