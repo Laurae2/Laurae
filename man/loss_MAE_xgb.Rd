@@ -7,14 +7,23 @@
 loss_MAE_xgb(preds, dtrain)
 }
 \arguments{
-\item{preds}{The predictions.}
+\item{preds}{The \code{predictions}.}
 
-\item{dtrain}{The labels.}
+\item{dtrain}{The xgboost model.}
 }
 \value{
 The gradient and the hessian of the Absolute Error per value in a list.
 }
 \description{
 This function computes for xgboost's \code{obj} function the Mean Absolute Error loss (MAE) gradient and hessian per value provided \code{preds} and \code{dtrain}.
+}
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x)}
+
+Gradient Formula : \eqn{sign(x)}
+
+Hessian Formula : \eqn{0}
 }
 

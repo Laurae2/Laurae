@@ -4,10 +4,12 @@
 \alias{loss_MAE_math}
 \title{Mean Absolute Error (symbolic function)}
 \usage{
-loss_MAE_math(x)
+loss_MAE_math(x, y)
 }
 \arguments{
-\item{x}{The difference between the \code{label} and the \code{prediction}.}
+\item{x}{The \code{predictions}.}
+
+\item{y}{The \code{labels}.}
 }
 \value{
 The Squared Error per value.
@@ -15,9 +17,18 @@ The Squared Error per value.
 \description{
 This function computes the Mean Absolute Error loss (MAE) per value provided \code{x} (preds - labels).
 }
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x)}
+
+Gradient Formula : \eqn{sign(x)}
+
+Hessian Formula : \eqn{0}
+}
 \examples{
 \dontrun{
-SymbolicLoss(fc = loss_MAE_math, fc_ref)
+SymbolicLoss(fc = loss_MAE_math)
 }
 
 }

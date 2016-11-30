@@ -59,7 +59,7 @@
 #' @param xmin The x-axis minimum when plotting data when \code{plotting = TRUE}. Defaults to \code{-10}.
 #' @param xmax The x-axis maximum when plotting data when \code{plotting = TRUE}. Defaults to \code{10}.
 #' @param xpoint How many poitns to plot when \code{plotting = TRUE}. Defaults to \code{20}.
-#' @param ... Arguments to pass to \code{fc}.
+#' @param ... Arguments to pass to \code{fc} and \code{fc_ref}.
 #' 
 #' @return A list with \code{grad} as the gradient of the loss function and \code{hess} as the hessian of the loss function.
 #' 
@@ -95,19 +95,19 @@ SymbolicLoss <- function(fc, fc_ref = NULL, verbose = TRUE, plotting = TRUE, xmi
     dev.off()
     par(mfrow=c(3, 1 + has_ref))
     
-    plot(x = x_plot, y = fc(x_plot, ...), type = "o", main = "Loss function", xlab = "Pred - Label", ylab = "Loss")
+    plot(x = x_plot, y = fc(x_plot, ...), type = "o", main = "Loss function", xlab = "x", ylab = "Loss")
     if (has_ref) {
-      plot(x = x_plot, y = fc_ref(x_plot), type = "o", main = "Reference loss function", xlab = "Pred - Label", ylab = "Loss")
+      plot(x = x_plot, y = fc_ref(x_plot, ...), type = "o", main = "Reference loss function", xlab = "x", ylab = "Loss")
     }
     
-    if (length(try(print(plot(x = x_plot, y = mini_func_grad(x_plot, ...), type = "o", main = "Computed Gradient: Success", xlab = "Pred - Label", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Computed Gradient: Constant/Error", xlab = "Pred - Label", ylab = "Loss"))}
+    if (length(try(print(plot(x = x_plot, y = mini_func_grad(x_plot, ...), type = "o", main = "Computed Gradient: Success", xlab = "x", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Computed Gradient: Constant/Error", xlab = "x", ylab = "Loss"))}
     if (has_ref) {
-      if (length(try(print(plot(x = x_plot, y = mini_func_grad_ref(x_plot), type = "o", main = "Reference Gradient: Success", xlab = "Pred - Label", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Reference Gradient: Constant/Error", xlab = "Pred - Label", ylab = "Loss"))}
+      if (length(try(print(plot(x = x_plot, y = mini_func_grad_ref(x_plot, ...), type = "o", main = "Reference Gradient: Success", xlab = "x", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Reference Gradient: Constant/Error", xlab = "x", ylab = "Loss"))}
     }
     
-    if (length(try(print(plot(x = x_plot, y = mini_func_hess(x_plot, ...), type = "o", main = "Computed Hessian: Success", xlab = "Pred - Label", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Computed Hessian: Constant/Error", xlab = "Pred - Label", ylab = "Loss"))}
+    if (length(try(print(plot(x = x_plot, y = mini_func_hess(x_plot, ...), type = "o", main = "Computed Hessian: Success", xlab = "x", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Computed Hessian: Constant/Error", xlab = "x", ylab = "Loss"))}
     if (has_ref) {
-      if (length(try(print(plot(x = x_plot, y = mini_func_hess_ref(x_plot), type = "o", main = "Reference Hessian: Success", xlab = "Pred - Label", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Reference Hessian: Constant/Error", xlab = "Pred - Label", ylab = "Loss"))}
+      if (length(try(print(plot(x = x_plot, y = mini_func_hess_ref(x_plot, ...), type = "o", main = "Reference Hessian: Success", xlab = "x", ylab = "Loss")))) == 1) {print(plot(x = 0, y = 0, main = "Reference Hessian: Constant/Error", xlab = "x", ylab = "Loss"))}
     }
     
   }

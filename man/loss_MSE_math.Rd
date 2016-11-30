@@ -4,10 +4,12 @@
 \alias{loss_MSE_math}
 \title{Mean Squared Error (symbolic function)}
 \usage{
-loss_MSE_math(x)
+loss_MSE_math(x, y)
 }
 \arguments{
-\item{x}{The difference between the \code{label} and the \code{prediction}.}
+\item{x}{The \code{predictions}.}
+
+\item{y}{The \code{labels}.}
 }
 \value{
 The Squared Error per value.
@@ -15,9 +17,18 @@ The Squared Error per value.
 \description{
 This function computes the Mean Squared Error loss (MSE) per value provided \code{x} (preds - labels).
 }
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{x^2}
+
+Gradient Formula : \eqn{2 * x}
+
+Hessian Formula : \eqn{2}
+}
 \examples{
 \dontrun{
-SymbolicLoss(fc = loss_MSE_math, fc_ref)
+SymbolicLoss(fc = loss_MSE_math)
 }
 
 }

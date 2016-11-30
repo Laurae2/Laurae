@@ -7,14 +7,23 @@
 loss_MSE_grad(y_pred, y_true)
 }
 \arguments{
-\item{y_pred}{The predictions.}
+\item{y_pred}{The \code{predictions}.}
 
-\item{y_true}{The labels.}
+\item{y_true}{The \code{labels}.}
 }
 \value{
 The gradient of the Squared Error per value.
 }
 \description{
 This function computes the Mean Squared Error loss (MSE) gradient per value provided \code{preds} and \code{labels}.
+}
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{x^2}
+
+Gradient Formula : \eqn{2 * x}
+
+Hessian Formula : \eqn{2}
 }
 

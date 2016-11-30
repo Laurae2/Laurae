@@ -7,14 +7,23 @@
 loss_MCE(y_pred, y_true)
 }
 \arguments{
-\item{y_pred}{The predictions.}
+\item{y_pred}{The \code{predictions}.}
 
-\item{y_true}{The labels.}
+\item{y_true}{The \code{labels}.}
 }
 \value{
 The Cubic Error per value.
 }
 \description{
 This function computes the Mean Cubic Error loss (MCE) per value provided \code{preds} and \code{labels}.
+}
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x^3)}
+
+Gradient Formula : \eqn{3 * (x * abs(x))}
+
+Hessian Formula : \eqn{(6 * x * x) / abs(x)}
 }
 

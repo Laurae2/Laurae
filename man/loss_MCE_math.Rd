@@ -4,10 +4,12 @@
 \alias{loss_MCE_math}
 \title{Mean Cubic Error (math function)}
 \usage{
-loss_MCE_math(x)
+loss_MCE_math(x, y)
 }
 \arguments{
-\item{x}{The difference between the \code{label} and the \code{prediction}.}
+\item{x}{The \code{predictions}.}
+
+\item{y}{The \code{labels}.}
 }
 \value{
 The Cubic Error per value.
@@ -15,9 +17,18 @@ The Cubic Error per value.
 \description{
 This function computes the Mean Cubic Error loss (MCE) per value provided \code{x} (preds - labels).
 }
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x^3)}
+
+Gradient Formula : \eqn{3 * (x * abs(x))}
+
+Hessian Formula : \eqn{(6 * x * x) / abs(x)}
+}
 \examples{
 \dontrun{
-SymbolicLoss(fc = loss_MCE_math, fc_ref)
+SymbolicLoss(fc = loss_MCE_math)
 }
 
 }

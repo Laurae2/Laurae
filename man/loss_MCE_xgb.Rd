@@ -7,14 +7,23 @@
 loss_MCE_xgb(preds, dtrain)
 }
 \arguments{
-\item{preds}{The predictions.}
+\item{preds}{The \code{predictions}.}
 
-\item{dtrain}{The labels.}
+\item{dtrain}{The xgboost model.}
 }
 \value{
 The gradient and the hessian of the Cubic Error per value in a list.
 }
 \description{
 This function computes for xgboost's \code{obj} function the Mean Cubic Error loss (MCE) gradient and hessian per value provided \code{preds} and \code{dtrain}.
+}
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x^3)}
+
+Gradient Formula : \eqn{3 * (x * abs(x))}
+
+Hessian Formula : \eqn{(6 * x * x) / abs(x)}
 }
 

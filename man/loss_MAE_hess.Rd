@@ -7,14 +7,23 @@
 loss_MAE_hess(y_pred, y_true)
 }
 \arguments{
-\item{y_pred}{The predictions.}
+\item{y_pred}{The \code{predictions}.}
 
-\item{y_true}{The labels.}
+\item{y_true}{The \code{labels}.}
 }
 \value{
 The hessian of the Absolute Error per value.
 }
 \description{
 This function computes the Mean Absolute Error loss (MAE) hessian per value provided \code{preds} and \code{labels}.
+}
+\details{
+Supposing: \eqn{x = preds - labels}
+
+Loss Formula : \eqn{abs(x)}
+
+Gradient Formula : \eqn{sign(x)}
+
+Hessian Formula : \eqn{0}
 }
 

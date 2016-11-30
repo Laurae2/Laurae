@@ -22,7 +22,7 @@ SymbolicLoss(fc, fc_ref = NULL, verbose = TRUE, plotting = TRUE,
 
 \item{xpoint}{How many poitns to plot when \code{plotting = TRUE}. Defaults to \code{20}.}
 
-\item{...}{Arguments to pass to \code{fc}.}
+\item{...}{Arguments to pass to \code{fc} and \code{fc_ref}.}
 }
 \value{
 A list with \code{grad} as the gradient of the loss function and \code{hess} as the hessian of the loss function.
