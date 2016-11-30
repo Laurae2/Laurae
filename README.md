@@ -4,23 +4,24 @@
 
 If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
 
-```
+```r
 library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
-```
+```r
 library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
 Need all R dependencies in one shot?:
 
-```
+```r
+install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
 install_github("Laurae2/sparsity")
 ```
 
@@ -40,6 +41,8 @@ Mostly...
 * Throw supervised rules using outliers anywhere you feel it appropriate (univariate, bivariate)
 * Create cross-validated and repeated cross-validated folds for supervised learning with more options for creating them (like batch creation - those ones can be fed into my LightGBM R wrapper for extensive analysis of feature behavior)
 * Feature Engineering Assistant (mostly non-linear version) using automated decision trees
+* Dictionary of loss functions and ready to input into xgboost (currently: Absolute Error, Squared Error, Cubic Error, Loglikelihood Error, Poisson Error, Kullback-Leibler Error)
+* Symbolic Derivaton for custom loss functions (finding gradient/hessian painlessly)
 
 **Unsupervised Learning:**
 
@@ -49,6 +52,7 @@ Mostly...
 
 * Do feature selection & hyperparameter optimization using Cross-Entropy optimization & Elite optimization
 * Do the same optimization but with any variable (continuous, ordinal, discrete) for any function using fully personalized callbacks (which is both a great thing and a hassle for the user)
+* Symbolic Derivaton for custom loss functions (finding gradient/hessian painlessly)
 
 **Improvements & Extras:**
 
@@ -61,6 +65,24 @@ Mostly...
 
 * Benchmark to convert a dgCMatrix with 2,500,000 rows and 8,500 columns (1.1GB in memory) => 5 minutes
 * I think it needs minimum hours if not days for the other existing converters for such size.
+
+**Nice pictures:**
+
+* LightGBM Feature Importance:
+
+![LightGBM Feature Importance](https://cloud.githubusercontent.com/assets/9083669/20763173/3e7a54a2-b729-11e6-86d5-48966ce2cd92.png)
+
+* Symbolic Derivation:
+
+![Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/20763045/c9d46d22-b728-11e6-9b5e-d1fe046ad045.png)
+
+* Feature Engineering Assistant:
+
+![Feature Engineering Assistant](https://cloud.githubusercontent.com/assets/9083669/20763260/896627ac-b729-11e6-93e4-2c4baef6f67f.png)
+
+* Feature Engineering Assistant Pretty Print:
+
+![Feature Engineering Assistant Pretty Print](https://cloud.githubusercontent.com/assets/9083669/20763274/9c6bf57a-b729-11e6-86ef-cd7157b81d70.png)
 
 # What you need?
 
@@ -84,6 +106,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | tabplot | No | tableplot_jpg |
 | stringi | No | lightgbm.cv |
 | ggplot2 | No | lgbm.fi.plot |
+| Deriv | No | SymbolicLoss |
 | None so far | No | kfold, nkfold, lgbm.find |
 
 LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722ca7ef1139c946fb608bf
@@ -143,6 +166,7 @@ Write in your R console `sink()` until you get an error.
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
 | ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. |
 | FeatureLookup | Non-linear Feature Engineering Assistant | Allows to run a cross-validated decision tree using your own specified depth, amount of surrogates, and best potential lookups in order to to create new features based on the resulting decision tree at your own will. |
+| SymbolicLoss | Symbolic Derivation of Loss Functions | Attemps to compute the exact 1st and 2nd derivatives of the loss function provided, along of a reference function if you provide one. The functions returned are ready to be used. Graphics are also added to help the user. |
 
 # TO-DO:
 
@@ -194,7 +218,7 @@ Run in R: `system('gcc -v')`
 * If you don't see MinGW, then edit the PATH variable appropriately so MinGW is FIRST.
 * If you see MinGW, open Git Bash and run:
 
-```
+```bash
 mkdir C:/xgboost
 cd C:/xgboost
 git clone --recursive https://github.com/dmlc/xgboost
@@ -215,7 +239,7 @@ This should compile xgboost perfectly out of the box on Windows. If you get an e
 
 Now, fire up an R session and run this:
 
-```
+```r
 setwd('C:/xgboost/xgboost/R-package')
 library(devtools)
 install()
@@ -236,7 +260,7 @@ And you should have now xgboost compiled in Windows.
 
 Check quickly that xgboost works:
 
-```
+```r
 library(xgboost)
 set.seed(11111)
 n=100
@@ -259,7 +283,7 @@ Once you are done installing Visual Studio 2015 Community, reboot your computer.
 
 Now, or if you skipped the installation step, clone the latest (CLEARLY UNRECOMMENDED) LightGBM repository by doing in Git Bash:
 
-```
+```r
 cd C:/xgboost
 git clone --recursive https://github.com/Microsoft/LightGBM
 ```
@@ -282,7 +306,8 @@ If Visual Studio fails to load the "project", delete LightGBM folder and clone L
 
 Once you compiled it (and after you installed everything else you need, like the Laurae package), create a folder named "test" in "C:/" (or any appropriate folder you have), and try to run the following in R (you will get two prompts: the first for the "temporary" directory you created, and the second for the LightGBM executable to select):
 
-```
+```r
+# Make sure you have data.table in case
 setwd(choosedir(caption = "Select the temporary folder"))
 library(Laurae)
 library(stringi)
@@ -317,7 +342,7 @@ trained <- lgbm.train(y_train = label,
 
 To make LightGBM run as fast as possible, improvements for Input/Output is necessary. For this, you will need the development version of data.table. To download it, run in your R console:
 
-```
+```r
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 ```
 
@@ -327,7 +352,7 @@ The speed up can reach over 1,000x for pure I/O.
 
 To have "more readable" tableplots for visualizations, you will need to install an old version of the tabplot package. You can do this by running in your R console:
 
-```
+```r
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
 ```
 
@@ -335,8 +360,8 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 
 You can install the other packages by running in your R console:
 
-```
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot"))
+```r
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
 install_github("Laurae2/sparsity")
 ```
 
@@ -344,14 +369,14 @@ install_github("Laurae2/sparsity")
 
 You can now install the Laurae package and use the fully fledged version of it.
 
-```
+```r
 library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
-```
+```r
 library(devtools)
 install_git("git://github.com/Laurae2/Laurae.git")
 ```
