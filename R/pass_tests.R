@@ -1,5 +1,7 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices jpeg
+#' @importFrom graphics par
+#' @importFrom graphics plot
 #' @importFrom stats cor
 #' @importFrom stats cov
 #' @importFrom stats mahalanobis
@@ -80,7 +82,9 @@ globalVariables(c("Timing_Metric",
                   "rpart",
                   "rpart.control",
                   "plotcp",
-                  "rpart.plot"))
+                  "rpart.plot",
+                  "Deriv",
+                  "getinfo"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -96,3 +100,4 @@ requireNamespace("CEoptim")
 requireNamespace("car")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
+requireNamespace("Deriv")
