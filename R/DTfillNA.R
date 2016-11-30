@@ -13,7 +13,7 @@
 #' @return A data.table with filled NA values (if \code{low_mem} is set to \code{TRUE}).
 #' 
 #' @examples
-#' #library(data.table)
+#' library(data.table)
 #' df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' setDT(df1)

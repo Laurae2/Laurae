@@ -6,8 +6,8 @@ Description: This package is for advanced statistics, visualization, and
     modeling.
 Depends:
     R (>= 3.3.0),
-	data.table (>= 1.9.7),
 Imports:
+	data.table (>= 1.9.7),
 	Matrix (>= 1.2)
 Suggests:
 	tabplot (>= 0.1.2),

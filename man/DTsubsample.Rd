@@ -30,7 +30,7 @@ This function attempts to subsample one data.table without making copies. Compar
 Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.
 }
 \examples{
-#library(data.table)
+library(data.table)
 DT <- data.frame(matrix(nrow = 5000000, ncol = 10))
 DT <- setDT(DT)
 DT[is.na(DT)] <- 1

@@ -27,7 +27,7 @@ This function attempts to fill NA values in a data.table. Compared to \code{DT[i
 Warning: \code{DT} is a pointer only and is directly modified.
 }
 \examples{
-#library(data.table)
+library(data.table)
 df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 setDT(df1)

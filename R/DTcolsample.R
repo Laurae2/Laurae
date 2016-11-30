@@ -11,7 +11,7 @@
 #' @return The subsampled data.table.
 #' 
 #' @examples
-#' #library(data.table)
+#' library(data.table)
 #' DT <- data.frame(matrix(nrow = 50, ncol = 10))
 #' DT <- setDT(DT)
 #' colnames(DT) <- paste(colnames(DT), "xx", sep = "")

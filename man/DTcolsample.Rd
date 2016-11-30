@@ -23,7 +23,7 @@ This function attempts to subsample one data.table without making copies. Well, 
 Warning: \code{DT} is a pointer only even if you pass the object to this function. This is how memory efficiency is achieved.
 }
 \examples{
-#library(data.table)
+library(data.table)
 DT <- data.frame(matrix(nrow = 50, ncol = 10))
 DT <- setDT(DT)
 colnames(DT) <- paste(colnames(DT), "xx", sep = "")

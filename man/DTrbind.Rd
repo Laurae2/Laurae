@@ -27,7 +27,7 @@ This function attempts to rbind two data.tables without making copies. Compared 
 Warning: \code{dt1} and \code{dt2} are pointers only even if you pass the objects to this function. This is how memory efficiency is achieved. \code{dt1} and \code{dt2} gets overwritten on the fly.
 }
 \examples{
-#library(data.table)
+library(data.table)
 df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 setDT(df1)

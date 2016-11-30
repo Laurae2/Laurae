@@ -13,7 +13,7 @@
 #' @return A data.table based on \code{dt1}.
 #' 
 #' @examples
-#' #library(data.table)
+#' library(data.table)
 #' df1 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' df2 <- data.frame(matrix(nrow = 50000, ncol = 1000))
 #' setDT(df1)
