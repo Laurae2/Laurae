@@ -84,7 +84,13 @@ globalVariables(c("Timing_Metric",
                   "plotcp",
                   "rpart.plot",
                   "Deriv",
-                  "getinfo"))
+                  "getinfo",
+                  "xgb.importance",
+                  "%>%",
+                  "datatable",
+                  "formatStyle",
+                  "styleColorBar",
+                  "formatPercentage"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")
@@ -101,3 +107,4 @@ requireNamespace("car")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
 requireNamespace("Deriv")
+requireNamespace("DT")

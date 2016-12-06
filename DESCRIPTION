@@ -23,6 +23,7 @@ Suggests:
 	rpart (>= 4.0),
 	rpart.plot (>= 2.1.0),
 	Deriv (>= 3.8.0),
+	DT (>= 0.2),
 	sparsity,
 License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8
