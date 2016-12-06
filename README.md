@@ -38,6 +38,7 @@ Mostly...
 
 * Use LightGBM in R (first wrapper available in R for LightGBM) tuned for maximum I/O without using in-memory dataset moves (which is both a good and bad thing! - 10GB of data takes 4 mins of travel in a HDD) and use feature importance with smart and readable plots
 * Use a repeated cross-validated xgboost (Extreme Gradient Boosting)
+* Get pretty interactive feature importance tables of xgboost ready-to-use for markdown documents
 * Throw supervised rules using outliers anywhere you feel it appropriate (univariate, bivariate)
 * Create cross-validated and repeated cross-validated folds for supervised learning with more options for creating them (like batch creation - those ones can be fed into my LightGBM R wrapper for extensive analysis of feature behavior)
 * Feature Engineering Assistant (mostly non-linear version) using automated decision trees
@@ -72,6 +73,10 @@ Mostly...
 
 ![LightGBM Feature Importance](https://cloud.githubusercontent.com/assets/9083669/20763173/3e7a54a2-b729-11e6-86d5-48966ce2cd92.png)
 
+* xgboost Interactive Feature Importance:
+
+![xgboost Interactive Feature Importance](https://cloud.githubusercontent.com/assets/9083669/20934442/6fdc1902-bbdb-11e6-8eb4-9f382e9cd97e.png)
+
 * Symbolic Derivation:
 
 ![Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/20763045/c9d46d22-b728-11e6-9b5e-d1fe046ad045.png)
@@ -94,6 +99,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
 | data.table | YES | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
 | sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| DT | No | xgb.importance.interactive |
 | CEoptim | No | ExtraOpt |
 | rpart | No | FeatureLookup |
 | rpart.plot | No | FeatureLookup |
@@ -135,10 +141,10 @@ Write in your R console `sink()` until you get an error.
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Visualizations | tableplots: tableplot_jpg |
-| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
+| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
 | --- | --- | --- |
@@ -167,6 +173,7 @@ Write in your R console `sink()` until you get an error.
 | ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. |
 | FeatureLookup | Non-linear Feature Engineering Assistant | Allows to run a cross-validated decision tree using your own specified depth, amount of surrogates, and best potential lookups in order to to create new features based on the resulting decision tree at your own will. |
 | SymbolicLoss | Symbolic Derivation of Loss Functions | Attemps to compute the exact 1st and 2nd derivatives of the loss function provided, along of a reference function if you provide one. The functions returned are ready to be used. Graphics are also added to help the user. |
+| xgb.importance.interactive | Interactive xgboost Feature Importance | Allows to print an interactive xgboost feature importance table, ready to be used in markdown documents and HTML documents to be shared. |
 
 # TO-DO:
 
