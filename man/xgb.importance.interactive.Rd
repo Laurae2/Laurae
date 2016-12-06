@@ -5,28 +5,40 @@
 \title{xgboost feature importance interactive table}
 \usage{
 xgb.importance.interactive(importance, feature_names = NULL, digits = 6,
-  pageLength = 20, lengthMenu = c(5, 10, 15, 20, 25, 50, 100, 500))
+  pageLength = 20, lengthMenu = c(5, 10, 15, 20, 25, 50, 100, 500),
+  gainColor = "lightgreen", coverColor = "lightblue",
+  freqColor = "lightgrey")
 }
 \arguments{
 \item{importance}{Type: xgboost model, data.table, or data.frame. Your xgboost model to get feature importance from. Or a data.table/data.frame.}
 
 \item{feature_names}{Type: vector of characters. The feature names to use in the feature importance. If you provide a data.table/data.frame, do not input this argument. Defaults to \code{NULL}.}
 
-\item{digits}{Type: integer. The number of digits to print in the table.}
+\item{digits}{Type: integer. The number of digits to print in the table. Defaults to \code{6}.}
 
-\item{pageLength}{Type: integer. The number of features to print in a single page.}
+\item{pageLength}{Type: integer. The number of features to print in a single page. Defaults to \code{20}.}
 
-\item{lengthMenu}{Type: vector of integers. The selectable number of features to print in a single page.}
+\item{lengthMenu}{Type: vector of integers. The selectable number of features to print in a single page. Defaults to \code{c(5, 10, 15, 20, 25, 50, 100, 500)}.}
+
+\item{gainColor}{Type: character. The color assigned to bars for Gain depending on its value per feature. Defaults to \code{"lightgreen"}.}
+
+\item{coverColor}{Type: character. The color assigned to bars for Cover depending on its value per feature. Defaults to \code{"lightblue"}.}
+
+\item{freqColor}{Type: character. The color assigned to bars for Frequency depending on its value per feature. Defaults to \code{"lightgrey"}.}
 }
 \value{
-The datatable printed.
+The "datatable" (not data.table) printed.
 }
 \description{
 This function interactively plots the table of the feature importance from a xgboost model, provided you give the feature names.
 }
 \examples{
 \dontrun{
-# Todo
+## my_model <- xgb.train(...)
+xgb.importnace.interactive(importance = my_model,
+                           feature_names = colnames(data),
+                           digits = 6,
+                           pageLength = 10)
 }
 
 }
