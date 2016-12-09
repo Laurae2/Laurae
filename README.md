@@ -28,7 +28,10 @@ install_github("Laurae2/sparsity")
 Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
 
 # Laurae
+
 Advanced Toolbox for Data Science for R by Laurae
+
+![What is data science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
 
 # What can I do with it?
 
@@ -52,7 +55,7 @@ Mostly...
 **Optimization:**
 
 * Do feature selection & hyperparameter optimization using Cross-Entropy optimization & Elite optimization
-* Do the same optimization but with any variable (continuous, ordinal, discrete) for any function using fully personalized callbacks (which is both a great thing and a hassle for the user)
+* Do the same optimization but with any variable (continuous, ordinal, discrete) for any function using fully personalized callbacks (which is both a great thing and a hassle for the user) and a personalized training backend (by default it uses xgboost as the predictor for next steps, you can modify it by another (un)supervised machine learning model!)
 * Symbolic Derivaton for custom loss functions (finding gradient/hessian painlessly)
 
 **Improvements & Extras:**
@@ -66,6 +69,7 @@ Mostly...
 
 * Benchmark to convert a dgCMatrix with 2,500,000 rows and 8,500 columns (1.1GB in memory) => 5 minutes
 * I think it needs minimum hours if not days for the other existing converters for such size.
+* Currently not merged on this repository: see https://github.com/Laurae2/sparsity !
 
 **Nice pictures:**
 
@@ -170,7 +174,7 @@ Write in your R console `sink()` until you get an error.
 | DTfillNA | Low memory DT Missing Value filling | Fills the missing values of a data.table using the least possible memory. Compared to direct usages (DT[is.na(DT)] <- value), this function consumes up to 3X less (and typically 2X less). You can even create a new data.table or overwrite the original one. Also, this function works on data.frame, and can even overwrite the original data.frame. |
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
-| ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. |
+| ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. The optimization backend is fully customizable, allowing you to switch the optimizer (default is xgboost) to any other (un)supervised machine learning model! |
 | FeatureLookup | Non-linear Feature Engineering Assistant | Allows to run a cross-validated decision tree using your own specified depth, amount of surrogates, and best potential lookups in order to to create new features based on the resulting decision tree at your own will. |
 | SymbolicLoss | Symbolic Derivation of Loss Functions | Attemps to compute the exact 1st and 2nd derivatives of the loss function provided, along of a reference function if you provide one. The functions returned are ready to be used. Graphics are also added to help the user. |
 | xgb.importance.interactive | Interactive xgboost Feature Importance | Allows to print an interactive xgboost feature importance table, ready to be used in markdown documents and HTML documents to be shared. |
