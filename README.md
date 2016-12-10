@@ -1,32 +1,3 @@
-# Installing this package? (Unproper installation)
-
-**Proper version is at the end of this page.**
-
-If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
-
-```r
-library(devtools)
-install_github("Laurae2/Laurae")
-```
-
-Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
-
-```r
-library(devtools)
-install_git("git://github.com/Laurae2/Laurae.git")
-```
-
-Need all R dependencies in one shot?:
-
-```r
-install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
-install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
-install_github("Laurae2/sparsity")
-```
-
-Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
-
 # Laurae
 
 Advanced Toolbox for Data Science for R by Laurae
@@ -81,6 +52,10 @@ Mostly...
 
 ![xgboost Interactive Feature Importance](https://cloud.githubusercontent.com/assets/9083669/20934442/6fdc1902-bbdb-11e6-8eb4-9f382e9cd97e.png)
 
+* Automated Reporting with pretty tables:
+
+![Automated Reporting with pretty tables](https://cloud.githubusercontent.com/assets/9083669/21076083/d23e6d94-bf22-11e6-9b40-c718b4d5691e.png)
+
 * Symbolic Derivation:
 
 ![Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/20763045/c9d46d22-b728-11e6-9b5e-d1fe046ad045.png)
@@ -93,6 +68,36 @@ Mostly...
 
 ![Feature Engineering Assistant Pretty Print](https://cloud.githubusercontent.com/assets/9083669/20763274/9c6bf57a-b729-11e6-86ef-cd7157b81d70.png)
 
+# Installing this package? (Unproper installation)
+
+**Proper version is at the end of this page.**
+
+If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
+
+```r
+library(devtools)
+install_github("Laurae2/Laurae")
+```
+
+Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
+
+```r
+library(devtools)
+install_git("git://github.com/Laurae2/Laurae.git")
+```
+
+Need all R dependencies in one shot?:
+
+```r
+install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
+install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
+install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
+install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice"))
+install_github("Laurae2/sparsity")
+```
+
+Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
+
 # What you need?
 
 If I am not missing stuff (please make a pull request if something is missing that must be added):
@@ -100,22 +105,28 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
 | LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
-| xgboost | YES (?) | xgb.ncv, xgb.opt.depth |
-| data.table | YES | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA |
-| sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| DT | No | xgb.importance.interactive |
+| xgboost | YES (should) | xgb.ncv, xgb.opt.depth |
+| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm |
+| Rcpp | No | sparsity (package) |
+| RcppArmadillo | No | report.lm |
+| rmarkdown | No | report.lm |
+| Laurae2/sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| DT | No | xgb.importance.interactive, report.lm |
+| formattable | No | report.lm |
 | CEoptim | No | ExtraOpt |
 | rpart | No | FeatureLookup |
 | rpart.plot | No | FeatureLookup |
 | car | No | .ExtraOpt_plot (demo function) |
 | outliers | No | rule_single, rule_double |
-| R.utils | No | rule_single, rule_double |
+| R.utils | No | rule_single, rule_double, report.lm |
 | Matrix | No | read_sparse_csv |
+| matrixStats | No | report.lm |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
 | tabplot | No | tableplot_jpg |
 | stringi | No | lightgbm.cv |
 | ggplot2 | No | lgbm.fi.plot |
+| lattice | No | report.lm |
 | Deriv | No | SymbolicLoss |
 | None so far | No | kfold, nkfold, lgbm.find |
 
@@ -147,6 +158,7 @@ Write in your R console `sink()` until you get an error.
 | --- | --- |
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
+| Automated Reporting | report.lm |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
@@ -178,6 +190,7 @@ Write in your R console `sink()` until you get an error.
 | FeatureLookup | Non-linear Feature Engineering Assistant | Allows to run a cross-validated decision tree using your own specified depth, amount of surrogates, and best potential lookups in order to to create new features based on the resulting decision tree at your own will. |
 | SymbolicLoss | Symbolic Derivation of Loss Functions | Attemps to compute the exact 1st and 2nd derivatives of the loss function provided, along of a reference function if you provide one. The functions returned are ready to be used. Graphics are also added to help the user. |
 | xgb.importance.interactive | Interactive xgboost Feature Importance | Allows to print an interactive xgboost feature importance table, ready to be used in markdown documents and HTML documents to be shared. |
+| report.lm | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE), pretty printed feature multiplicative coefficients, plotting statistics, analysis of variance (ANOVA), adjusted R^2, degrees of freedom computation... |
 
 # TO-DO:
 
@@ -373,6 +386,7 @@ You can install the other packages by running in your R console:
 
 ```r
 install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
+install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice"))
 install_github("Laurae2/sparsity")
 ```
 
