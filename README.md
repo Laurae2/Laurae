@@ -23,6 +23,10 @@ Mostly...
 
 * Auto-tune t-SNE (t-Distributed Stochastic Neighbor Embedding), but it comes already with premade hyperparameters tuned for minimal reproduction loss!
 
+**Automated Reporting for Machine Learning:**
+
+* Generate an in-depth automated report for linear regression with interactive elements.
+
 **Optimization:**
 
 * Do feature selection & hyperparameter optimization using Cross-Entropy optimization & Elite optimization
