@@ -203,32 +203,48 @@ If for some reason you lose the ability to print in the console, run \code{sink(
 }
 \examples{
 \dontrun{
-3-fold cross-validated LightGBM with log on a file, with predictions and feature importance.
-Runs on 2 threads.
-1000 iterations with shrinkage of 0.1, stop when 10 iterations are not increase performance.
-127 leaves for an "approximate equivalent" of depth = 7.
-Uses the working dir / temp folder as working directory for the temporary files.
-Returns in addition the out of fold predictions, and the feature importance.
-trained.cv <- lgbm.cv(y_train = targets,
-                      x_train = data[1:1500, ],
-                      lgbm_path = "C:/LightGBM/windows/x64/Release/lightgbm.exe",
-                      workingdir = file.path(getwd(), "temp"),
-                      files_exist = FALSE,
-                      train_conf = 'lgbm_train.conf',
-                      train_name = 'lgbm_train.csv',
-                      val_name = 'lgbm_val.csv',
-                      validation = TRUE,
-                      unicity = FALSE,
-                      folds = 3,
-                      verbose = FALSE,
-                      log_name = "houseprice_log_cv.txt",
-                      predictions = TRUE,
-                      importance = TRUE,
-                      num_threads = 2,
-                      application = "regression",
-                      num_iterations = 10,
-                      learning_rate = 0.1,
-                      num_leaves = 127)
+#5-fold cross-validated LightGBM, on very simple data.
+
+library(Laurae)
+library(stringi)
+library(Matrix)
+library(sparsity)
+library(data.table)
+
+remove(list = ls()) # WARNING: CLEANS EVERYTHING IN THE ENVIRONMENT
+setwd("C:/LightGBM/temp") # DIRECTORY FOR TEMP FILES
+
+DT <- data.table(Split1 = c(rep(0, 50), rep(1, 50)),
+                 Split2 = rep(c(rep(0, 25), rep(0.5, 25)), 2))
+DT$Split3 <- rep(c(rep(0, 10), rep(0.25, 15)), 4)
+DT$Split4 <- rep(c(rep(0, 5), rep(0.1, 5), rep(0, 5), rep(0.1, 10)), 4)
+DT$Split5 <- rep(c(rep(0, 5), rep(0.05, 5), rep(0, 10), rep(0.05, 5)), 4)
+label <- as.numeric((DT$Split2 == 0) & (DT$Split1 == 0) & (DT$Split3 == 0))
+
+trained <- lgbm.cv(y_train = label,
+                   x_train = DT,
+                   bias_train = NA,
+                   folds = 5,
+                   unicity = TRUE,
+                   application = "binary",
+                   num_iterations = 1,
+                   early_stopping_rounds = 1,
+                   learning_rate = 5,
+                   num_leaves = 16,
+                   min_data_in_leaf = 1,
+                   min_sum_hessian_in_leaf = 1,
+                   tree_learner = "serial",
+                   num_threads = 1,
+                   lgbm_path = "C:/LightGBM/windows/x64/Release/lightgbm.exe",
+                   workingdir = getwd(),
+                   validation = FALSE,
+                   files_exist = FALSE,
+                   verbose = TRUE,
+                   is_training_metric = TRUE,
+                   save_binary = TRUE,
+                   metric = "binary_logloss")
+
+str(trained)
 }
 
 }
