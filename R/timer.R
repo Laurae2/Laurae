@@ -2,8 +2,6 @@
 #'
 #' This function returns the current time in milliseconds.
 #' 
-#' @param None
-#' 
 #' @return The current time at the call in milliseconds.
 #' 
 #' @examples
