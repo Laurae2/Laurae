@@ -2,10 +2,11 @@
 title: "Linear Regression Model"
 output:
   html_notebook:
-      toc: true
-      toc_float: true
-      toc_depth: 6
-      code_folding: hide
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
 date: "`r format(Sys.time(), '%a %b %d %Y %X')`"
 ---
 
@@ -15,7 +16,7 @@ date: "`r format(Sys.time(), '%a %b %d %Y %X')`"
 
 We must load the package `Laurae`, `data.table`, `rmarkdown`, `RcppArmadillo`, `DT`, `formattable`, `matrixStats`, and `lattice` before continuing.
 
-```{r}
+```{r Packages}
 library(Laurae)
 library(data.table)
 library(rmarkdown)
@@ -24,13 +25,14 @@ library(DT)
 library(formattable)
 library(matrixStats)
 library(lattice)
+library(R.utils)
 ```
 
 ## Print-A-Lot
 
 We are going to print a lot. Therefore, we must go over the limitations of R.
 
-```{r}
+```{r PrePrint}
 previousLimit <- getOption("max.print")
 previousScipen <- getOption("scipen")
 options(max.print = 1e7)
@@ -42,7 +44,7 @@ my_data <- copy(data)
 
 The features can be normalized to the range [0, 1\].
 
-```{r}
+```{r Normalize}
 if (normalize) {
   for (i in 1:ncol(data)) {
     my_data[[i]] <- (my_data[[i]] - min(my_data[[i]], na.rm = TRUE)) / (max(my_data[[i]], na.rm = TRUE) - min(my_data[[i]], na.rm = TRUE))
@@ -55,7 +57,7 @@ if (normalize) {
 
 The linear model we are using is not supporting missing values. We are replacing all NAs by 0.
 
-```{r}
+```{r Clean}
 if (cleaning) {
   my_data <- DTfillNA(my_data, value = 0)
 }
@@ -71,7 +73,7 @@ The kappa value is `r ifelse(deficiency, kappa(my_data), "not computed")`.
 
 We are generating the regression model per fold.
 
-```{r}
+```{r Train}
 fitted_lm <- list()
 StartTime <- timer()
 CurrentTime <- StartTime
@@ -90,7 +92,7 @@ for (i in 1:length(folds)) {
 
 We must gather all values first.
 
-```{r}
+```{r Validate}
 fitted_values <- list()
 fitted_predicted <- list()
 fitted_diff <- list()
@@ -125,7 +127,7 @@ fitted_coefficients <- DTcbind(fitted_coefficients2, fitted_coefficients)
 
 A pretty table is better than text to print the base statistics.
 
-```{r}
+```{r Stats1}
 if (stats) {
   stats_table <- data.table(Statistic = c("Pearson Correlation Coefficient (R)", "Coefficient of Determination (R^2)", "Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)", "Mean Average Percentage Error (MAPE)"), Mean = c(mean(r_pearson), mean(r_squared), mean(r_mae), mean(r_mse), mean(r_rmse), mean(r_mape)), SD = c(sd(r_pearson), sd(r_squared), sd(r_mae), sd(r_mse), sd(r_rmse), sd(r_mape)))
   formattable(stats_table)
@@ -136,7 +138,7 @@ if (stats) {
 
 A pretty table is better than text to print the base statistics.
 
-```{r}
+```{r Stats2}
 if (stats) {
   stats_table <- data.table(Folds = 1:length(folds), R = r_pearson, R2 = r_squared, MAE = r_mae, MSE = r_mse, RMSE = r_rmse, MAPE = r_mape)
   formattable(stats_table, list(R = color_bar("lightpink"), R2 = color_bar("pink"), MAE = color_bar("lightgreen"), MSE = color_bar("lightgrey"), RMSE = color_bar("lightblue"), MAPE = color_bar("cyan")))
@@ -147,7 +149,7 @@ if (stats) {
 
 We can get the multiplicative coefficient assigned to each feature per fold.
 
-```{r}
+```{r Coefficients}
 if (coefficients) {
   as.datatable(formattable(fitted_coefficients, c(list(Mean = color_tile("lightpink", "lightblue"), SD = color_tile("lightgreen", "lightpink"), (area(col = colnames(fitted_coefficients)[3:ncol(fitted_coefficients)]) ~ color_tile("lightpink", "lightblue")))))) %>% formatRound(1:ncol(my_data), digits = 5)
 }
@@ -155,7 +157,7 @@ if (coefficients) {
 
 ## Plotting Statistics (plots = `r plots`)
 
-```{r, fig.height=12, fig.width=12}
+```{r Plots1, fig.height=12, fig.width=12}
 if (plots) {
   fitted_in <- numeric(0)
   fitted_out <- numeric(0)
@@ -169,7 +171,7 @@ if (plots) {
 }
 ```
 
-```{r, fig.height=12, fig.width=12}
+```{r Plots2, fig.height=12, fig.width=12}
 if (plots) {
   for (i in 1:length(folds)) {
     plot(x = fitted_values[[i]], y = fitted_predicted[[i]], main = paste0("Cross-Validated (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ") Linear Regression fitted values vs predicted values"), xlab = "Fitted Values", ylab = "Predicted Values")
@@ -180,7 +182,7 @@ if (plots) {
 
 ## In-depth Statistics (adv_stats = `r adv_stats`)
 
-```{r}
+```{r adv_stats}
 options(scipen = 6)
 if (adv_stats) {
   for (i in 1:length(folds)) {
@@ -193,7 +195,7 @@ if (adv_stats) {
 
 We can reset the printing options and leave away.
 
-```{r}
+```{r PostPrint}
 options(max.print = previousLimit)
 options(scipen = previousScipen)
 ```
