@@ -14,6 +14,7 @@
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
+#' @importFrom utils browseURL
 #' @importFrom stats na.omit
 #' @import data.table
 
@@ -90,7 +91,9 @@ globalVariables(c("Timing_Metric",
                   "datatable",
                   "formatStyle",
                   "styleColorBar",
-                  "formatPercentage"))
+                  "formatPercentage",
+                  "render",
+                  "report_dir"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")

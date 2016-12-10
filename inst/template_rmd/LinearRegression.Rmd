@@ -1,0 +1,203 @@
+---
+title: "Linear Regression Model"
+output:
+  html_notebook:
+      toc: true
+      toc_float: true
+      toc_depth: 6
+      code_folding: hide
+date: "`r format(Sys.time(), '%a %b %d %Y %X')`"
+---
+
+# Preparing Data
+
+## Loading necessary packages
+
+We must load the package `Laurae`, `data.table`, `rmarkdown`, `RcppArmadillo`, `DT`, `formattable`, `matrixStats`, and `lattice` before continuing.
+
+```{r}
+library(Laurae)
+library(data.table)
+library(rmarkdown)
+library(RcppArmadillo)
+library(DT)
+library(formattable)
+library(matrixStats)
+library(lattice)
+```
+
+## Print-A-Lot
+
+We are going to print a lot. Therefore, we must go over the limitations of R.
+
+```{r}
+previousLimit <- getOption("max.print")
+previousScipen <- getOption("scipen")
+options(max.print = 1e7)
+options(scipen = 999)
+my_data <- copy(data)
+```
+
+## Data Normalization (normalize = `r normalize`)
+
+The features can be normalized to the range [0, 1\].
+
+```{r}
+if (normalize) {
+  for (i in 1:ncol(data)) {
+    my_data[[i]] <- (my_data[[i]] - min(my_data[[i]], na.rm = TRUE)) / (max(my_data[[i]], na.rm = TRUE) - min(my_data[[i]], na.rm = TRUE))
+  }
+}
+```
+
+
+## Data Cleaning (cleaning = `r cleaning`)
+
+The linear model we are using is not supporting missing values. We are replacing all NAs by 0.
+
+```{r}
+if (cleaning) {
+  my_data <- DTfillNA(my_data, value = 0)
+}
+```
+
+## Rank Deficiency Check (deficiency = `r deficiency`)
+
+We can check for rank deficiency using kappa. The higher the value, the higher the rank deficiency.
+
+The kappa value is `r ifelse(deficiency, kappa(my_data), "not computed")`.
+
+# Creating the Regression Model
+
+We are generating the regression model per fold.
+
+```{r}
+fitted_lm <- list()
+StartTime <- timer()
+CurrentTime <- StartTime
+for (i in 1:length(folds)) {
+  data_temp <- DTsubsample(my_data, kept = folds[[i]], remove = TRUE, low_mem = FALSE, collect = 50, silent = TRUE)
+  label_temp <- label[-folds[[i]]]
+  #fitted_lm[[i]] <- lsfit(x = data_temp, y = label_temp, intercept = TRUE, tolerance = 1e-10)
+  fitted_lm[[i]] <- fastLm(X = data_temp, y = label_temp)
+  gc(verbose = FALSE)
+  cat("[", format(Sys.time(), "%a %b %d %Y %X"), "] Fitted the regression model on fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), " in ", sprintf("%07.03f", (timer() - CurrentTime) / 1000), "s.  \n", sep = "")
+  CurrentTime <- timer()
+}
+```
+
+# Aggregated Regression Statistics (out of fold)
+
+We must gather all values first.
+
+```{r}
+fitted_values <- list()
+fitted_predicted <- list()
+fitted_diff <- list()
+fitted_sqdiff <- list()
+fitted_coefficients <- data.table(Feature = 1:ncol(my_data))
+r_pearson <- numeric(length(folds))
+r_squared <- numeric(length(folds))
+r_mae <- numeric(length(folds))
+r_mse <- numeric(length(folds))
+r_rmse <- numeric(length(folds))
+r_mape <- numeric(length(folds))
+for (i in 1:length(folds)) {
+  fitted_values[[i]] <- label[folds[[i]]]
+  fitted_predicted[[i]] <- as.numeric(as.matrix(my_data[folds[[i]], ]) %*% fitted_lm[[i]]$coefficients)
+  fitted_diff[[i]] <- abs(fitted_values[[i]] - fitted_predicted[[i]])
+  fitted_sqdiff[[i]] <- fitted_diff[[i]] * fitted_diff[[i]]
+  fitted_coefficients <- fitted_coefficients[, (paste0("Fold_", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i))) := as.numeric(fitted_lm[[i]]$coefficients)]
+  r_pearson[i] <- cor(data.frame(A = fitted_values[[i]], B = fitted_predicted[[i]]), method = "pearson")[1, 2]
+  r_squared[i] <- r_pearson[i] * r_pearson[i]
+  r_mae[i] <- mean(fitted_diff[[i]])
+  r_mse[i] <- mean(fitted_sqdiff[[i]])
+  r_rmse[i] <- sqrt(r_mse[i])
+  r_mape[i] <- mean(fitted_diff[[i]] / fitted_values[[i]])
+  gc(verbose = FALSE)
+}
+fitted_coefficients <- fitted_coefficients[, Feature := NULL]
+fitted_coefficients2 <- data.table(Feature = colnames(my_data), Mean = rowMeans(as.matrix(fitted_coefficients)), SD = rowSds(as.matrix(fitted_coefficients)))
+fitted_coefficients <- DTcbind(fitted_coefficients2, fitted_coefficients)
+```
+
+## Base Statistics, global (stats = `r stats`)
+
+A pretty table is better than text to print the base statistics.
+
+```{r}
+if (stats) {
+  stats_table <- data.table(Statistic = c("Pearson Correlation Coefficient (R)", "Coefficient of Determination (R^2)", "Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)", "Mean Average Percentage Error (MAPE)"), Mean = c(mean(r_pearson), mean(r_squared), mean(r_mae), mean(r_mse), mean(r_rmse), mean(r_mape)), SD = c(sd(r_pearson), sd(r_squared), sd(r_mae), sd(r_mse), sd(r_rmse), sd(r_mape)))
+  formattable(stats_table)
+}
+```
+
+## Base Statistics (per fold) (stats = `r stats`)
+
+A pretty table is better than text to print the base statistics.
+
+```{r}
+if (stats) {
+  stats_table <- data.table(Folds = 1:length(folds), R = r_pearson, R2 = r_squared, MAE = r_mae, MSE = r_mse, RMSE = r_rmse, MAPE = r_mape)
+  formattable(stats_table, list(R = color_bar("lightpink"), R2 = color_bar("pink"), MAE = color_bar("lightgreen"), MSE = color_bar("lightgrey"), RMSE = color_bar("lightblue"), MAPE = color_bar("cyan")))
+}
+```
+
+## Coefficients on Features (coefficients = `r coefficients`)
+
+We can get the multiplicative coefficient assigned to each feature per fold.
+
+```{r}
+if (coefficients) {
+  as.datatable(formattable(fitted_coefficients, c(list(Mean = color_tile("lightpink", "lightblue"), SD = color_tile("lightgreen", "lightpink"), (area(col = colnames(fitted_coefficients)[3:ncol(fitted_coefficients)]) ~ color_tile("lightpink", "lightblue")))))) %>% formatRound(1:ncol(my_data), digits = 5)
+}
+```
+
+## Plotting Statistics (plots = `r plots`)
+
+```{r, fig.height=12, fig.width=12}
+if (plots) {
+  fitted_in <- numeric(0)
+  fitted_out <- numeric(0)
+  folded <- numeric(0)
+  for (i in 1:length(folds)) {
+    fitted_in <- c(fitted_in, fitted_values[[i]])
+    fitted_out <- c(fitted_out, fitted_predicted[[i]])
+    folded <- c(folded, rep(i, length(folds[[i]])))
+  }
+  print(xyplot(fitted_out ~ fitted_in, group = folded, data = data.frame(Folds = as.factor(folded), Fitted = fitted_in, Predicted = fitted_out), auto.key = list(space = "right"), main = "Cross-Validated Linear Regression fitted values vs predicted values", xlab = "Fitted Values", ylab = "Predicted Values"))
+}
+```
+
+```{r, fig.height=12, fig.width=12}
+if (plots) {
+  for (i in 1:length(folds)) {
+    plot(x = fitted_values[[i]], y = fitted_predicted[[i]], main = paste0("Cross-Validated (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ") Linear Regression fitted values vs predicted values"), xlab = "Fitted Values", ylab = "Predicted Values")
+  }
+}
+```
+
+
+## In-depth Statistics (adv_stats = `r adv_stats`)
+
+```{r}
+options(scipen = 6)
+if (adv_stats) {
+  for (i in 1:length(folds)) {
+    cat("  \nFold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ".  \n", sep = "")
+    print(summary(fitted_lm[[i]]))
+  }
+}
+
+```
+
+We can reset the printing options and leave away.
+
+```{r}
+options(max.print = previousLimit)
+options(scipen = previousScipen)
+```
+
+
+
+
