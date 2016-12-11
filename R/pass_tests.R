@@ -93,7 +93,24 @@ globalVariables(c("Timing_Metric",
                   "styleColorBar",
                   "formatPercentage",
                   "render",
-                  "report_dir"))
+                  "report_dir",
+                  "acc",
+                  "cb.evaluation.log",
+                  "data",
+                  "f1s",
+                  "fall",
+                  "fn_v",
+                  "fp_v",
+                  "mcc",
+                  "pExp",
+                  "pObs",
+                  "prec",
+                  "sens",
+                  "spec",
+                  "tn_v",
+                  "tp_v",
+                  "y_true",
+                  "miss"))
 
 requireNamespace("Matrix")
 requireNamespace("R.utils")

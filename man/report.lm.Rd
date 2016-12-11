@@ -39,18 +39,23 @@ report.lm(data, label, folds, normalize = TRUE, cleaning = TRUE,
 \item{...}{Other arguments to pass to \code{rmarkdown::render}.}
 }
 \value{
-Returns a list with the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
+Returns a list with the machine learning models (\code{Models}), the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
 }
 \description{
-This function creates a linear regression report as a HTML file. Cross-validation is possible.
+This function creates a linear regression report as a HTML file. Cross-validation is mandatory.
 }
 \examples{
 # No example.
 \dontrun{
+  library(Laurae)
+  library(data.table)
   library(rmarkdown)
+  library(RcppArmadillo)
   library(DT)
   library(formattable)
-  library(RcppArmadillo)
+  library(matrixStats)
+  library(lattice)
+  library(R.utils)
 }
 
 }

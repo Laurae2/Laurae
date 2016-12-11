@@ -52,7 +52,6 @@ if (normalize) {
 }
 ```
 
-
 ## Data Cleaning (cleaning = `r cleaning`)
 
 The linear model we are using is not supporting missing values. We are replacing all NAs by 0.
@@ -80,7 +79,6 @@ CurrentTime <- StartTime
 for (i in 1:length(folds)) {
   data_temp <- DTsubsample(my_data, kept = folds[[i]], remove = TRUE, low_mem = FALSE, collect = 50, silent = TRUE)
   label_temp <- label[-folds[[i]]]
-  #fitted_lm[[i]] <- lsfit(x = data_temp, y = label_temp, intercept = TRUE, tolerance = 1e-10)
   fitted_lm[[i]] <- fastLm(X = data_temp, y = label_temp)
   gc(verbose = FALSE)
   cat("[", format(Sys.time(), "%a %b %d %Y %X"), "] Fitted the regression model on fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), " in ", sprintf("%07.03f", (timer() - CurrentTime) / 1000), "s.  \n", sep = "")
@@ -99,6 +97,7 @@ fitted_diff <- list()
 fitted_sqdiff <- list()
 fitted_coefficients <- data.table(Feature = 1:ncol(my_data))
 r_pearson <- numeric(length(folds))
+r_spearman <- numeric(length(folds))
 r_squared <- numeric(length(folds))
 r_mae <- numeric(length(folds))
 r_mse <- numeric(length(folds))
@@ -111,6 +110,7 @@ for (i in 1:length(folds)) {
   fitted_sqdiff[[i]] <- fitted_diff[[i]] * fitted_diff[[i]]
   fitted_coefficients <- fitted_coefficients[, (paste0("Fold_", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i))) := as.numeric(fitted_lm[[i]]$coefficients)]
   r_pearson[i] <- cor(data.frame(A = fitted_values[[i]], B = fitted_predicted[[i]]), method = "pearson")[1, 2]
+  r_spearman[i] <- cor(data.frame(A = fitted_values[[i]], B = fitted_predicted[[i]]), method = "spearman")[1, 2]
   r_squared[i] <- r_pearson[i] * r_pearson[i]
   r_mae[i] <- mean(fitted_diff[[i]])
   r_mse[i] <- mean(fitted_sqdiff[[i]])
@@ -178,7 +178,6 @@ if (plots) {
   }
 }
 ```
-
 
 ## In-depth Statistics (adv_stats = `r adv_stats`)
 

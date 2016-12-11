@@ -1,6 +1,6 @@
 #' Linear Regression Modeling HTML report
 #'
-#' This function creates a linear regression report as a HTML file. Cross-validation is possible.
+#' This function creates a linear regression report as a HTML file. Cross-validation is mandatory.
 #' 
 #' @param data Type: data.table. The data to fit a linear regression model on.
 #' @param label Type: vector. The label the data must fit to.
@@ -17,22 +17,27 @@
 #' @param open_file Type: boolean. Whether to open the output report once it has finished computing. Defaults to \code{TRUE}.
 #' @param ... Other arguments to pass to \code{rmarkdown::render}.
 #' 
-#' @return Returns a list with the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
+#' @return Returns a list with the machine learning models (\code{Models}), the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
 #' 
 #' @examples
 #' # No example.
 #' \dontrun{
+#'   library(Laurae)
+#'   library(data.table)
 #'   library(rmarkdown)
+#'   library(RcppArmadillo)
 #'   library(DT)
 #'   library(formattable)
-#'   library(RcppArmadillo)
+#'   library(matrixStats)
+#'   library(lattice)
+#'   library(R.utils)
 #' }
 #' 
 #' @export
 
 report.lm <- function(data, label, folds, normalize = TRUE, cleaning = TRUE, deficiency = TRUE, stats = TRUE, coefficients = TRUE, adv_stats = TRUE, plots = TRUE, output_file = "report.lm.html", output_dir = getwd(), open_file = TRUE, ...) {
   
-  stats_table <- fitted_values <- fitted_predicted <- 0 # Avoid CRAN issue
+  fitted_lm = stats_table = fitted_values = fitted_predicted = NULL # Avoid CRAN issue
   
   # A numeric fold?
   if (length(folds) == 1) {
@@ -57,7 +62,7 @@ report.lm <- function(data, label, folds, normalize = TRUE, cleaning = TRUE, def
   
   # Return stats?
   if (stats) {
-    return(list(Metrics = stats_table, Folds = folds, Fitted = fitted_values, Predicted = fitted_predicted))
+    return(list(Models = fitted_lm, Metrics = stats_table, Folds = folds, Fitted = fitted_values, Predicted = fitted_predicted))
   } else {
     return(TRUE)
   }
