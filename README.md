@@ -26,6 +26,7 @@ Mostly...
 **Automated Reporting for Machine Learning:**
 
 * Generate an in-depth automated report for linear regression with interactive elements.
+* Generate an in-depth automated report for xgboost regression/classification with interactive elements. 
 
 **Optimization:**
 
@@ -109,28 +110,28 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
 | LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
-| xgboost | YES (should) | xgb.ncv, xgb.opt.depth |
-| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm |
+| xgboost | YES (should) | xgb.ncv, xgb.opt.depth, report.xgb |
+| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb |
 | Rcpp | No | sparsity (package) |
 | RcppArmadillo | No | report.lm |
-| rmarkdown | No | report.lm |
+| rmarkdown | No | report.lm, report.xgb |
 | Laurae2/sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| DT | No | xgb.importance.interactive, report.lm |
-| formattable | No | report.lm |
+| DT | No | xgb.importance.interactive, report.lm, report.xgb |
+| formattable | No | report.lm, report.xgb |
 | CEoptim | No | ExtraOpt |
 | rpart | No | FeatureLookup |
 | rpart.plot | No | FeatureLookup |
 | car | No | .ExtraOpt_plot (demo function) |
 | outliers | No | rule_single, rule_double |
-| R.utils | No | rule_single, rule_double, report.lm |
+| R.utils | No | rule_single, rule_double, report.lm, report.xgb |
 | Matrix | No | read_sparse_csv |
-| matrixStats | No | report.lm |
+| matrixStats | No | report.lm, report.xgb |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rtsne | No | tsne_grid |
 | tabplot | No | tableplot_jpg |
 | stringi | No | lightgbm.cv |
 | ggplot2 | No | lgbm.fi.plot |
-| lattice | No | report.lm |
+| lattice | No | report.lm, report.xgb |
 | Deriv | No | SymbolicLoss |
 | None so far | No | kfold, nkfold, lgbm.find |
 
@@ -162,7 +163,7 @@ Write in your R console `sink()` until you get an error.
 | --- | --- |
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
-| Automated Reporting | report.lm |
+| Automated Reporting | report.lm, report.xgb |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
@@ -195,6 +196,7 @@ Write in your R console `sink()` until you get an error.
 | SymbolicLoss | Symbolic Derivation of Loss Functions | Attemps to compute the exact 1st and 2nd derivatives of the loss function provided, along of a reference function if you provide one. The functions returned are ready to be used. Graphics are also added to help the user. |
 | xgb.importance.interactive | Interactive xgboost Feature Importance | Allows to print an interactive xgboost feature importance table, ready to be used in markdown documents and HTML documents to be shared. |
 | report.lm | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE), pretty printed feature multiplicative coefficients, plotting statistics, analysis of variance (ANOVA), adjusted R^2, degrees of freedom computation... |
+| report.xgb | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE, AUC, Logloss, optimistic Kappa, optimistic F1 Score, optimistic MCC, optimistic TPR, optimistic TNR, optimistic FPR, optimistic FNR), pretty printed feature (unbiased/biased) importance, plotting statistics, plotting of machine learning performance statistic evolution vs probability... |
 
 # TO-DO:
 
