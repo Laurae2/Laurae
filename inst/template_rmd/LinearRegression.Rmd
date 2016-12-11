@@ -1,7 +1,7 @@
 ---
 title: "Linear Regression Model"
 output:
-  html_notebook:
+  html_document:
     code_folding: hide
     number_sections: yes
     toc: yes
@@ -14,7 +14,7 @@ date: "`r format(Sys.time(), '%a %b %d %Y %X')`"
 
 ## Loading necessary packages
 
-We must load the package `Laurae`, `data.table`, `rmarkdown`, `RcppArmadillo`, `DT`, `formattable`, `matrixStats`, and `lattice` before continuing.
+We must load the package `Laurae`, `data.table`, `rmarkdown`, `RcppArmadillo`, `DT`, `formattable`, `matrixStats`, `lattice`, `R.utils`, `ggplot2`, `grid`, and `gridExtra` before continuing.
 
 ```{r Packages}
 library(Laurae)
@@ -26,6 +26,9 @@ library(formattable)
 library(matrixStats)
 library(lattice)
 library(R.utils)
+library(ggplot2)
+library(grid)
+library(gridExtra)
 ```
 
 ## Print-A-Lot
@@ -145,6 +148,51 @@ if (stats) {
 }
 ```
 
+We can plot pie charts if applicable.
+
+```{r Stats3, fig.height=13.5, fig.width=10}
+if (stats & plots) {
+  
+  grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
+    
+    plots <- list(...)
+    position <- match.arg(position)
+    g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lheight <- sum(legend$height)
+    lwidth <- sum(legend$width)
+    gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+    gl <- c(gl, ncol = ncol, nrow = nrow)
+    
+    combined <- switch(position,
+                       "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                              legend,
+                                              ncol = 1,
+                                              heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                       "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                             legend,
+                                             ncol = 2,
+                                             widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+    grid.newpage()
+    grid.draw(combined)
+    
+  }
+  
+  stats_table_shadow <- copy(stats_table)
+  stats_table_shadow[["Folds"]] <- as.factor(stats_table_shadow[["Folds"]])
+  
+  p01 <- ggplot(stats_table_shadow, aes(x = Folds, y = R, fill = Folds, label = round(R, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Pearson's R", title = "Pearson's R per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p02 <- ggplot(stats_table_shadow, aes(x = Folds, y = R2, fill = Folds, label = round(R2, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "R-Squared", title = "Pearson's R-Squared per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p03 <- ggplot(stats_table_shadow, aes(x = Folds, y = MAE, fill = Folds, label = round(MAE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MAE", title = "MAE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p04 <- ggplot(stats_table_shadow, aes(x = Folds, y = MSE, fill = Folds, label = round(MSE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MSE", title = "MSE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p05 <- ggplot(stats_table_shadow, aes(x = Folds, y = RMSE, fill = Folds, label = round(RMSE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "RMSE", title = "RMSE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p06 <- ggplot(stats_table_shadow, aes(x = Folds, y = MAPE, fill = Folds, label = round(MAPE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MAPE", title = "MAPE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  grid_arrange_shared_legend(p01, p02, p03, p04, p05, p06, nrow = 3, ncol = 2)
+  
+}
+```
+
+
 ## Coefficients on Features (coefficients = `r coefficients`)
 
 We can get the multiplicative coefficient assigned to each feature per fold.
@@ -189,7 +237,6 @@ if (adv_stats) {
     print(summary(fitted_lm[[i]]))
   }
 }
-
 ```
 
 We can reset the printing options and leave away.

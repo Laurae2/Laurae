@@ -7,7 +7,7 @@
 report.lm(data, label, folds, normalize = TRUE, cleaning = TRUE,
   deficiency = TRUE, stats = TRUE, coefficients = TRUE,
   adv_stats = TRUE, plots = TRUE, output_file = "report.lm.html",
-  output_dir = getwd(), open_file = TRUE, ...)
+  output_dir = getwd(), open_file = TRUE, quiet = FALSE, ...)
 }
 \arguments{
 \item{data}{Type: data.table. The data to fit a linear regression model on.}
@@ -36,13 +36,15 @@ report.lm(data, label, folds, normalize = TRUE, cleaning = TRUE,
 
 \item{open_file}{Type: boolean. Whether to open the output report once it has finished computing. Defaults to \code{TRUE}.}
 
+\item{quiet}{Type: boolean. Whether to "shut up" while rendering the HTML file or not. Defaults to \code{FALSE}.}
+
 \item{...}{Other arguments to pass to \code{rmarkdown::render}.}
 }
 \value{
 Returns a list with the machine learning models (\code{Models}), the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
 }
 \description{
-This function creates a linear regression report as a HTML file. Cross-validation is mandatory.
+This function creates a linear regression report as a HTML file. Cross-validation is mandatory. Add \code{quiet = TRUE} to the list of arguments to make the function "shut up" the massive verbose text.
 }
 \examples{
 # No example.

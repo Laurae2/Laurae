@@ -18,12 +18,13 @@ get.max_specificity <- function(preds, labels) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, spec := tn_v / (tn_v + fp_v)]
-  DT[, spec := ifelse(!is.finite(spec), -1, spec)]
   
   best_row <- which.max(DT$spec)
-  best_spec <- DT$spec[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_spec, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$spec[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

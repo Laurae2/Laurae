@@ -24,8 +24,7 @@ plotting.max_mcc <- function(preds, labels, plots = TRUE, ...) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, mcc := (tp_v * tn_v - fp_v * fn_v) / sqrt((tp_v + fp_v) * (tp_v + fn_v) * (tn_v + fp_v) * (tn_v + fn_v))]
-  DT[, mcc := ifelse(!is.finite(mcc), -1, mcc)]
-  DT <- DT[mcc != -1]
+  DT <- DT[is.finite(mcc)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["mcc"]], ...)
   }

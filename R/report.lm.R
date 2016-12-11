@@ -1,6 +1,6 @@
 #' Linear Regression Modeling HTML report
 #'
-#' This function creates a linear regression report as a HTML file. Cross-validation is mandatory.
+#' This function creates a linear regression report as a HTML file. Cross-validation is mandatory. Add \code{quiet = TRUE} to the list of arguments to make the function "shut up" the massive verbose text.
 #' 
 #' @param data Type: data.table. The data to fit a linear regression model on.
 #' @param label Type: vector. The label the data must fit to.
@@ -15,6 +15,7 @@
 #' @param output_file Type: character. The output report file name. Defaults to \code{"report.lm.html"}.
 #' @param output_dir Type: character. The output report directory name. Defaults to \code{getwd()}.
 #' @param open_file Type: boolean. Whether to open the output report once it has finished computing. Defaults to \code{TRUE}.
+#' @param quiet Type: boolean. Whether to "shut up" while rendering the HTML file or not. Defaults to \code{FALSE}.
 #' @param ... Other arguments to pass to \code{rmarkdown::render}.
 #' 
 #' @return Returns a list with the machine learning models (\code{Models}), the machine learning metrics (\code{"Metrics"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}) if they were computed. Otherwise, returns \code{TRUE}.
@@ -35,7 +36,7 @@
 #' 
 #' @export
 
-report.lm <- function(data, label, folds, normalize = TRUE, cleaning = TRUE, deficiency = TRUE, stats = TRUE, coefficients = TRUE, adv_stats = TRUE, plots = TRUE, output_file = "report.lm.html", output_dir = getwd(), open_file = TRUE, ...) {
+report.lm <- function(data, label, folds, normalize = TRUE, cleaning = TRUE, deficiency = TRUE, stats = TRUE, coefficients = TRUE, adv_stats = TRUE, plots = TRUE, output_file = "report.lm.html", output_dir = getwd(), open_file = TRUE, quiet = FALSE, ...) {
   
   fitted_lm = stats_table = fitted_values = fitted_predicted = NULL # Avoid CRAN issue
   
@@ -52,6 +53,7 @@ report.lm <- function(data, label, folds, normalize = TRUE, cleaning = TRUE, def
          intermediates_dir = output_dir,
          params = list(data = data, label = label, folds = folds, normalize = normalize, cleaning = cleaning, deficiency = deficiency, stats = stats, coefficients = coefficients, adv_stats = adv_stats, plots = plots, fun_options = list()),
          envir = environment(),
+         quiet = quiet,
          ...)
   
   # Open file?

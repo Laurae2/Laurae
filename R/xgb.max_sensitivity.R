@@ -22,11 +22,13 @@ xgb.max_sensitivity <- function(pred, dtrain) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, sens := tp_v / (tp_v + fn_v)]
-  DT[, sens := ifelse(!is.finite(sens), -1, sens)]
   
   best_row <- which.max(DT$sens)
-  best_sens <- DT$sens[best_row[1]]
   
-  return(list(metric = "sens", value = best_sens))
+  if (length(best_row) > 0) {
+    return(list(metric = "sens", value = DT$sens[best_row[1]]))
+  } else {
+    return(list(metric = "sens", value = -1))
+  }
   
 }

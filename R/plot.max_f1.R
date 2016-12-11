@@ -23,8 +23,7 @@ plotting.max_f1 <- function(preds, labels, plots = TRUE, ...) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, f1s := 2 * tp_v / (2 * tp_v + fp_v + fn_v)]
-  DT[, f1s := ifelse(!is.finite(f1s), -1, f1s)]
-  DT <- DT[f1s != -1]
+  DT <- DT[is.finite(f1s)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["f1s"]], ...)
   }

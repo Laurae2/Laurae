@@ -1,7 +1,7 @@
 ---
 title: "Extreme Gradient Boosting Model"
 output:
-  html_notebook:
+  html_document:
     code_folding: hide
     number_sections: yes
     toc: yes
@@ -14,7 +14,7 @@ date: "`r format(Sys.time(), '%a %b %d %Y %X')`"
 
 ## Loading necessary packages
 
-We must load the package `Laurae`, `data.table`, `rmarkdown`, `RcppArmadillo`, `DT`, `formattable`, `matrixStats`, and `lattice` before continuing.
+We must load the package `Laurae`, `data.table`, `rmarkdown`, `xgboost`, `DT`, `formattable`, `matrixStats`, `lattice`, `R.utils`, `ggplot2`, `grid`, and `gridExtra` before continuing.
 
 ```{r Packages}
 library(Laurae)
@@ -26,6 +26,9 @@ library(formattable)
 library(matrixStats)
 library(lattice)
 library(R.utils)
+library(ggplot2)
+library(grid)
+library(gridExtra)
 ```
 
 ## Print-A-Lot
@@ -52,9 +55,9 @@ if (normalize) {
 }
 ```
 
-# Creating the Regression Model
+# Creating the `r ifelse(classification, "Classification", "Regression")` Model
 
-We are generating the regression model per fold.
+We are generating the `r ifelse(classification, "Classification", "Regression")` model per fold.
 
 ```{r Train}
 fitted_xgb <- list()
@@ -91,9 +94,9 @@ for (i in 1:length(folds)) {
 }
 ```
 
-# Aggregated Regression Statistics (out of fold)
+# Aggregated `r ifelse(classification, "Classification", "Regression")` Statistics (out of fold)
 
-We must gather all values first.
+We must gather all values first for `r ifelse(classification, paste0("classification, with a binary threshold of ", threshold), "regression")`.
 
 ```{r Validate}
 if (!classification) {
@@ -111,18 +114,25 @@ if (!classification) {
   r_logloss <- numeric(length(folds))
   r_kappa <- numeric(length(folds))
   r_kappa_p <- numeric(length(folds))
+  r_kappa_n <- numeric(length(folds))
   r_f1s <- numeric(length(folds))
   r_f1s_p <- numeric(length(folds))
+  r_f1s_n <- numeric(length(folds))
   r_mcc <- numeric(length(folds))
   r_mcc_p <- numeric(length(folds))
+  r_mcc_n <- numeric(length(folds))
   r_tpr <- numeric(length(folds))
   r_tpr_p <- numeric(length(folds))
+  r_tpr_n <- numeric(length(folds))
   r_tnr <- numeric(length(folds))
   r_tnr_p <- numeric(length(folds))
+  r_tnr_n <- numeric(length(folds))
   r_fpr <- numeric(length(folds))
   r_fpr_p <- numeric(length(folds))
+  r_fpr_n <- numeric(length(folds))
   r_fnr <- numeric(length(folds))
   r_fnr_p <- numeric(length(folds))
+  r_fnr_n <- numeric(length(folds))
 }
 
 if (! classification) {
@@ -144,33 +154,41 @@ if (! classification) {
     temp_vec <- get.max_kappa(fitted_predicted[[i]], fitted_values[[i]])
     r_kappa[[i]] <- temp_vec[1]
     r_kappa_p[[i]] <- temp_vec[2]
+    r_kappa_n[[i]] <- prob.max_kappa(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_f1(fitted_predicted[[i]], fitted_values[[i]])
     r_f1s[[i]] <- temp_vec[1]
     r_f1s_p[[i]] <- temp_vec[2]
+    r_f1s_n[[i]] <- prob.max_f1(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_mcc(fitted_predicted[[i]], fitted_values[[i]])
     r_mcc[[i]] <- temp_vec[1]
     r_mcc_p[[i]] <- temp_vec[2]
+    r_mcc_n[[i]] <- prob.max_mcc(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_sensitivity(fitted_predicted[[i]], fitted_values[[i]])
     r_tpr[[i]] <- temp_vec[1]
     r_tpr_p[[i]] <- temp_vec[2]
+    r_tpr_n[[i]] <- prob.max_sensitivity(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_specificity(fitted_predicted[[i]], fitted_values[[i]])
     r_tnr[[i]] <- temp_vec[1]
     r_tnr_p[[i]] <- temp_vec[2]
+    r_tnr_n[[i]] <- prob.max_specificity(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_fallout(fitted_predicted[[i]], fitted_values[[i]])
     r_fpr[[i]] <- temp_vec[1]
     r_fpr_p[[i]] <- temp_vec[2]
+    r_fpr_n[[i]] <- prob.max_fallout(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     temp_vec <- get.max_missrate(fitted_predicted[[i]], fitted_values[[i]])
     r_fnr[[i]] <- temp_vec[1]
     r_fnr_p[[i]] <- temp_vec[2]
+    r_fnr_n[[i]] <- prob.max_missrate(fitted_predicted[[i]], fitted_values[[i]], thresh = threshold)
     gc(verbose = FALSE)
   }
 }
-
 ```
 
 ## Base Statistics, global (stats = `r stats`)
 
 A pretty table is better than text to print the base statistics.
+
+The values on the table are the most optimistic values you can get. They do not represent the best all-rounded model using a probability threshold of `r threshold`.
 
 ```{r Stats1}
 if (stats) {
@@ -178,17 +196,15 @@ if (stats) {
     stats_table <- data.table(Statistic = c("Pearson Correlation Coefficient (R)", "Coefficient of Determination (R^2)", "Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)", "Mean Average Percentage Error (MAPE)"), Mean = c(mean(r_pearson), mean(r_squared), mean(r_mae), mean(r_mse), mean(r_rmse), mean(r_mape)), SD = c(sd(r_pearson), sd(r_squared), sd(r_mae), sd(r_mse), sd(r_rmse), sd(r_mape)))
     formattable(stats_table)
   } else {
-    stats_table <- data.table(Statistic = c("AUROC", "Log Loss", "Kappa", "F1 Score", "MCC", "TPR", "TNR", "FPR", "FNR"), Mean = c(mean(r_auc), mean(r_logloss), mean(r_kappa), mean(r_f1s), mean(r_mcc), mean(r_tpr), mean(r_tnr), mean(r_fpr), mean(r_fnr)), SD = c(sd(r_auc), sd(r_logloss), sd(r_kappa), sd(r_f1s), sd(r_mcc), sd(r_tpr), sd(r_tnr), sd(r_fpr), sd(r_fnr)))
+    stats_table <- data.table(Statistic = c("AUROC", "Log Loss", "Optimistic Kappa", "Regular Kappa", "Threshold Kappa", "Optimistic F1 Score", "Regular F1 Score", "Threshold F1 Score", "Optimistic MCC", "Regular MCC", "Threshold MCC", "Optimistic TPR", "Regular TPR", "Threshold TPR", "Optimistic TNR", "Regular TNR", "Threshold TNR", "Optimistic FPR", "Regular FPR", "Threshold FPR", "Optimistic FNR", "Regular FNR", "Threshold FNR"), Mean = c(mean(r_auc), mean(r_logloss), mean(r_kappa), mean(r_kappa_n), mean(r_kappa_p), mean(r_f1s), mean(r_f1s_n), mean(r_f1s_p), mean(r_mcc), mean(r_mcc_n), mean(r_mcc_p), mean(r_tpr), mean(r_tpr_n), mean(r_tpr_p), mean(r_tnr), mean(r_tnr_n), mean(r_tnr_p), mean(r_fpr), mean(r_fpr_n), mean(r_fpr_p), mean(r_fnr), mean(r_fnr_n), mean(r_fnr_p)), SD = c(sd(r_auc), sd(r_logloss), sd(r_kappa), sd(r_kappa_n), sd(r_kappa_p), sd(r_f1s), sd(r_f1s_n), sd(r_f1s_p), sd(r_mcc), sd(r_mcc_n), sd(r_mcc_p), sd(r_tpr), sd(r_tpr_n), sd(r_tpr_p), sd(r_tnr), sd(r_tnr_n), sd(r_tnr_p), sd(r_fpr), sd(r_fpr_n), sd(r_fpr_p), sd(r_fnr), sd(r_fnr_n), sd(r_fnr_p)))
     formattable(stats_table)
-    stats_probs <- data.table(Statistic = c("Kappa", "F1 Score", "MCC", "TPR", "TNR", "FPR", "FNR"), Mean = c(mean(r_kappa_p), mean(r_f1s_p), mean(r_mcc_p), mean(r_tpr_p), mean(r_tnr_p), mean(r_fpr_p), mean(r_fnr_p)), SD = c(sd(r_kappa_p), sd(r_f1s_p), sd(r_mcc_p), sd(r_tpr_p), sd(r_tnr_p), sd(r_fpr_p), sd(r_fnr_p)))
-    formattable(stats_probs)
   }
 }
 ```
 
 ## Base Statistics (per fold) (stats = `r stats`)
 
-A pretty table is better than text to print the base statistics. For classification, the metrics are the most optimistic values.
+A pretty table is better than text to print the base statistics.
 
 ```{r Stats2}
 if (stats) {
@@ -197,15 +213,142 @@ if (stats) {
     stats_probs <- NULL
     formattable(stats_table, list(R = color_bar("lightpink"), R2 = color_bar("pink"), MAE = color_bar("lightgreen"), MSE = color_bar("lightgrey"), RMSE = color_bar("lightblue"), MAPE = color_bar("cyan")))
   } else {
-    stats_table <- data.table(Folds = 1:length(folds), AUROC = r_auc, LogLoss = r_logloss, Kappa = r_kappa, F1_Score = r_f1s, MCC = r_mcc, TPR = r_tpr, TNR = r_tnr, FPR = r_fpr, FNR = r_fnr)
-    formattable(stats_table, list(AUROC = color_bar("lightpink"), LogLoss = color_bar("pink"), Kappa = color_bar("lightgreen"), F1_Score = color_bar("lightgreen"), MCC = color_bar("lightgreen"), TPR = color_bar("lightblue"), TNR = color_bar("lightblue"), FPR = color_bar("cyan"), FPR = color_bar("cyan")))
-    stats_probs <- data.table(Folds = 1:length(folds), pKappa = r_kappa_p, pF1_Score = r_f1s_p, pMCC = r_mcc_p, pTPR = r_tpr_p, pTNR = r_tnr_p, pFPR = r_fpr_p, pFNR = r_fnr_p)
-    formattable(stats_probs, list(pKappa = color_bar("lightgreen"), pF1_Score = color_bar("lightgreen"), pMCC = color_bar("lightgreen"), pTPR = color_bar("lightblue"), pTNR = color_bar("lightblue"), pFPR = color_bar("cyan"), pFPR = color_bar("cyan"), pFNR = color_bar("cyan")))
+    stats_table <- data.table(Folds = 1:length(folds), AUROC = r_auc, LogLoss = r_logloss, bKappa = r_kappa, bF1_Score = r_f1s, bMCC = r_mcc, bTPR = r_tpr, bTNR = r_tnr, bFPR = r_fpr, bFNR = r_fnr, nKappa = r_kappa_n, nF1_Score = r_f1s_n, nMCC = r_mcc_n, nTPR = r_tpr_n, nTNR = r_tnr_n, nFPR = r_fpr_n, nFNR = r_fnr_n)
+    formattable(stats_table[, 1:3, with = FALSE], list(AUROC = color_bar("lightpink"), LogLoss = color_bar("pink")))
   }
 }
 ```
 
+They do not represent the best all-rounded model ("b"), which is denoted as "n". Here are best possible models if applicable:
+
+```{r Stats3}
+if (stats & classification) {
+  formattable(stats_table[, c(1, 4:10), with = FALSE], list(bKappa = color_bar("lightgreen"), bF1_Score = color_bar("lightgreen"), bMCC = color_bar("lightgreen"), bTPR = color_bar("lightblue"), bTNR = color_bar("lightblue"), bFPR = color_bar("cyan"), bFNR = color_bar("cyan")))
+}
+```
+
+Those are the best all-rounded models (typical, normal models) for classification using a probability threshold of `r threshold` if applicable:
+
+```{r Stats4}
+if (stats & classification) {
+  formattable(stats_table[, c(1, 11:17), with = FALSE], list(nKappa = color_bar("lightgreen"), nF1_Score = color_bar("lightgreen"), nMCC = color_bar("lightgreen"), nTPR = color_bar("lightblue"), nTNR = color_bar("lightblue"), nFPR = color_bar("cyan"), nFNR = color_bar("cyan")))
+}
+```
+
+When using a classification, the "p" values on the table are the probability thresholds to use to maximize the relevant performance metric. 
+
+```{r Stats5}
+if (stats & classification) {
+  stats_probs <- data.table(Folds = 1:length(folds), pKappa = r_kappa_p, pF1_Score = r_f1s_p, pMCC = r_mcc_p, pTPR = r_tpr_p, pTNR = r_tnr_p, pFPR = r_fpr_p, pFNR = r_fnr_p)
+  formattable(stats_probs, list(pKappa = color_bar("lightgreen"), pF1_Score = color_bar("lightgreen"), pMCC = color_bar("lightgreen"), pTPR = color_bar("lightblue"), pTNR = color_bar("lightblue"), pFPR = color_bar("cyan"), pFPR = color_bar("cyan"), pFNR = color_bar("cyan")))
+}
+```
+
+As there are many things to lookout for, plots are better for classification if applicable:
+
+```{r Stats6, fig.height=36, fig.width=10}
+if (stats & plots & classification) {
+  
+  grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
+  
+    plots <- list(...)
+    position <- match.arg(position)
+    g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lheight <- sum(legend$height)
+    lwidth <- sum(legend$width)
+    gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+    gl <- c(gl, ncol = ncol, nrow = nrow)
+    
+    combined <- switch(position,
+                       "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                              legend,
+                                              ncol = 1,
+                                              heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                       "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                             legend,
+                                             ncol = 2,
+                                             widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+    grid.newpage()
+    grid.draw(combined)
+    
+  }
+  
+  stats_table_shadow <- copy(stats_table)
+  stats_table_shadow[["Folds"]] <- as.factor(stats_table_shadow[["Folds"]])
+  p01 <- ggplot(stats_table_shadow, aes(x = Folds, y = AUROC, fill = Folds, label = round(AUROC, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "AUROC", title = "AUROC per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p02 <- ggplot(stats_table_shadow, aes(x = Folds, y = LogLoss, fill = Folds, label = round(LogLoss, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Logloss", title = "Logloss per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p03 <- ggplot(stats_table_shadow, aes(x = Folds, y = bKappa, fill = Folds, label = round(bKappa, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic Kappa per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p04 <- ggplot(stats_table_shadow, aes(x = Folds, y = nKappa, fill = Folds, label = round(nKappa, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal Kappa per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p05 <- ggplot(stats_table_shadow, aes(x = Folds, y = bF1_Score, fill = Folds, label = round(bF1_Score, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic F1 Score per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p06 <- ggplot(stats_table_shadow, aes(x = Folds, y = nF1_Score, fill = Folds, label = round(nF1_Score, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal F1 Score per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p07 <- ggplot(stats_table_shadow, aes(x = Folds, y = bMCC, fill = Folds, label = round(bMCC, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic MCC per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p08 <- ggplot(stats_table_shadow, aes(x = Folds, y = nMCC, fill = Folds, label = round(nMCC, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal MCC per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p09 <- ggplot(stats_table_shadow, aes(x = Folds, y = bTPR, fill = Folds, label = round(bTPR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic TPR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p10 <- ggplot(stats_table_shadow, aes(x = Folds, y = nTPR, fill = Folds, label = round(nTPR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal TPR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p11 <- ggplot(stats_table_shadow, aes(x = Folds, y = bTNR, fill = Folds, label = round(bTNR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic TNR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p12 <- ggplot(stats_table_shadow, aes(x = Folds, y = nTNR, fill = Folds, label = round(nTNR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal TNR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p13 <- ggplot(stats_table_shadow, aes(x = Folds, y = bFPR, fill = Folds, label = round(bFPR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic FPR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p14 <- ggplot(stats_table_shadow, aes(x = Folds, y = nFPR, fill = Folds, label = round(nFPR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal FPR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p15 <- ggplot(stats_table_shadow, aes(x = Folds, y = bFNR, fill = Folds, label = round(bFNR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Optimistic Kappa", title = "Optimistic FNR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p16 <- ggplot(stats_table_shadow, aes(x = Folds, y = nFNR, fill = Folds, label = round(nFNR, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Normal Kappa", title = "Normal FNR per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  grid_arrange_shared_legend(p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11, p12, p13, p14, p15, p16, nrow = 8, ncol = 2)
+  
+}
+```
+
+```{r Stats7, fig.height=13.5, fig.width=10}
+if (stats & plots & (!classification)) {
+  
+  grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
+    
+    plots <- list(...)
+    position <- match.arg(position)
+    g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lheight <- sum(legend$height)
+    lwidth <- sum(legend$width)
+    gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+    gl <- c(gl, ncol = ncol, nrow = nrow)
+    
+    combined <- switch(position,
+                       "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                              legend,
+                                              ncol = 1,
+                                              heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                       "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                             legend,
+                                             ncol = 2,
+                                             widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+    grid.newpage()
+    grid.draw(combined)
+    
+  }
+  
+  stats_table_shadow <- copy(stats_table)
+  stats_table_shadow[["Folds"]] <- as.factor(stats_table_shadow[["Folds"]])
+  
+  p01 <- ggplot(stats_table_shadow, aes(x = Folds, y = R, fill = Folds, label = round(R, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "Pearson's R", title = "Pearson's R per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p02 <- ggplot(stats_table_shadow, aes(x = Folds, y = R2, fill = Folds, label = round(R2, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "R-Squared", title = "Pearson's R-Squared per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p03 <- ggplot(stats_table_shadow, aes(x = Folds, y = MAE, fill = Folds, label = round(MAE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MAE", title = "MAE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p04 <- ggplot(stats_table_shadow, aes(x = Folds, y = MSE, fill = Folds, label = round(MSE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MSE", title = "MSE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p05 <- ggplot(stats_table_shadow, aes(x = Folds, y = RMSE, fill = Folds, label = round(RMSE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "RMSE", title = "RMSE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  p06 <- ggplot(stats_table_shadow, aes(x = Folds, y = MAPE, fill = Folds, label = round(MAPE, digits = 5))) + geom_bar(stat = "identity") + coord_polar(theta = "x", direction = 1) + labs(x = "Fold", y = "MAPE", title = "MAPE per fold") + geom_text(position = position_stack(vjust = 0.5)) + theme_bw()
+  grid_arrange_shared_legend(p01, p02, p03, p04, p05, p06, nrow = 3, ncol = 2)
+  
+}
+```
+
+
 ## Feature Importance (importance = `r importance`, unbiased = `r unbiased`)
+
+When the feature importance is unbiased, the model has its overfitting trees pruned. Also, the gain/cover values are computed using the out of fold data, unlike the default behavior of using the training data to compute the gain/cover (when unbiased == FALSE). The column names (when unbiased == TRUE) are in the form XYZ, where:
+
+* X = B or U => Biased or Unbiased
+* Y = Gain, Cover, or Freq => Gain, Cover, or Frequency
+* Z = M or SD => Mean or Standard Deviation
+
+The table is sortable to help the user. Negative unbiased values denotes negative overfitting (bad), while positive unbiased values denotes positive overfitting (good). The unbiased value printed is the subtraction of the unbiased value by the biased value: this is the reason a positive value denotes a higher gain.
 
 ```{r FeatureImp}
 if (importance) {
@@ -330,8 +473,10 @@ if (importance) {
 
 ## Plotting Statistics (plots = `r plots`)
 
+On binary classes, plotting the prediction and the label does not make much sense.
+
 ```{r Plots1, fig.height=12, fig.width=12}
-if (plots) {
+if (plots & (!classification)) {
   fitted_in <- numeric(0)
   fitted_out <- numeric(0)
   folded <- numeric(0)
@@ -345,23 +490,97 @@ if (plots) {
 ```
 
 ```{r Plots2, fig.height=12, fig.width=12}
-if (plots) {
+if (plots & (!classification)) {
   for (i in 1:length(folds)) {
     plot(x = fitted_values[[i]], y = fitted_predicted[[i]], main = paste0("Cross-Validated (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ") xgboost fitted values vs predicted values"), xlab = "Fitted Values", ylab = "Predicted Values")
   }
 }
 ```
 
-```{r Plots3, fig.height=12, fig.width=12}
+When using classification, We can print probability threshold calibration vs a metric to understand how the model behaves against classification metrics.
+
+```{r Plots3, fig.height=12, fig.width=10}
 if (plots & classification) {
-  par(mfrow=c(3, 2))
+  
+  grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, position = c("bottom", "right")) {
+  
+    plots <- list(...)
+    position <- match.arg(position)
+    g <- ggplotGrob(plots[[1]] + theme(legend.position = position))$grobs
+    legend <- g[[which(sapply(g, function(x) x$name) == "guide-box")]]
+    lheight <- sum(legend$height)
+    lwidth <- sum(legend$width)
+    gl <- lapply(plots, function(x) x + theme(legend.position="none"))
+    gl <- c(gl, ncol = ncol, nrow = nrow)
+    
+    combined <- switch(position,
+                       "bottom" = arrangeGrob(do.call(arrangeGrob, gl),
+                                              legend,
+                                              ncol = 1,
+                                              heights = unit.c(unit(1, "npc") - lheight, lheight)),
+                       "right" = arrangeGrob(do.call(arrangeGrob, gl),
+                                             legend,
+                                             ncol = 2,
+                                             widths = unit.c(unit(1, "npc") - lwidth, lwidth)))
+    grid.newpage()
+    grid.draw(combined)
+    
+  }
+  
+  f1s_evolution <- list()
+  f1s_combo <- data.table(y_prob = numeric(0), f1s = numeric(0), Folds = numeric(0))
+  mcc_evolution <- list()
+  mcc_combo <- data.table(y_prob = numeric(0), mcc = numeric(0), Folds = numeric(0))
+  sens_evolution <- list()
+  sens_combo <- data.table(y_prob = numeric(0), sens = numeric(0), Folds = numeric(0))
+  spec_evolution <- list()
+  spec_combo <- data.table(y_prob = numeric(0), spec = numeric(0), Folds = numeric(0))
+  fall_evolution <- list()
+  fall_combo <- data.table(y_prob = numeric(0), fall = numeric(0), Folds = numeric(0))
+  miss_evolution <- list()
+  miss_combo <- data.table(y_prob = numeric(0), miss = numeric(0), Folds = numeric(0))
+  
+  par(mfrow = c(3, 2))
+  
   for (i in 1:length(folds)) {
-    plotting.max_f1(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("F1 Score (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "F1 Score")
-    plotting.max_mcc(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("MCC (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "Matthews Correlation Coefficient")
-    plotting.max_sensitivity(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("TPR (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "True Positive Rate")
-    plotting.max_specificity(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("TNR Score (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "True Negative Rate")
-    plotting.max_fallout(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("FPR Score (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "False Positive Rate")
-    plotting.max_missrate(fitted_predicted[[i]], fitted_values[[i]], plots = TRUE, main = paste0("FNR Score (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "False Negative Rate")
+    f1s_evolution[[i]] <- plotting.max_f1(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    f1s_combo <- rbind(f1s_combo, cbind(f1s_evolution[[i]], Folds = rep(i, nrow(f1s_evolution[[i]]))))
+    mcc_evolution[[i]] <- plotting.max_mcc(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    mcc_combo <- rbind(mcc_combo, cbind(mcc_evolution[[i]], Folds = rep(i, nrow(mcc_evolution[[i]]))))
+    sens_evolution[[i]] <- plotting.max_sensitivity(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    sens_combo <- rbind(sens_combo, cbind(sens_evolution[[i]], Folds = rep(i, nrow(sens_evolution[[i]]))))
+    spec_evolution[[i]] <- plotting.max_specificity(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    spec_combo <- rbind(spec_combo, cbind(spec_evolution[[i]], Folds = rep(i, nrow(spec_evolution[[i]]))))
+    fall_evolution[[i]] <- plotting.max_fallout(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    fall_combo <- rbind(fall_combo, cbind(fall_evolution[[i]], Folds = rep(i, nrow(fall_evolution[[i]]))))
+    miss_evolution[[i]] <- plotting.max_missrate(fitted_predicted[[i]], fitted_values[[i]], plots = FALSE)
+    miss_combo <- rbind(miss_combo, cbind(miss_evolution[[i]], Folds = rep(i, nrow(miss_evolution[[i]]))))
+  }
+  
+  f1s_combo[["Folds"]] <- as.factor(f1s_combo[["Folds"]])
+  mcc_combo[["Folds"]] <- as.factor(mcc_combo[["Folds"]])
+  sens_combo[["Folds"]] <- as.factor(sens_combo[["Folds"]])
+  spec_combo[["Folds"]] <- as.factor(spec_combo[["Folds"]])
+  fall_combo[["Folds"]] <- as.factor(fall_combo[["Folds"]])
+  miss_combo[["Folds"]] <- as.factor(miss_combo[["Folds"]])
+  
+  p1 <- ggplot(data = f1s_combo, aes(x = y_prob, y = f1s, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "F1 Score", title = "Cross-Validated F1 Score vs Probability") + theme_bw()
+  p2 <- ggplot(data = mcc_combo, aes(x = y_prob, y = mcc, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "MCC", title = "Cross-Validated MCC vs Probability") + theme_bw()
+  p3 <- ggplot(data = sens_combo, aes(x = y_prob, y = sens, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "TPR", title = "Cross-Validated TPR vs Probability") + theme_bw()
+  p4 <- ggplot(data = spec_combo, aes(x = y_prob, y = spec, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "TNR", title = "Cross-Validated TNR vs Probability") + theme_bw()
+  p5 <- ggplot(data = fall_combo, aes(x = y_prob, y = fall, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "FPR", title = "Cross-Validated FPR vs Probability") + theme_bw()
+  p6 <- ggplot(data = miss_combo, aes(x = y_prob, y = miss, group = Folds, colour = Folds)) + geom_path() + labs(x = "Probability", y = "FNR", title = "Cross-Validated FNR vs Probability") + theme_bw()
+  grid_arrange_shared_legend(p1, p2, p3, p4, p5, p6, nrow = 3, ncol = 2)
+  
+  for (i in 1:length(folds)) {
+    
+    plot(x = f1s_evolution[[i]]$y_prob, y = f1s_evolution[[i]]$f1s, main = paste0("F1 Score (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "F1 Score", type = plot_type)
+    plot(x = mcc_evolution[[i]]$y_prob, y = mcc_evolution[[i]]$mcc, main = paste0("MCC (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "Matthews Correlation Coefficient", type = plot_type)
+    plot(x = sens_evolution[[i]]$y_prob, y = sens_evolution[[i]]$sens, main = paste0("TPR (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "True Positive Rate", type = plot_type)
+    plot(x = spec_evolution[[i]]$y_prob, y = spec_evolution[[i]]$spec, main = paste0("TNR (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "True Negative Rate", type = plot_type)
+    plot(x = fall_evolution[[i]]$y_prob, y = fall_evolution[[i]]$fall, main = paste0("FPR (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "False Positive Rate", type = plot_type)
+    plot(x = miss_evolution[[i]]$y_prob, y = miss_evolution[[i]]$miss, main = paste0("FNR (fold ", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), i), ")"), xlab = "Predicted Value", ylab = "False Negative Rate", type = plot_type)
+    
   }
 }
 ```

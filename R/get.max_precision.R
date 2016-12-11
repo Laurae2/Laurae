@@ -19,12 +19,13 @@ get.max_precision <- function(preds, labels) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, prec := tp_v / (tp_v + fp_v)]
-  DT[, prec := ifelse(!is.finite(prec), -1, prec)]
   
   best_row <- which.max(DT$prec)
-  best_prec <- DT$prec[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_prec, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$prec[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

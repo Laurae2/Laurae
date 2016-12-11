@@ -20,8 +20,7 @@ plotting.max_specificity <- function(preds, labels, plots = TRUE, ...) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, spec := tn_v / (tn_v + fp_v)]
-  DT[, spec := ifelse(!is.finite(spec), -1, spec)]
-  DT <- DT[spec != -1]
+  DT <- DT[is.finite(spec)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["spec"]], ...)
   }

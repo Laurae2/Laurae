@@ -21,11 +21,13 @@ xgb.max_precision <- function(pred, dtrain) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, prec := tp_v / (tp_v + fp_v)]
-  DT[, prec := ifelse(!is.finite(prec), -1, prec)]
   
   best_row <- which.max(DT$prec)
-  best_prec <- DT$prec[best_row[1]]
   
-  return(list(metric = "prec", value = best_prec))
+  if (length(best_row) > 0) {
+    return(list(metric = "prec", value = DT$prec[best_row[1]]))
+  } else {
+    return(list(metric = "prec", value = -1))
+  }
   
 }

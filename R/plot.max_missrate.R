@@ -22,8 +22,7 @@ plotting.max_missrate <- function(preds, labels, plots = TRUE, ...) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, miss := fn_v / (tp_v + fn_v)]
-  DT[, miss := ifelse(!is.finite(miss), -1, miss)]
-  DT <- DT[miss != -1]
+  DT <- DT[is.finite(miss)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["miss"]], ...)
   }

@@ -18,12 +18,13 @@ get.max_fallout <- function(preds, labels) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, fall := fp_v / (fp_v + tn_v)]
-  DT[, fall := ifelse(!is.finite(fall), -1, fall)]
   
   best_row <- which.min(DT$fall)
-  best_fall <- DT$fall[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_fall, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$fall[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

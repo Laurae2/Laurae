@@ -22,8 +22,7 @@ plotting.max_sensitivity <- function(preds, labels, plots = TRUE, ...) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, sens := tp_v / (tp_v + fn_v)]
-  DT[, sens := ifelse(!is.finite(sens), -1, sens)]
-  DT <- DT[sens != -1]
+  DT <- DT[is.finite(sens)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["sens"]], ...)
   }

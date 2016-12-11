@@ -20,11 +20,13 @@ xgb.max_fallout <- function(pred, dtrain) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, fall := fp_v / (fp_v + tn_v)]
-  DT[, fall := ifelse(!is.finite(fall), -1, fall)]
   
   best_row <- which.min(DT$fall)
-  best_fall <- DT$fall[best_row[1]]
   
-  return(list(metric = "fall", value = best_fall))
+  if (length(best_row) > 0) {
+    return(list(metric = "fall", value = DT$fall[best_row[1]]))
+  } else {
+    return(list(metric = "fall", value = -1))
+  }
   
 }

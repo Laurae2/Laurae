@@ -22,8 +22,7 @@ plotting.max_acc <- function(preds, labels, plots = TRUE, ...) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, acc := (tn_v + tp_v) / lens]
-  DT[, acc := ifelse(!is.finite(acc), -1, acc)]
-  DT <- DT[acc != -1]
+  DT <- DT[is.finite(acc)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["acc"]], ...)
   }

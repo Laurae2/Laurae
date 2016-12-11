@@ -5,9 +5,10 @@
 \title{Extreme Gradient Boosting HTML report}
 \usage{
 report.xgb(data, label, folds, params, normalize = TRUE,
-  classification = TRUE, importance = TRUE, unbiased = TRUE,
-  stats = TRUE, plots = TRUE, output_file = "report.xgb.html",
-  output_dir = getwd(), open_file = TRUE, ...)
+  classification = TRUE, threshold = 0.5, importance = TRUE,
+  unbiased = TRUE, stats = TRUE, plots = TRUE, plot_type = "S",
+  output_file = "report.xgb.html", output_dir = getwd(), open_file = TRUE,
+  quiet = FALSE, ...)
 }
 \arguments{
 \item{data}{Type: data.table. The data to fit a xgboost model on.}
@@ -22,13 +23,17 @@ report.xgb(data, label, folds, params, normalize = TRUE,
 
 \item{classification}{Type: boolean. Whether the task is a classification or not. Defaults to \code{TRUE}.}
 
+\item{threshold}{Type: numeric. The binary threshold to use for statistics when using \code{classification == TRUE}. Defaults to \code{0.5}.}
+
 \item{importance}{Type: boolean. Whether to perform feature importance computation or not. Defaults to \code{TRUE}.}
 
-\item{unbiased}{Type: boolean. Whether to perform unbiased feature importance computation or not. Defaults to \code{TRUE}.}
+\item{unbiased}{Type: boolean. Whether to perform unbiased feature importance computation or not. This doubles (sometimes triples) the effective training time, therefore this must be used with caution (for the benefits of getting very accurate and unbiased feature importance from the final cross-validated models). Defaults to \code{TRUE}.}
 
 \item{stats}{Type: boolean. Whether machine learning statistics should be output for model performance diagnosis. When \code{TRUE}, also returns the metrics and the out of fold predictions. Defaults to \code{TRUE}.}
 
 \item{plots}{Type: boolean. Whether plotting of fitted values vs predicted values should be done. Defaults to \code{TRUE}.}
+
+\item{plot_type}{Type: character. The type of plot to use for classification threshold calibration plots. \code{"p"} for points, \code{"l"} for lines, \code{"b"} for points+line, \code{"c"} for line without points, \code{"o"} for overplotted (points+line overlapping), \code{"h"} for high-density vertical lines (histogram-like), \code{"s"} for optimistic stair steps, \code{"S"} for pessimistic stair steps, \code{"n"} to plot nothing. Defaults to \code{"S"} for pessimistic stair step.}
 
 \item{output_file}{Type: character. The output report file name. Defaults to \code{"report.lm.html"}.}
 
@@ -36,13 +41,15 @@ report.xgb(data, label, folds, params, normalize = TRUE,
 
 \item{open_file}{Type: boolean. Whether to open the output report once it has finished computing. Defaults to \code{TRUE}.}
 
+\item{quiet}{Type: boolean. Whether to "shut up" while rendering the HTML file or not. Defaults to \code{FALSE}.}
+
 \item{...}{Other arguments to pass to \code{rmarkdown::render}.}
 }
 \value{
 Returns a list with the machine learning metrics (\code{"Metrics"}), the machine learning probabilities (\code{"Probs"}), the folds \code{"Folds"}, the fitted values per fold (\code{"Fitted"}), the predicted values per fold (\code{"Predicted"}), the biased feature importance (\code{"BiasedImp"}), and the unbiased feature importance (\code{"UnbiasedImp"}) if they were computed. Otherwise, returns \code{TRUE}.
 }
 \description{
-This function creates an xgboost as a HTML file. Cross-validation is mandatory. Does NOT handle multiclass scenarios or non-regression/classification tasks. Does NOT handle gblinear. You cannot use \code{process_type}, \code{updater}, and \code{refresh_leaf} parameters.
+This function creates an xgboost as a HTML file. Cross-validation is mandatory. Does NOT handle multiclass scenarios or non-regression/classification tasks. Does NOT handle gblinear. You cannot use \code{process_type}, \code{updater}, and \code{refresh_leaf} parameters. Add \code{quiet = TRUE} to the list of arguments to make the function "shut up" the massive verbose text.
 }
 \examples{
 # No example.

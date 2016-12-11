@@ -20,8 +20,7 @@ plotting.max_fallout <- function(preds, labels, plots = TRUE, ...) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, fall := fp_v / (fp_v + tn_v)]
-  DT[, fall := ifelse(!is.finite(fall), -1, fall)]
-  DT <- DT[fall != -1]
+  DT <- DT[is.finite(fall)]
   if (plots) {
     plot(x = DT[["y_prob"]], y = DT[["fall"]], ...)
   }

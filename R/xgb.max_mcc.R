@@ -24,11 +24,13 @@ xgb.max_mcc <- function(pred, dtrain) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, mcc := (tp_v * tn_v - fp_v * fn_v) / sqrt((tp_v + fp_v) * (tp_v + fn_v) * (tn_v + fp_v) * (tn_v + fn_v))]
-  DT[, mcc := ifelse(!is.finite(mcc), -1, mcc)]
   
   best_row <- which.max(DT$mcc)
-  best_MCC <- DT$mcc[best_row[1]]
   
-  return(list(metric = "MCC", value = best_MCC))
+  if (length(best_row) > 0) {
+    return(list(metric = "mcc", value = DT$mcc[best_row[1]]))
+  } else {
+    return(list(metric = "mcc", value = -1))
+  }
   
 }

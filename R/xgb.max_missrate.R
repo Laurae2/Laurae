@@ -22,11 +22,13 @@ xgb.max_missrate <- function(pred, dtrain) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, miss := fn_v / (tp_v + fn_v)]
-  DT[, miss := ifelse(!is.finite(miss), -1, miss)]
   
   best_row <- which.min(DT$miss)
-  best_miss <- DT$miss[best_row[1]]
   
-  return(list(metric = "miss", value = best_miss))
+  if (length(best_row) > 0) {
+    return(list(metric = "miss", value = DT$miss[best_row[1]]))
+  } else {
+    return(list(metric = "miss", value = -1))
+  }
   
 }

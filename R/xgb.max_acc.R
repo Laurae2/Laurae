@@ -22,11 +22,12 @@ xgb.max_acc <- function(pred, dtrain) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, acc := (tn_v + tp_v) / lens]
-  DT[, acc := ifelse(!is.finite(acc), -1, acc)]
   
   best_row <- which.max(DT$acc)
-  best_acc <- DT$acc[best_row[1]]
-  
-  return(list(metric = "acc", value = best_acc))
+  if (length(best_row) > 0) {
+    return(list(metric = "acc", value = DT$acc[best_row[1]]))
+  } else {
+    return(list(metric = "acc", value = -1))
+  }
   
 }

@@ -21,12 +21,13 @@ get.max_f1 <- function(preds, labels) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, f1s := 2 * tp_v / (2 * tp_v + fp_v + fn_v)]
-  DT[, f1s := ifelse(!is.finite(f1s), -1, f1s)]
   
   best_row <- which.max(DT$f1s)
-  best_f1s <- DT$f1s[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_f1s, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$f1s[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

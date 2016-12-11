@@ -20,11 +20,13 @@ xgb.max_specificity <- function(pred, dtrain) {
   DT[, fp_v := cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, spec := tn_v / (tn_v + fp_v)]
-  DT[, spec := ifelse(!is.finite(spec), -1, spec)]
   
   best_row <- which.max(DT$spec)
-  best_spec <- DT$spec[best_row[1]]
   
-  return(list(metric = "spec", value = best_spec))
+  if (length(best_row) > 0) {
+    return(list(metric = "spec", value = DT$spec[best_row[1]]))
+  } else {
+    return(list(metric = "spec", value = -1))
+  }
   
 }

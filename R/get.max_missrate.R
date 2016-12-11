@@ -20,12 +20,13 @@ get.max_missrate <- function(preds, labels) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, miss := fn_v / (tp_v + fn_v)]
-  DT[, miss := ifelse(!is.finite(miss), -1, miss)]
   
   best_row <- which.min(DT$miss)
-  best_miss <- DT$miss[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_miss, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$miss[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

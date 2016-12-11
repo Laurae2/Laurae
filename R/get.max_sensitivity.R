@@ -20,12 +20,13 @@ get.max_sensitivity <- function(preds, labels) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, sens := tp_v / (tp_v + fn_v)]
-  DT[, sens := ifelse(!is.finite(sens), -1, sens)]
   
   best_row <- which.max(DT$sens)
-  best_sens <- DT$sens[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_sens, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$sens[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

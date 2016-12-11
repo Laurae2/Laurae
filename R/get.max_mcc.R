@@ -22,12 +22,13 @@ get.max_mcc <- function(preds, labels) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, mcc := (tp_v * tn_v - fp_v * fn_v) / sqrt((tp_v + fp_v) * (tp_v + fn_v) * (tn_v + fp_v) * (tn_v + fn_v))]
-  DT[, mcc := ifelse(!is.finite(mcc), -1, mcc)]
   
   best_row <- which.max(DT$mcc)
-  best_MCC <- DT$mcc[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_MCC, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$mcc[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }

@@ -23,11 +23,13 @@ xgb.max_f1 <- function(pred, dtrain) {
   DT[, tp_v := nump - fp_v]
   DT <- DT[cleaner, ]
   DT[, f1s := 2 * tp_v / (2 * tp_v + fp_v + fn_v)]
-  DT[, f1s := ifelse(!is.finite(f1s), -1, f1s)]
   
   best_row <- which.max(DT$f1s)
-  best_f1s <- DT$f1s[best_row[1]]
   
-  return(list(metric = "f1s", value = best_f1s))
+  if (length(best_row) > 0) {
+    return(list(metric = "f1s", value = DT$f1s[best_row[1]]))
+  } else {
+    return(list(metric = "f1s", value = -1))
+  }
   
 }

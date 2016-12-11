@@ -20,12 +20,13 @@ get.max_acc <- function(preds, labels) {
   DT[, tp_v := nump - cumsum(y_true == 1)]
   DT <- DT[cleaner, ]
   DT[, acc := (tn_v + tp_v) / lens]
-  DT[, acc := ifelse(!is.finite(acc), -1, acc)]
   
   best_row <- which.max(DT$acc)
-  best_acc <- DT$acc[best_row[1]]
-  best_thresh <- DT$y_prob[best_row[1]]
   
-  return(c(best_acc, best_thresh))
+  if (length(best_row) > 0) {
+    return(c(DT$acc[best_row[1]], DT$y_prob[best_row[1]]))
+  } else {
+    return(c(-1, -1))
+  }
   
 }
