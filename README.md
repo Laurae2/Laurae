@@ -26,7 +26,7 @@ Mostly...
 **Automated Reporting for Machine Learning:**
 
 * Generate an in-depth automated report for linear regression with interactive elements.
-* Generate an in-depth automated report for xgboost regression/classification with interactive elements. 
+* Generate an in-depth automated report for xgboost regression/classification with interactive elements, with unbiased feature importance computations.
 
 **Optimization:**
 
@@ -97,7 +97,7 @@ Need all R dependencies in one shot?:
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
 install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
-install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice"))
+install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice", "grid", "gridExtra"))
 install_github("Laurae2/sparsity")
 ```
 
@@ -110,7 +110,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
 | LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
-| xgboost | YES (should) | xgb.ncv, xgb.opt.depth, report.xgb |
+| xgboost | YES (from PR 1855) | xgb.ncv, xgb.opt.depth, report.xgb |
 | data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb |
 | Rcpp | No | sparsity (package) |
 | RcppArmadillo | No | report.lm |
@@ -130,7 +130,9 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Rtsne | No | tsne_grid |
 | tabplot | No | tableplot_jpg |
 | stringi | No | lightgbm.cv |
-| ggplot2 | No | lgbm.fi.plot |
+| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb |
+| grid | No | report.lm, report.xgb |
+| gridExtra | No | report.lm, report.xgb |
 | lattice | No | report.lm, report.xgb |
 | Deriv | No | SymbolicLoss |
 | None so far | No | kfold, nkfold, lgbm.find |
@@ -392,7 +394,7 @@ You can install the other packages by running in your R console:
 
 ```r
 install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
-install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice"))
+install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice", "grid", "gridExtra"))
 install_github("Laurae2/sparsity")
 ```
 
