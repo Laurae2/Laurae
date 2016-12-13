@@ -1,7 +1,8 @@
 Package: Laurae
-Title: Advanced Data Science Toolbox for R
+Title: Advanced High Performance Data Science Toolbox for R
 Version: 0.0.0.9001
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Date: 2016-12-13
+Authors: Laurae
 Description: This package is for advanced statistics, visualization, and
     modeling.
 Depends:
@@ -24,6 +25,9 @@ Suggests:
 	rpart.plot (>= 2.1.0),
 	Deriv (>= 3.8.0),
 	DT (>= 0.2),
+	shiny (>= 0.14.2),
+	shinydashboard (>= 0.5.3),
+	plotluck (>= 1.1.0),
 	sparsity,
 License: What license is it under? A license where I'm not liable for anything you do bad with.
 Encoding: UTF-8

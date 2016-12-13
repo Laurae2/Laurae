@@ -110,21 +110,51 @@ globalVariables(c("Timing_Metric",
                   "tn_v",
                   "tp_v",
                   "y_true",
-                  "miss"))
+                  "miss",
+                  "box",
+                  "dashboardBody",
+                  "dashboardHeader",
+                  "dashboardPage",
+                  "dashboardSidebar",
+                  "dropdownMenu",
+                  "f",
+                  "fluidRow",
+                  "icon",
+                  "messageItem",
+                  "plotOutput",
+                  "renderPlot",
+                  "shinyApp",
+                  "textInput",
+                  "sidebarMenu",
+                  "verbatimTextOutput",
+                  "selectInput",
+                  "observeEvent",
+                  "updateSelectInput",
+                  "renderText"))
 
-requireNamespace("Matrix")
-requireNamespace("R.utils")
-requireNamespace("Rtsne")
-requireNamespace("outliers")
-requireNamespace("recommenderlab")
-requireNamespace("tabplot")
 requireNamespace("xgboost")
-requireNamespace("stringi")
-requireNamespace("ggplot2")
-requireNamespace("sparsity")
-requireNamespace("CEoptim")
-requireNamespace("car")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
-requireNamespace("Deriv")
+requireNamespace("tabplot")
+requireNamespace("ggplot2")
+requireNamespace("plotluck")
+requireNamespace("grid")
+requireNamespace("gridExtra")
+requireNamespace("lattice")
+requireNamespace("car")
+requireNamespace("CEoptim")
 requireNamespace("DT")
+requireNamespace("formattable")
+requireNamespace("rmarkdown")
+requireNamespace("shiny")
+requireNamespace("shinydashboard")
+requireNamespace("Matrix")
+requireNamespace("matrixStats")
+requireNamespace("R.utils")
+requireNamespace("Rtsne")
+requireNamespace("recommenderlab")
+requireNamespace("sparsity")
+requireNamespace("RcppArmadillo")
+requireNamespace("Deriv")
+requireNamespace("outliers")
+requireNamespace("stringi")

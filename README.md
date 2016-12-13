@@ -1,12 +1,21 @@
 # Laurae
 
-Advanced Toolbox for Data Science for R by Laurae
+Advanced High Performance Data Science Toolbox for R by Laurae
 
 ![What is data science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
 
 # What can I do with it?
 
-Mostly...
+Mostly... in a nutshell:
+
+* Supervised Learning: xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation
+* Unsupervised Learning: auto t-SNE
+* Automated Reporting for Machine Learning: linear regression, unbiased xgboost regression/classification
+* Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot
+* Optimization: Cross-Entropy optimization combined with Elite optimization
+* data.table improvements: up to 3X memory efficiency without even a minor cost in CPU time
+* Plot massive amounts of data without being slow: tableplots tableplots tableplots tableplots tableplots
+* SVMLight I/O: C++ implementation of SVMLight reading/saving for dgCMatrix (sparse column-compressed format)
 
 **Supervised Learning:**
 
@@ -26,7 +35,12 @@ Mostly...
 **Automated Reporting for Machine Learning:**
 
 * Generate an in-depth automated report for linear regression with interactive elements.
-* Generate an in-depth automated report for xgboost regression/classification with interactive elements, with unbiased feature importance computations.
+* Generate an in-depth automated report for xgboost regression/classification with interactive elements, with unbiased feature importance computations
+
+**Interactive Analysis:**
+
+* Discover and optimize gradient and hessian functions interactively in real-time
+* Plot up to 1 dependent variable, 2 independent variables, 2 conditioning variables, and 1 weighting variable for Exploratory Data Analysis using ggplot, in real-time
 
 **Optimization:**
 
@@ -61,9 +75,13 @@ Mostly...
 
 ![Automated Reporting with pretty tables](https://cloud.githubusercontent.com/assets/9083669/21076083/d23e6d94-bf22-11e6-9b40-c718b4d5691e.png)
 
-* Symbolic Derivation:
+* Interactive Symbolic Derivation:
 
-![Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/20763045/c9d46d22-b728-11e6-9b5e-d1fe046ad045.png)
+![Interactive Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/21138299/b050ce68-c12d-11e6-9302-c32286ad1729.png)
+
+* Interactive EDA using ggplot:
+
+![Interactive EDA using ggplot](https://cloud.githubusercontent.com/assets/9083669/21138494/9efcf910-c12e-11e6-9e02-0a4bacd0e957.png)
 
 * Feature Engineering Assistant:
 
@@ -96,8 +114,7 @@ Need all R dependencies in one shot?:
 ```r
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
-install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice", "grid", "gridExtra"))
+install.packages(c("rpart", "rpart.plot", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
 install_github("Laurae2/sparsity")
 ```
 
@@ -111,30 +128,33 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | xgboost | YES (from PR 1855) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb |
-| Rcpp | No | sparsity (package) |
-| RcppArmadillo | No | report.lm |
-| rmarkdown | No | report.lm, report.xgb |
+| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot |
 | Laurae2/sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| DT | No | xgb.importance.interactive, report.lm, report.xgb |
-| formattable | No | report.lm, report.xgb |
-| CEoptim | No | ExtraOpt |
 | rpart | No | FeatureLookup |
 | rpart.plot | No | FeatureLookup |
-| car | No | .ExtraOpt_plot (demo function) |
-| outliers | No | rule_single, rule_double |
-| R.utils | No | rule_single, rule_double, report.lm, report.xgb |
-| Matrix | No | read_sparse_csv |
-| matrixStats | No | report.lm, report.xgb |
-| recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
-| Rtsne | No | tsne_grid |
-| tabplot | No | tableplot_jpg |
-| stringi | No | lightgbm.cv |
-| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb |
+| tabplot | No | tableplot_jpg, interactive.eda_ggplot |
+| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb,, interactive.eda_ggplot |
+| plotluck | No | , interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb |
 | gridExtra | No | report.lm, report.xgb |
 | lattice | No | report.lm, report.xgb |
-| Deriv | No | SymbolicLoss |
+| car | No | .ExtraOpt_plot |
+| CEoptim | No | ExtraOpt |
+| DT | No | xgb.importance.interactive, report.lm, report.xgb |
+| formattable | No | report.lm, report.xgb |
+| rmarkdown | No | report.lm, report.xgb |
+| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot |
+| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot |
+| Matrix | No | read_sparse_csv |
+| matrixStats | No | report.lm, report.xgb |
+| R.utils | No | rule_single, rule_double, report.lm, report.xgb |
+| Rtsne | No | tsne_grid |
+| recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
+| Rcpp | No | sparsity (package) |
+| RcppArmadillo | No | report.lm |
+| Deriv | No | SymbolicLoss, interactive.SymbolicLoss |
+| outliers | No | rule_single, rule_double |
+| stringi | No | lightgbm.cv |
 | None so far | No | kfold, nkfold, lgbm.find |
 
 LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722ca7ef1139c946fb608bf
@@ -166,6 +186,7 @@ Write in your R console `sink()` until you get an error.
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
+| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
@@ -199,6 +220,8 @@ Write in your R console `sink()` until you get an error.
 | xgb.importance.interactive | Interactive xgboost Feature Importance | Allows to print an interactive xgboost feature importance table, ready to be used in markdown documents and HTML documents to be shared. |
 | report.lm | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE), pretty printed feature multiplicative coefficients, plotting statistics, analysis of variance (ANOVA), adjusted R^2, degrees of freedom computation... |
 | report.xgb | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE, AUC, Logloss, optimistic Kappa, optimistic F1 Score, optimistic MCC, optimistic TPR, optimistic TNR, optimistic FPR, optimistic FNR), pretty printed feature (unbiased/biased) importance, plotting statistics, plotting of machine learning performance statistic evolution vs probability... |
+| interactive.SymbolicLoss | Interactive Dashboard for Derivation of Loss Functions | Creates an interactive dashboard which allows you to work on up to 4 loss functions with their gradient and hessian, which are typically used in numerical optimization tasks. Resists to errors (keeps running even when you input errors). |
+| interactive.eda_ggplot | Interactive Dashforboard for Exploratory Data Analysis using ggplot2 | Creates an interactive dashboard which allows you to work on the data set you want (from the global environment) by plotting up to 3 variables simultaneously, using a smart detection of variables to choose the best appropriate plot. Resists to errors (keeps running even when you input errors). |
 
 # TO-DO:
 
@@ -393,8 +416,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("stringi", "outliers", "R.utils", "Matrix", "recommenderlab", "Rtsne", "caret", "CEoptim", "car", "rpart", "rpart.plot", "Deriv"))
-install.packages(c("rmarkdown", "DT", "RcppArmadillo", "formattable", "matrixStats", "lattice", "grid", "gridExtra"))
+install.packages(c("rpart", "rpart.plot", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
 install_github("Laurae2/sparsity")
 ```
 
