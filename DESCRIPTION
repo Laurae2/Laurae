@@ -2,7 +2,7 @@ Package: Laurae
 Title: Advanced High Performance Data Science Toolbox for R
 Version: 0.0.0.9001
 Date: 2016-12-13
-Authors: Laurae
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
 Description: This package is for advanced statistics, visualization, and
     modeling.
 Depends:
