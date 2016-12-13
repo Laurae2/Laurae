@@ -9,7 +9,9 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
-![What is data science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
+# What is Data Science
+
+![What is Data Science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
 
 # What can I do with it?
 
@@ -133,15 +135,15 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| LightGBM | YES (from PR 33) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
-| xgboost | YES (from PR 1855) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (MUST) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot |
-| Laurae2/sparsity | YES | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
+| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb |
+| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot |
+| Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | rpart | No | FeatureLookup |
 | rpart.plot | No | FeatureLookup |
 | tabplot | No | tableplot_jpg, interactive.eda_ggplot |
 | ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb,, interactive.eda_ggplot |
-| plotluck | No | , interactive.eda_ggplot |
+| plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb |
 | gridExtra | No | report.lm, report.xgb |
 | lattice | No | report.lm, report.xgb |
@@ -164,7 +166,11 @@ If I am not missing stuff (please make a pull request if something is missing th
 | stringi | No | lightgbm.cv |
 | None so far | No | kfold, nkfold, lgbm.find |
 
-LightGBM PR 33: https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722ca7ef1139c946fb608bf
+Manual installations:
+
+- \* Mandatory version of Microsoft/LightGBM (PR 33): https://github.com/Microsoft/LightGBM/tree/9895116d9e71a91b6722ca7ef1139c946fb608bf
+- \*\* dmlc/xgboost PR 1855: https://github.com/dmlc/xgboost/commit/b21e658a0251d692d4e6ff3b614893c54e7d0c7c
+- \*\*\* Laurae2/sparsity: https://github.com/Laurae2/sparsity
 
 # Installing dependencies?
 
