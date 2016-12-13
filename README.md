@@ -2,6 +2,13 @@
 
 Advanced High Performance Data Science Toolbox for R by Laurae
 
+# me = wants download
+
+```r
+library(devtools)
+install_github("Laurae2/Laurae")
+```
+
 ![What is data science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
 
 # What can I do with it?
