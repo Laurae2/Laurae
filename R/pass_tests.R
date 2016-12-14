@@ -130,11 +130,30 @@ globalVariables(c("Timing_Metric",
                   "selectInput",
                   "observeEvent",
                   "updateSelectInput",
-                  "renderText"))
+                  "renderText",
+                  "actionButton",
+                  "as.party",
+                  "isolate",
+                  "numericInput",
+                  "renderPrint",
+                  "renderTable",
+                  "tableOutput",
+                  "updateNumericInput",
+                  "breaks_split",
+                  "data_party",
+                  "id_node",
+                  "index_split",
+                  "kids_node",
+                  "node_party",
+                  "nodeids",
+                  "right_split",
+                  "split_node",
+                  "varid_split"))
 
 requireNamespace("xgboost")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
+requireNamespace("partykit")
 requireNamespace("tabplot")
 requireNamespace("ggplot2")
 requireNamespace("plotluck")
