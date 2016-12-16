@@ -10,6 +10,7 @@
 #' @importFrom stats sd
 #' @importFrom stats rnorm
 #' @importFrom stats reformulate
+#' @importFrom stats complete.cases
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
@@ -148,13 +149,17 @@ globalVariables(c("Timing_Metric",
                   "nodeids",
                   "right_split",
                   "split_node",
-                  "varid_split"))
+                  "varid_split",
+                  "showOutput",
+                  "withProgress",
+                  "renderChart2"))
 
 requireNamespace("xgboost")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
 requireNamespace("partykit")
 requireNamespace("tabplot")
+requireNamespace("rCharts")
 requireNamespace("ggplot2")
 requireNamespace("plotluck")
 requireNamespace("grid")

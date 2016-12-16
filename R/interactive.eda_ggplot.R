@@ -35,7 +35,7 @@
 #'   \item{yellow}{yellow color}
 #' }
 #' 
-#' @param data Type: data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.
+#' @param data Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.
 #' @param p_back Type: character. A background color character for the plot frame. Defaults to \code{"red"}.
 #' @param f_back Type: character. A background color character for the header. Defaults to \code{"red"}.
 #' @param side_width Type: numeric. The width of the sidebar containing variable names. Defaults to \code{300}.
@@ -51,7 +51,7 @@
 #' library(plotluck)
 #' library(datasets)
 #' data(faithful)
-#' interactive.eda_ggplot(data = faithful,
+#' interactive.eda_ggplot(data = "faithful",
 #'                        p_back = "red",
 #'                        f_back = "red",
 #'                        side_width = 300,
@@ -70,7 +70,7 @@ interactive.eda_ggplot <- function(data,
     
     ui <- dashboardPage(
       skin = f_back,
-      header = dashboardHeader(title = "Laurae's Data Explorer Dashboard", titleWidth = 500),
+      header = dashboardHeader(title = "Laurae's Data Explorer (ggplot) Dashboard", titleWidth = 500),
       sidebar = dashboardSidebar(
         sidebarMenu(
           verbatimTextOutput("rule_name"),
@@ -116,7 +116,11 @@ interactive.eda_ggplot <- function(data,
         output$plotted <- renderPlot({returnplot(input$dep_var, c(input$indep_var1, input$indep_var2), c(input$cond_var1, input$cond_var2), input$weight_var, data)})
       })
       
-      output$plotted <- renderPlot({returnplot(input$dep_var, c(input$indep_var1, input$indep_var2), c(input$cond_var1, input$cond_var2), input$weight_var, data)})
+      observeEvent({input$dep_var; input$indep_var1; input$indep_var2; input$cond_var1; input$cond_var2; input$weight_var}, {
+        withProgress(message = "Plotting data", detail = "Preparing data...", value = 0, {
+          output$plotted <- renderPlot({returnplot(input$dep_var, c(input$indep_var1, input$indep_var2), c(input$cond_var1, input$cond_var2), input$weight_var, data)})
+        })
+      })
       
       output$rule_name <- renderText({"Select ONLY at most 3 variables!  \nWeight is excluded from the count."})
       

@@ -37,7 +37,7 @@
 #'   \item{yellow}{yellow color}
 #' }
 #' 
-#' @param data Type: data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.
+#' @param data Type: name reference to a data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.
 #' @param label Type: character. The name of the label feature in the data. Defaults to \code{"!!!!! SELECT ME !!!!!"}
 #' @param ban Type: vector of characters or of numerics The names (or column numbers) of variables to be banned from the decision tree. Defaults to \code{NULL}, which means no variables are banned (all variables are potentially used for the decision tree). Defaults to \code{NULL}.
 #' @param antiban Type: boolean. Whether banned variable selection should be inverted, which means if \code{"yes"}, the \code{ban} transforms into a selection (which bans all other variables not "banned" initially). Defaults to \code{"yes"}.
@@ -75,7 +75,7 @@
 #' library(partykit)
 #' library(datasets)
 #' data(faithful)
-#' interactive.eda_tree(data,
+#' interactive.eda_tree(data = "faithful",
 #'                      label = "!!!!! SELECT ME !!!!!",
 #'                      ban = NULL,
 #'                      antiban = "Yes",
@@ -134,7 +134,7 @@ interactive.eda_tree <- function(data,
     
     ui <- dashboardPage(
       skin = "red",
-      header = dashboardHeader(title = "Laurae's Data Explorer Dashboard", titleWidth = 500),
+      header = dashboardHeader(title = "Laurae's Non-Linear Feature Engineering Dashboard", titleWidth = 500),
       sidebar = dashboardSidebar(
         sidebarMenu(
           actionButton("run_me", "Run Feature Engineering Assistant", icon("refresh")),

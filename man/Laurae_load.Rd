@@ -21,6 +21,7 @@ Loaded packages:
   \item{rpart.plot}{Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'}
   \item{partykit}{A Toolkit for Recursive Partitioning}
   \item{tabplot}{Tableplot, a visualization of large datasets}
+  \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
   \item{grid}{The Grid Graphics Package}
@@ -47,6 +48,7 @@ Loaded packages:
 }
 \examples{
 \dontrun{
+# Load all dependencies.
 Laurae_load()
 }
 

@@ -50,6 +50,7 @@ Mostly... in a nutshell:
 
 * Discover and optimize gradient and hessian functions interactively in real-time
 * Plot up to 1 dependent variable, 2 independent variables, 2 conditioning variables, and 1 weighting variable for Exploratory Data Analysis using ggplot, in real-time
+* Plot up to three variables for Exploratory Data Analysis using 3djs via NVD3, in real-time
 * Discover rule-based (from decision trees) non-linear relationship between variables, with rules ready to be copied and pasted for data.tables
 
 **Optimization:**
@@ -93,6 +94,10 @@ Mostly... in a nutshell:
 
 ![Interactive EDA using ggplot](https://cloud.githubusercontent.com/assets/9083669/21138494/9efcf910-c12e-11e6-9e02-0a4bacd0e957.png)
 
+* Interactive EDA using 3djs:
+
+![Interactive EDA using 3djs](https://cloud.githubusercontent.com/assets/9083669/21265690/df5b634a-c3a2-11e6-8966-0f1cef04d01b.png)
+
 * Interactive Feature Engineering Assistant:
 
 ![Interactive Feature Engineering Assistant](https://cloud.githubusercontent.com/assets/9083669/21165716/78499d46-c1a1-11e6-9912-9acba65a6099.png)
@@ -119,9 +124,10 @@ Need all R dependencies in one shot?:
 
 ```r
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
+devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
 install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
-install_github("Laurae2/sparsity")
+devtools:::install_github("Laurae2/sparsity")
 ```
 
 Getting Failed with error: `'there is no package called 'sparsity''` ? Run `install_github("Laurae2/sparsity")` or `install_git("git://github.com/Laurae2/sparsity.git")` if you wish to hide this error or if you want to use the super fast column-compressed sparse matrix (dgCMatrix) -> SVMLight converter in R.
@@ -134,12 +140,13 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree |
+| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | rpart | No | FeatureLookup, interactive.eda_tree |
 | rpart.plot | No | FeatureLookup, interactive.eda_tree |
 | partykit | No | interactive.eda_tree |
 | tabplot | No | tableplot_jpg, interactive.eda_ggplot |
+| rCharts | No | interactive.eda_3djs |
 | ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb,, interactive.eda_ggplot |
 | plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb, interactive.eda_tree |
@@ -150,8 +157,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | DT | No | xgb.importance.interactive, report.lm, report.xgb |
 | formattable | No | report.lm, report.xgb |
 | rmarkdown | No | report.lm, report.xgb, interactive.eda_tree |
-| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree |
-| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree |
+| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
+| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
 | Matrix | No | read_sparse_csv |
 | matrixStats | No | report.lm, report.xgb |
 | R.utils | No | rule_single, rule_double, report.lm, report.xgb |
@@ -197,12 +204,13 @@ Write in your R console `sink()` until you get an error.
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
-| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree |
+| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
 | --- | --- | --- |
+| Laurae_load | Dependency load | Attempts to load all Laurae dependencies. |
 | tsne_grid | Dimensionality Reduction + Grid Search | Allows to grid search a seed and a perplexity interval using t-SNE, while returning the best t-SNE model along with the best iteration found, all in a fully verbose fashion. |
 | read_sparse_csv | Iterated numeric sparse matrix reading | R always imports CSV as dense. This function allows to read very large CSVs in chunks by variables (or a specific subset of variables), outputting a sparse matrix with typically lower RAM usage than a dense matrix if sparsity is high enough, all in a fully verbose fashion. Sparsity can be defined as 0 or NA, while saving as RDS is available in the loading streak. |
 | tableplot_jpg | Batch tableplot output to JPEG | Allows to create a tableplot which is immediately turned into JPEG in batch per variable, against a label. It allows to preview features in a more understandable fashion than eyeballing numeric values. |
@@ -232,8 +240,9 @@ Write in your R console `sink()` until you get an error.
 | report.lm | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE), pretty printed feature multiplicative coefficients, plotting statistics, analysis of variance (ANOVA), adjusted R^2, degrees of freedom computation... |
 | report.xgb | Automated HTML Reporting for Linear Regression | Automatically creates a report for linear regression (C++ backend). Allows data normalization, NA cleaning, rank deficiency checking, pretty printed machine learning performance statistics (R, R^2, MAE, MSE, RMSE, MAPE, AUC, Logloss, optimistic Kappa, optimistic F1 Score, optimistic MCC, optimistic TPR, optimistic TNR, optimistic FPR, optimistic FNR), pretty printed feature (unbiased/biased) importance, plotting statistics, plotting of machine learning performance statistic evolution vs probability... |
 | interactive.SymbolicLoss | Interactive Dashboard for Derivation of Loss Functions | Creates an interactive dashboard which allows you to work on up to 4 loss functions with their gradient and hessian, which are typically used in numerical optimization tasks. Resists to errors (keeps running even when you input errors). |
-| interactive.eda_ggplot | Interactive Dashforboard for Exploratory Data Analysis using ggplot2 | Creates an interactive dashboard which allows you to work on the data set you want (from the global environment) by plotting up to 3 variables simultaneously, using a smart detection of variables to choose the best appropriate plot. Resists to errors (keeps running even when you input errors). |
-| interactive.eda_tree | Interactive Dashboard for Non-linear Feature Engineering Assistant | Creates an interactive dashboards which allows to run a cross-validated decision tree using the same settings as the Non-Linear Feature Engineering Assistant, but with an interactive interface and printable rules ready to copy and paste into data.tables. |
+| interactive.eda_ggplot | Interactive Dashforboard for Exploratory Data Analysis using ggplot2 | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables simultaneously, using a smart detection of variables to choose the best appropriate plot via ggplot and plotluck. Resists to errors (keeps running even when you input errors). |
+| interactive.eda_tree | Interactive Dashboard for Non-linear Feature Engineering Assistant | Creates an interactive dashboard which allows to run a cross-validated decision tree using the same settings as the Non-Linear Feature Engineering Assistant, but with an interactive interface and printable rules ready to copy and paste into data.tables. |
+| interactive.eda_3djs | Interactive Dashboard for Exploratory Data Analysis using d3js | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables using 3djs. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup).
 
 # TO-DO:
 
@@ -429,7 +438,8 @@ You can install the other packages by running in your R console:
 
 ```r
 install.packages(c("rpart", "rpart.plot", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
-install_github("Laurae2/sparsity")
+devtools:::install_github("ramnathv/rCharts")
+devtools:::install_github("Laurae2/sparsity")
 ```
 
 ## Laurae

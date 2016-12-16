@@ -10,6 +10,7 @@
 #'   \item{rpart.plot}{Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'}
 #'   \item{partykit}{A Toolkit for Recursive Partitioning}
 #'   \item{tabplot}{Tableplot, a visualization of large datasets}
+#'   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
 #'   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
 #'   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
 #'   \item{grid}{The Grid Graphics Package}
@@ -50,6 +51,7 @@ Laurae_load <- function() {
   # try(library(rpart.plot))
   # try(library(partykit))
   # try(library(tabplot))
+  # try(library(rCharts))
   # try(library(ggplot2))
   # try(library(plotluck))
   # try(library(grid))
@@ -72,7 +74,7 @@ Laurae_load <- function() {
   # try(library(Deriv))
   # try(library(outliers))
   # try(library(stringi))
-  eval(parse(text = "try(library(xgboost));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try(library(ggplot2));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(Deriv));try(library(outliers));try(library(stringi))"))
+  eval(parse(text = "try(library(xgboost));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try(library(rCharts));try(library(ggplot2));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(Deriv));try(library(outliers));try(library(stringi))"))
 }
 
 

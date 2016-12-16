@@ -16,6 +16,7 @@ Suggests:
 	rpart.plot (>= 2.1.0),
 	partykit (>= 1.1),
 	tabplot (>= 0.1.2),
+	rCharts (>= 0.4.5),
 	ggplot2 (>= 2.0),
 	plotluck (>= 1.1.0),
 	grid (>= 0.4),

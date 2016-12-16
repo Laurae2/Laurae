@@ -8,7 +8,7 @@ interactive.eda_ggplot(data, p_back = "red", f_back = "red",
   side_width = 300, max_height = 820)
 }
 \arguments{
-\item{data}{Type: data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.}
+\item{data}{Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.}
 
 \item{p_back}{Type: character. A background color character for the plot frame. Defaults to \code{"red"}.}
 
@@ -66,7 +66,7 @@ library(ggplot2)
 library(plotluck)
 library(datasets)
 data(faithful)
-interactive.eda_ggplot(data = faithful,
+interactive.eda_ggplot(data = "faithful",
                        p_back = "red",
                        f_back = "red",
                        side_width = 300,

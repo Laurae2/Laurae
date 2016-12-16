@@ -15,7 +15,7 @@ interactive.eda_tree(data, label = "!!!!! SELECT ME !!!!!", ban = NULL,
   gain_height = 200)
 }
 \arguments{
-\item{data}{Type: data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.}
+\item{data}{Type: name reference to a data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.}
 
 \item{label}{Type: character. The name of the label feature in the data. Defaults to \code{"!!!!! SELECT ME !!!!!"}}
 
@@ -107,6 +107,43 @@ The colors (header: \code{f_back}) allowed are the following:
   \item{green}{green color}
   \item{red}{red color}
   \item{yellow}{yellow color}
+}
+}
+\examples{
+\dontrun{
+library(shiny)
+library(shinydashboard)
+library(rpart)
+library(rpart.plot)
+library(partykit)
+library(datasets)
+data(faithful)
+interactive.eda_tree(data = "faithful",
+                     label = "!!!!! SELECT ME !!!!!",
+                     ban = NULL,
+                     antiban = "Yes",
+                     type = "auto",
+                     split = "information",
+                     folds = 5,
+                     seed = 0,
+                     verbose = TRUE,
+                     plots = TRUE,
+                     max_depth = 4,
+                     min_split = max(20, nrow(data)/1000),
+                     min_bucket = round(min_split/3),
+                     min_improve = 0.01,
+                     competing_splits = 2,
+                     surrogate_search = 5,
+                     surrogate_type = 2,
+                     surrogate_style = 0,
+                     tree_back = "red",
+                     gain_back = "red",
+                     rules_back = "red",
+                     details_back = "red",
+                     f_back = "red",
+                     side_width = 300,
+                     tree_height = 580,
+                     gain_height = 200)
 }
 }
 

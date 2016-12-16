@@ -122,7 +122,6 @@
 #' 
 #' @export
 
-
 interactive.SymbolicLoss <- function(f1 = "(x, y) {(x - y) ^ 2}",
                                      f2 = "(x, y) {(y * log(x) + (1 - y) * log(1 - x))}",
                                      f3 = "(x, y) {(x - y * log(x)) + (y * log(y) - y)}",
@@ -233,10 +232,30 @@ interactive.SymbolicLoss <- function(f1 = "(x, y) {(x - y) ^ 2}",
         tryplot(x = x_plot, y = ranges[4], f = f, type = type, main = paste0("Loss f", id), xlab = "x", ylab = "Loss", dx = 2)
       }
       
-      output$plot1 <- renderPlot({returnplot(input$formula1, as.numeric(strsplit(input$range1, ", ")[[1]]), 1)})
-      output$plot2 <- renderPlot({returnplot(input$formula2, as.numeric(strsplit(input$range2, ", ")[[1]]), 2)})
-      output$plot3 <- renderPlot({returnplot(input$formula3, as.numeric(strsplit(input$range3, ", ")[[1]]), 3)})
-      output$plot4 <- renderPlot({returnplot(input$formula4, as.numeric(strsplit(input$range4, ", ")[[1]]), 4)})
+      observeEvent({input$range1; input$formula1}, {
+        withProgress(message = "Computing Loss Function 1", detail = "Preparing data...", value = 0, {
+          output$plot1 <- renderPlot({returnplot(input$formula1, as.numeric(strsplit(input$range1, ", ")[[1]]), 1)})
+        })
+      })
+      
+      observeEvent({input$range2; input$formula2}, {
+        withProgress(message = "Computing Loss Function 2", detail = "Preparing data...", value = 0, {
+          output$plot2 <- renderPlot({returnplot(input$formula2, as.numeric(strsplit(input$range2, ", ")[[1]]), 2)})
+        })
+      })
+      
+      observeEvent({input$range3; input$formula3}, {
+        withProgress(message = "Computing Loss Function 3", detail = "Preparing data...", value = 0, {
+          output$plot3 <- renderPlot({returnplot(input$formula3, as.numeric(strsplit(input$range3, ", ")[[1]]), 3)})
+        })
+      })
+      
+      observeEvent({input$range4; input$formula4}, {
+        withProgress(message = "Computing Loss Function 4", detail = "Preparing data...", value = 0, {
+          output$plot4 <- renderPlot({returnplot(input$formula4, as.numeric(strsplit(input$range4, ", ")[[1]]), 4)})
+        })
+      })
+      
       
     }
     
