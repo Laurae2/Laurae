@@ -17,10 +17,10 @@ install_github("Laurae2/Laurae")
 
 Mostly... in a nutshell:
 
-* Supervised Learning: xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation
+* Supervised Learning: xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant
 * Unsupervised Learning: auto t-SNE
 * Automated Reporting for Machine Learning: linear regression, unbiased xgboost regression/classification
-* Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot
+* Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot, interactive 3djs/Plotly
 * Optimization: Cross-Entropy optimization combined with Elite optimization
 * data.table improvements: up to 3X memory efficiency without even a minor cost in CPU time
 * Plot massive amounts of data without being slow: tableplots tableplots tableplots tableplots tableplots
@@ -53,6 +53,7 @@ Mostly... in a nutshell:
 * Plot up to three variables for Exploratory Data Analysis using 3djs via NVD3, in real-time
 * Plot several variables for Exploratory Data Analysis using 3djs vs Plotly, in real-time
 * Discover rule-based (from decision trees) non-linear relationship between variables, with rules ready to be copied and pasted for data.tables
+* Visualize interactively Color Brewer palettes with unlimited colors (unlike the original palettes), with ready to copy&paste color codes as vectors
 
 **Optimization:**
 
@@ -66,6 +67,7 @@ Mostly... in a nutshell:
 * Improve Cross-Entropy optimization by providing a more powerful frontend (at the expense of the user's necessary knowledge) in order to converge better on feature selection & but slower on hyperparameter optimization of black boxes
 * Load sparse data directly as dgCMatrix (sparse matrix)
 * Plot massive amount of data in an easily readable picture
+* Add unlimited colors to the Color Brewer palettes
 
 **Sparsity SVMLight converter benchmark:**
 
@@ -143,7 +145,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
+| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | rpart | No | FeatureLookup, interactive.eda_tree |
 | rpart.plot | No | FeatureLookup, interactive.eda_tree |
@@ -155,15 +157,15 @@ If I am not missing stuff (please make a pull request if something is missing th
 | plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb, interactive.eda_tree |
 | gridExtra | No | report.lm, report.xgb |
-| RColorBrewer | No | interactive.eda_plotly |
+| RColorBrewer | No | interactive.eda_plotly, interactive.eda_RColorBrewer, brewer.pal_extended |
 | lattice | No | report.lm, report.xgb |
 | car | No | .ExtraOpt_plot |
 | CEoptim | No | ExtraOpt |
 | DT | No | xgb.importance.interactive, report.lm, report.xgb |
 | formattable | No | report.lm, report.xgb |
 | rmarkdown | No | report.lm, report.xgb, interactive.eda_tree |
-| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
-| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
+| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
+| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
 | Matrix | No | read_sparse_csv |
 | matrixStats | No | report.lm, report.xgb |
 | R.utils | No | rule_single, rule_double, report.lm, report.xgb |
@@ -210,8 +212,7 @@ Write in your R console `sink()` until you get an error.
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
-| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
-| Visualizations | tableplots: tableplot_jpg |
+| Visualizations | tableplot_jpg, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
@@ -250,6 +251,8 @@ Write in your R console `sink()` until you get an error.
 | interactive.eda_tree | Interactive Dashboard for Non-linear Feature Engineering Assistant | Creates an interactive dashboard which allows to run a cross-validated decision tree using the same settings as the Non-Linear Feature Engineering Assistant, but with an interactive interface and printable rules ready to copy and paste into data.tables. |
 | interactive.eda_3djs | Interactive Dashboard for Exploratory Data Analysis using d3js | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables using 3djs. Not recommended and it is better to use interactive.eda_plotly. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
 | interactive.eda_plotly | Interactive Dashboard for Exploratory Data Analysis using d3js via Plotly | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting several variables using 3djs via Plotly. This is the recommended way for interactive charts. Not all plots are available, but support for scatter, bar, pie, histogram, histogram2d, box, contour, heatmap, polar, scatter3d, and surface plots is provided. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
+| brewer.pal_extended | Color Brewer Palette Extended | Extends the original Color Brewer palettes by providing unlimited colors unlike the original palettes. |
+| interactive.eda_RColorBrewer | Interactive Dashboard for Finding the Perfect Color Brewer Palette | Creates an interactive dashboard which allows you to search visually for the best Color Brewer palette for your own taste. Not only everything is shown in real-time just by editing a field, but a copy&paste output is ready to be pasted into R for further usage. You are greeted with a pyramid. |
 
 # TO-DO:
 

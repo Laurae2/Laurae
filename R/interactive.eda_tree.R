@@ -133,7 +133,7 @@ interactive.eda_tree <- function(data,
   if (interactive()) {
     
     ui <- dashboardPage(
-      skin = "red",
+      skin = f_back,
       header = dashboardHeader(title = "Laurae's Non-Linear Feature Engineering Dashboard", titleWidth = 500),
       sidebar = dashboardSidebar(
         sidebarMenu(

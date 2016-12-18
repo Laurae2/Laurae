@@ -1,8 +1,11 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices jpeg
 #' @importFrom grDevices col2rgb
+#' @importFrom grDevices colorRampPalette
 #' @importFrom graphics par
 #' @importFrom graphics plot
+#' @importFrom graphics curve
+#' @importFrom graphics pie
 #' @importFrom stats cor
 #' @importFrom stats cov
 #' @importFrom stats mahalanobis
@@ -163,7 +166,8 @@ globalVariables(c("Timing_Metric",
                   "renderPlotly",
                   "sliderInput",
                   "toRGB",
-                  "width.SJ"))
+                  "width.SJ",
+                  "x"))
 
 requireNamespace("xgboost")
 requireNamespace("rpart")
