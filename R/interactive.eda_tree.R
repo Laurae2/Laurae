@@ -37,7 +37,7 @@
 #'   \item{yellow}{yellow color}
 #' }
 #' 
-#' @param data Type: name reference to a data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.
+#' @param data Type: data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.
 #' @param label Type: character. The name of the label feature in the data. Defaults to \code{"!!!!! SELECT ME !!!!!"}
 #' @param ban Type: vector of characters or of numerics The names (or column numbers) of variables to be banned from the decision tree. Defaults to \code{NULL}, which means no variables are banned (all variables are potentially used for the decision tree). Defaults to \code{NULL}.
 #' @param antiban Type: boolean. Whether banned variable selection should be inverted, which means if \code{"yes"}, the \code{ban} transforms into a selection (which bans all other variables not "banned" initially). Defaults to \code{"yes"}.
@@ -75,7 +75,7 @@
 #' library(partykit)
 #' library(datasets)
 #' data(faithful)
-#' interactive.eda_tree(data = "faithful",
+#' interactive.eda_tree(data = faithful,
 #'                      label = "!!!!! SELECT ME !!!!!",
 #'                      ban = NULL,
 #'                      antiban = "Yes",
@@ -138,7 +138,7 @@ interactive.eda_tree <- function(data,
       sidebar = dashboardSidebar(
         sidebarMenu(
           actionButton("run_me", "Run Feature Engineering Assistant", icon("refresh")),
-          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))) == 'data.frame'], selected = data),
+          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))[length(class(get(x)))]) == 'data.frame'], selected = data),
           selectInput("label", "Label Variable:", choices = c(label, colnames(data)), selected = label),
           selectInput("ban", "Feature Selection:", choices = colnames(data), selected = ban, multiple = TRUE),
           selectInput("antiban", "Ban Selection:", choices = c("Yes", "No"), selected = antiban),

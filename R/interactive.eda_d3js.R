@@ -1,6 +1,6 @@
-#' Interactive Dashboard for Exploratory Data Analysis (ggplot)
+#' Interactive Dashboard for Exploratory Data Analysis (d3js)
 #'
-#' This function runs an interactive dashboard which allows to explore data via 3djs and NVD3. Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. In addition, the filtering method is currently broken.
+#' This function runs an interactive dashboard which allows to explore data via 3djs and NVD3. Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. In addition, the filtering method is currently broken. This function is not recommended if you want d3js plot and you should use \code{interactive.eda_plotly}.
 #' 
 #' Plotting is done using \code{rCharts}, which must be loaded before running this function. There are issues if you open this in Internet Explorer 9 or under.
 #' 
@@ -15,7 +15,7 @@
 #'   \item{yellow}{yellow color}
 #' }
 #' 
-#' @param data Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table increases the processing speed.
+#' @param data Type: data.table (preferred) or data.frame. The data you want to explore. Using a data.table increases the processing speed.
 #' @param type Type: character. The type of plot requested to d3js nvds. You may choose between \code{"lineChart"}, \code{"scatterChart"}, \code{"stackedAreaChart"}, \code{"discreteBarChart"}, \code{"multiBarChart"}, \code{"multiBarHorizontalChart"}, \code{"linePlusBarChart"}, \code{"cumulativeLineChart"}, \code{"lineWithFocusChart"}, \code{"pieChart"}, \code{"bulletChart"}. Defaults to \code{"scatterChart"}.
 #' @param dep_var Type: character (currently overriden). The dependent variable to plot. Defaults to \code{colnames(data)[1]}, a reference to the first column of \code{data}.
 #' @param indep_var Type: character (currently overriden). The independent variable to plot. Defaults to \code{"None"}.
@@ -35,7 +35,7 @@
 #' library(rCharts)
 #' library(datasets)
 #' hair_eye <- as.data.frame(HairEyeColor)
-#' interactive.eda_d3js(data = "hair_eye",
+#' interactive.eda_d3js(data = hair_eye,
 #'                      type = "multiBarChart",
 #'                      dep_var = "Hair", #ignored
 #'                      indep_var = "Freq", #ignored
@@ -68,7 +68,7 @@ interactive.eda_d3js <- function(data,
         sidebarMenu(
           verbatimTextOutput("rule_name"),
           actionButton("run_me", "Create 3djs Plot", icon("refresh")),
-          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))) == 'data.frame'], selected = data),
+          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))[length(class(get(x)))]) == 'data.frame'], selected = data),
           selectInput("plot_var", "Plot Type:", choices = c("lineChart", "scatterChart", "stackedAreaChart", "discreteBarChart", "multiBarChart", "multiBarHorizontalChart", "linePlusBarChart", "cumulativeLineChart", "lineWithFocusChart", "pieChart", "bulletChart"), selected = type),
           selectInput("dep_var", "Label Variable:", choices = colnames(data), selected = dep_var),
           selectInput("indep_var", "Independent Variable:", choices = c("None", colnames(data)[-1]), selected = indep_var),

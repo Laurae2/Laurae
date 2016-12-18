@@ -1,4 +1,4 @@
-#' Party Rules to data.table
+#' partykit's Party Rules to data.table
 #'
 #' Get the rules of a party model to be used in a data.table.
 #' 
@@ -7,6 +7,8 @@
 #' @param ... Other parameters to pass to the rule generator. Ignoring this is preferred.
 #' 
 #' @return The rules in a character frame.
+#' 
+#' @export
 
 GetPartyRules <- function(x, i = NULL, ...) {
   if (is.null(i)) i <- nodeids(x, terminal = TRUE)

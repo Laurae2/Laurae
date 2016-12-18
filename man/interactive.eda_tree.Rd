@@ -15,7 +15,7 @@ interactive.eda_tree(data, label = "!!!!! SELECT ME !!!!!", ban = NULL,
   gain_height = 200)
 }
 \arguments{
-\item{data}{Type: name reference to a data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.}
+\item{data}{Type: data.frame (preferred) or data.table. Your data, preferably a data.frame but it "should" also work perfectly with data.table.}
 
 \item{label}{Type: character. The name of the label feature in the data. Defaults to \code{"!!!!! SELECT ME !!!!!"}}
 
@@ -118,7 +118,7 @@ library(rpart.plot)
 library(partykit)
 library(datasets)
 data(faithful)
-interactive.eda_tree(data = "faithful",
+interactive.eda_tree(data = faithful,
                      label = "!!!!! SELECT ME !!!!!",
                      ban = NULL,
                      antiban = "Yes",

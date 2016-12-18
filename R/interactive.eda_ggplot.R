@@ -35,7 +35,7 @@
 #'   \item{yellow}{yellow color}
 #' }
 #' 
-#' @param data Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.
+#' @param data Type: data.table (preferred) or data.frame. The data you want to explore. Using a data.table allows to avoid copying in-memory when switching datasets.
 #' @param p_back Type: character. A background color character for the plot frame. Defaults to \code{"red"}.
 #' @param f_back Type: character. A background color character for the header. Defaults to \code{"red"}.
 #' @param side_width Type: numeric. The width of the sidebar containing variable names. Defaults to \code{300}.
@@ -51,7 +51,7 @@
 #' library(plotluck)
 #' library(datasets)
 #' data(faithful)
-#' interactive.eda_ggplot(data = "faithful",
+#' interactive.eda_ggplot(data = faithful,
 #'                        p_back = "red",
 #'                        f_back = "red",
 #'                        side_width = 300,
@@ -74,7 +74,7 @@ interactive.eda_ggplot <- function(data,
       sidebar = dashboardSidebar(
         sidebarMenu(
           verbatimTextOutput("rule_name"),
-          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))) == 'data.frame'], selected = data),
+          selectInput("data", "Data (Global Environment):", choices = ls(envir = .GlobalEnv)[sapply(ls(.GlobalEnv), function(x) class(get(x))[length(class(get(x)))]) == 'data.frame'], selected = data),
           selectInput("dep_var", "Label Variable:", choices = colnames(data), selected = colnames(data)[1]),
           selectInput("indep_var1", "Independent Variable 1:", choices = c("None", colnames(data)[-1]), selected = "None"),
           selectInput("indep_var2", "Independent Variable 2:", choices = c("None", colnames(data)[-1]), selected = "None"),

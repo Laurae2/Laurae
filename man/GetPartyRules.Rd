@@ -2,7 +2,7 @@
 % Please edit documentation in R/GetPartyRules.R
 \name{GetPartyRules}
 \alias{GetPartyRules}
-\title{Party Rules to data.table}
+\title{partykit's Party Rules to data.table}
 \usage{
 GetPartyRules(x, i = NULL, ...)
 }

@@ -51,6 +51,7 @@ Mostly... in a nutshell:
 * Discover and optimize gradient and hessian functions interactively in real-time
 * Plot up to 1 dependent variable, 2 independent variables, 2 conditioning variables, and 1 weighting variable for Exploratory Data Analysis using ggplot, in real-time
 * Plot up to three variables for Exploratory Data Analysis using 3djs via NVD3, in real-time
+* Plot several variables for Exploratory Data Analysis using 3djs vs Plotly, in real-time
 * Discover rule-based (from decision trees) non-linear relationship between variables, with rules ready to be copied and pasted for data.tables
 
 **Optimization:**
@@ -94,9 +95,11 @@ Mostly... in a nutshell:
 
 ![Interactive EDA using ggplot](https://cloud.githubusercontent.com/assets/9083669/21138494/9efcf910-c12e-11e6-9e02-0a4bacd0e957.png)
 
-* Interactive EDA using 3djs:
+* Interactive EDA using 3djs/Plotly:
 
 ![Interactive EDA using 3djs](https://cloud.githubusercontent.com/assets/9083669/21265690/df5b634a-c3a2-11e6-8966-0f1cef04d01b.png)
+
+![Interactive EDA using Plotly](https://cloud.githubusercontent.com/assets/9083669/21290556/f457a2d2-c4be-11e6-89ff-1d9eae4f9477.png)
 
 * Interactive Feature Engineering Assistant:
 
@@ -126,7 +129,7 @@ Need all R dependencies in one shot?:
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
+install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -140,25 +143,27 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
+| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | rpart | No | FeatureLookup, interactive.eda_tree |
 | rpart.plot | No | FeatureLookup, interactive.eda_tree |
 | partykit | No | interactive.eda_tree |
 | tabplot | No | tableplot_jpg, interactive.eda_ggplot |
 | rCharts | No | interactive.eda_3djs |
+| plotly | No | , interactive.eda_plotly |
 | ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb,, interactive.eda_ggplot |
 | plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb, interactive.eda_tree |
 | gridExtra | No | report.lm, report.xgb |
+| RColorBrewer | No | interactive.eda_plotly |
 | lattice | No | report.lm, report.xgb |
 | car | No | .ExtraOpt_plot |
 | CEoptim | No | ExtraOpt |
 | DT | No | xgb.importance.interactive, report.lm, report.xgb |
 | formattable | No | report.lm, report.xgb |
 | rmarkdown | No | report.lm, report.xgb, interactive.eda_tree |
-| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
-| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
+| shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
+| shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
 | Matrix | No | read_sparse_csv |
 | matrixStats | No | report.lm, report.xgb |
 | R.utils | No | rule_single, rule_double, report.lm, report.xgb |
@@ -168,6 +173,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | RcppArmadillo | No | report.lm |
 | Deriv | No | SymbolicLoss, interactive.SymbolicLoss |
 | outliers | No | rule_single, rule_double |
+| MASS | No | interactive.eda_plotly |
 | stringi | No | lightgbm.cv |
 | None so far | No | kfold, nkfold, lgbm.find |
 
@@ -204,7 +210,7 @@ Write in your R console `sink()` until you get an error.
 | Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
-| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs |
+| Interactive Analysis | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly |
 | Visualizations | tableplots: tableplot_jpg |
 | Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
 
@@ -242,7 +248,8 @@ Write in your R console `sink()` until you get an error.
 | interactive.SymbolicLoss | Interactive Dashboard for Derivation of Loss Functions | Creates an interactive dashboard which allows you to work on up to 4 loss functions with their gradient and hessian, which are typically used in numerical optimization tasks. Resists to errors (keeps running even when you input errors). |
 | interactive.eda_ggplot | Interactive Dashforboard for Exploratory Data Analysis using ggplot2 | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables simultaneously, using a smart detection of variables to choose the best appropriate plot via ggplot and plotluck. Resists to errors (keeps running even when you input errors). |
 | interactive.eda_tree | Interactive Dashboard for Non-linear Feature Engineering Assistant | Creates an interactive dashboard which allows to run a cross-validated decision tree using the same settings as the Non-Linear Feature Engineering Assistant, but with an interactive interface and printable rules ready to copy and paste into data.tables. |
-| interactive.eda_3djs | Interactive Dashboard for Exploratory Data Analysis using d3js | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables using 3djs. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup).
+| interactive.eda_3djs | Interactive Dashboard for Exploratory Data Analysis using d3js | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables using 3djs. Not recommended and it is better to use interactive.eda_plotly. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
+| interactive.eda_plotly | Interactive Dashboard for Exploratory Data Analysis using d3js via Plotly | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting several variables using 3djs via Plotly. This is the recommended way for interactive charts. Not all plots are available, but support for scatter, bar, pie, histogram, histogram2d, box, contour, heatmap, polar, scatter3d, and surface plots is provided. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
 
 # TO-DO:
 
@@ -437,7 +444,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("rpart", "rpart.plot", "tabplot", "ggplot2", "plotluck", "grid", "gridExtra", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "stringi"))
+install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```

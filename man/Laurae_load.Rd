@@ -22,10 +22,12 @@ Loaded packages:
   \item{partykit}{A Toolkit for Recursive Partitioning}
   \item{tabplot}{Tableplot, a visualization of large datasets}
   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
+  \item{plotly}{Create Interactive Web Graphics via 'plotly.js'}
   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
   \item{grid}{The Grid Graphics Package}
   \item{gridExtra}{Miscellaneous Functions for "Grid" Graphics}
+  \item{RColorBrewer}{ColorBrewer Palettes}
   \item{lattice}{Trellis Graphics for R}
   \item{car}{Commpanion to Applied Regression}
   \item{CEoptim}{Cross-Entropy R Package for Optimization}
@@ -43,6 +45,7 @@ Loaded packages:
   \item{RcppArmadillo}{'Rcpp' Integration for the 'Armadillo' Templated Linear Algebra Library}
   \item{Deriv}{Symbolic Differentiation}
   \item{outliers}{Tests for outliers}
+  \item{MASS}{Support Functions and Datasets for Venables and Ripley's MASS}
   \item{stringi}{Character String Processing Facilities}
 }
 }
@@ -52,6 +55,5 @@ Loaded packages:
 Laurae_load()
 }
 
-#@export
 }
 

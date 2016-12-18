@@ -1,5 +1,6 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices jpeg
+#' @importFrom grDevices col2rgb
 #' @importFrom graphics par
 #' @importFrom graphics plot
 #' @importFrom stats cor
@@ -11,12 +12,15 @@
 #' @importFrom stats rnorm
 #' @importFrom stats reformulate
 #' @importFrom stats complete.cases
+#' @importFrom stats na.omit
+#' @importFrom stats dnorm
+#' @importFrom stats quantile
+#' @importFrom stats var
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar
 #' @importFrom utils txtProgressBar
 #' @importFrom utils browseURL
-#' @importFrom stats na.omit
 #' @import data.table
 
 # Pass CRAN tests
@@ -152,7 +156,14 @@ globalVariables(c("Timing_Metric",
                   "varid_split",
                   "showOutput",
                   "withProgress",
-                  "renderChart2"))
+                  "renderChart2",
+                  "brewer.pal",
+                  "conditionalPanel",
+                  "plotlyOutput",
+                  "renderPlotly",
+                  "sliderInput",
+                  "toRGB",
+                  "width.SJ"))
 
 requireNamespace("xgboost")
 requireNamespace("rpart")
@@ -160,10 +171,12 @@ requireNamespace("rpart.plot")
 requireNamespace("partykit")
 requireNamespace("tabplot")
 requireNamespace("rCharts")
+requireNamespace("plotly")
 requireNamespace("ggplot2")
 requireNamespace("plotluck")
 requireNamespace("grid")
 requireNamespace("gridExtra")
+requireNamespace("RColorBrewer")
 requireNamespace("lattice")
 requireNamespace("car")
 requireNamespace("CEoptim")
@@ -181,4 +194,5 @@ requireNamespace("sparsity")
 requireNamespace("RcppArmadillo")
 requireNamespace("Deriv")
 requireNamespace("outliers")
+requireNamespace("MASS")
 requireNamespace("stringi")

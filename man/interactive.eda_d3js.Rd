@@ -2,7 +2,7 @@
 % Please edit documentation in R/interactive.eda_d3js.R
 \name{interactive.eda_d3js}
 \alias{interactive.eda_d3js}
-\title{Interactive Dashboard for Exploratory Data Analysis (ggplot)}
+\title{Interactive Dashboard for Exploratory Data Analysis (d3js)}
 \usage{
 interactive.eda_d3js(data, type = "scatterChart",
   dep_var = colnames(data)[1], indep_var = "None", group_var = "None",
@@ -10,7 +10,7 @@ interactive.eda_d3js(data, type = "scatterChart",
   f_back = "red", side_width = 300)
 }
 \arguments{
-\item{data}{Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table increases the processing speed.}
+\item{data}{Type: data.table (preferred) or data.frame. The data you want to explore. Using a data.table increases the processing speed.}
 
 \item{type}{Type: character. The type of plot requested to d3js nvds. You may choose between \code{"lineChart"}, \code{"scatterChart"}, \code{"stackedAreaChart"}, \code{"discreteBarChart"}, \code{"multiBarChart"}, \code{"multiBarHorizontalChart"}, \code{"linePlusBarChart"}, \code{"cumulativeLineChart"}, \code{"lineWithFocusChart"}, \code{"pieChart"}, \code{"bulletChart"}. Defaults to \code{"scatterChart"}.}
 
@@ -34,7 +34,7 @@ interactive.eda_d3js(data, type = "scatterChart",
 Nothing
 }
 \description{
-This function runs an interactive dashboard which allows to explore data via 3djs and NVD3. Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. In addition, the filtering method is currently broken.
+This function runs an interactive dashboard which allows to explore data via 3djs and NVD3. Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. In addition, the filtering method is currently broken. This function is not recommended if you want d3js plot and you should use \code{interactive.eda_plotly}.
 }
 \details{
 Plotting is done using \code{rCharts}, which must be loaded before running this function. There are issues if you open this in Internet Explorer 9 or under.
@@ -57,7 +57,7 @@ library(shinydashboard)
 library(rCharts)
 library(datasets)
 hair_eye <- as.data.frame(HairEyeColor)
-interactive.eda_d3js(data = "hair_eye",
+interactive.eda_d3js(data = hair_eye,
                      type = "multiBarChart",
                      dep_var = "Hair", #ignored
                      indep_var = "Freq", #ignored
