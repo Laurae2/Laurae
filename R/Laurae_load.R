@@ -13,6 +13,7 @@
 #'   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
 #'   \item{plotly}{Create Interactive Web Graphics via 'plotly.js'}
 #'   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
+#'   \item{ggthemes}{Extra Themes, Scales and Geoms for 'ggplot2'}
 #'   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
 #'   \item{grid}{The Grid Graphics Package}
 #'   \item{gridExtra}{Miscellaneous Functions for "Grid" Graphics}
@@ -80,7 +81,7 @@ Laurae_load <- function() {
   # try(library(outliers))
   # try(library(MASS))
   # try(library(stringi))
-  eval(parse(text = "try(library(xgboost));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(stringi))"))
+  eval(parse(text = "try(library(xgboost));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(ggthemes));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(stringi))"))
 }
 
 

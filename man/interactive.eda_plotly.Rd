@@ -10,7 +10,7 @@ interactive.eda_plotly(data, type = "scatter", plot_width = 1500,
 \arguments{
 \item{data}{Type: name reference to a data.table (preferred) or data.frame. The data you want to explore. Using a data.table increases the processing speed.}
 
-\item{type}{Type: character. The type of plot to preselect (but it does nothing itself). You may choose between \code{"scatter"}, \code{"bar"}, \code{"pie"}, \code{"histogram"}, \code{"histogram2d"}, \code{"box"}, \code{"contour"}, \code{"heatmap"}, \code{"polar"}, \code{"scatter3d"}, and \code{"surface"}. Defaults to \code{"scatter"}.}
+\item{type}{Type: character. The type of plot to preselect (but it does nothing itself). You may choose between \code{"scatter"}, \code{"bar"}, \code{"pie"}, \code{"histogram"}, \code{"histogram2d"}, \code{"box"}, \code{"contour"}, \code{"heatmap"}, \code{"polar"}, \code{"scatter3d"}, \code{"surface"}, \code{"geom_density"}, \code{"geom_density_2d"}, \code{"stat_density_2d"}, \code{"geom_bar"}, \code{"geom_point"}, and \code{"geom_boxplot"}. Defaults to \code{"scatter"}.}
 
 \item{plot_width}{Type: numeric. The width for the plot. Defaults to \code{1500}, which fits nicely Full HD screens (1920 vertical pixels).}
 
@@ -24,7 +24,7 @@ interactive.eda_plotly(data, type = "scatter", plot_width = 1500,
 Nothing
 }
 \description{
-This function runs an interactive dashboard which allows to explore data via 3djs and Plotly. Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. You should use this function over \code{interactive.eda_3djs}, which performs poorly compared to its plotly counterpart. When specific variables are mandatory, the interactive dashboard will warn you with a star preceding the element which is mandatory to be used.
+This function runs an interactive dashboard which allows to explore data via 3djs and Plotly (using Plotly or Plotly+ggplot2). Unlike its counterpart \code{interactive.eda_ggplot}, using 3djs is not efficient for large data (10K+ observations) and automated smart plotting is not available. You should use this function over \code{interactive.eda_3djs}, which performs poorly compared to its plotly counterpart. When specific variables are mandatory, the interactive dashboard will warn you with a star preceding the element which is mandatory to be used. In addition, make sure your variables are in the right formats, as columns may be turned into factors (this is true for facetting, coloring...).
 }
 \details{
 Plotting is done using \code{plotly}, which must be loaded before running this function. You must import data as \code{data.table} if you want maximum performance, although you will probably not notice any difference unless you are playing with millions of rows. For kernel estimation, you need the \code{MASS} package. There are issues if you open this in Internet Explorer 9 or under.

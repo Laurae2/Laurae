@@ -167,7 +167,9 @@ globalVariables(c("Timing_Metric",
                   "sliderInput",
                   "toRGB",
                   "width.SJ",
-                  "x"))
+                  "x",
+                  "predicted",
+                  "mini"))
 
 requireNamespace("xgboost")
 requireNamespace("rpart")
@@ -177,6 +179,7 @@ requireNamespace("tabplot")
 requireNamespace("rCharts")
 requireNamespace("plotly")
 requireNamespace("ggplot2")
+requireNamespace("ggthemes")
 requireNamespace("plotluck")
 requireNamespace("grid")
 requireNamespace("gridExtra")

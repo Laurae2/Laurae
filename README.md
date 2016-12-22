@@ -51,7 +51,7 @@ Mostly... in a nutshell:
 * Discover and optimize gradient and hessian functions interactively in real-time
 * Plot up to 1 dependent variable, 2 independent variables, 2 conditioning variables, and 1 weighting variable for Exploratory Data Analysis using ggplot, in real-time
 * Plot up to three variables for Exploratory Data Analysis using 3djs via NVD3, in real-time
-* Plot several variables for Exploratory Data Analysis using 3djs vs Plotly, in real-time
+* Plot several variables for Exploratory Data Analysis using 3djs via Plotly/ggplot, in real-time
 * Discover rule-based (from decision trees) non-linear relationship between variables, with rules ready to be copied and pasted for data.tables
 * Visualize interactively Color Brewer palettes with unlimited colors (unlike the original palettes), with ready to copy&paste color codes as vectors
 
@@ -93,15 +93,13 @@ Mostly... in a nutshell:
 
 ![Interactive Symbolic Derivation](https://cloud.githubusercontent.com/assets/9083669/21138299/b050ce68-c12d-11e6-9302-c32286ad1729.png)
 
-* Interactive EDA using ggplot:
-
-![Interactive EDA using ggplot](https://cloud.githubusercontent.com/assets/9083669/21138494/9efcf910-c12e-11e6-9e02-0a4bacd0e957.png)
-
-* Interactive EDA using 3djs/Plotly:
+* Interactive EDA using 3djs/Plotly/ggplot2:
 
 ![Interactive EDA using 3djs](https://cloud.githubusercontent.com/assets/9083669/21265690/df5b634a-c3a2-11e6-8966-0f1cef04d01b.png)
 
 ![Interactive EDA using Plotly](https://cloud.githubusercontent.com/assets/9083669/21290556/f457a2d2-c4be-11e6-89ff-1d9eae4f9477.png)
+
+![Interactive EDA using ggplot2](https://cloud.githubusercontent.com/assets/9083669/21413139/8443d3be-c7f5-11e6-95a8-8f0e8311e7cb.png)
 
 * Interactive Feature Engineering Assistant:
 
@@ -131,7 +129,7 @@ Need all R dependencies in one shot?:
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -152,8 +150,9 @@ If I am not missing stuff (please make a pull request if something is missing th
 | partykit | No | interactive.eda_tree |
 | tabplot | No | tableplot_jpg, interactive.eda_ggplot |
 | rCharts | No | interactive.eda_3djs |
-| plotly | No | , interactive.eda_plotly |
-| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb,, interactive.eda_ggplot |
+| plotly | No | interactive.eda_plotly |
+| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb, interactive.eda_ggplot |
+| ggthemes | No | interactive.eda_plotly |
 | plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb, interactive.eda_tree |
 | gridExtra | No | report.lm, report.xgb |
@@ -250,7 +249,7 @@ Write in your R console `sink()` until you get an error.
 | interactive.eda_ggplot | Interactive Dashforboard for Exploratory Data Analysis using ggplot2 | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables simultaneously, using a smart detection of variables to choose the best appropriate plot via ggplot and plotluck. Resists to errors (keeps running even when you input errors). |
 | interactive.eda_tree | Interactive Dashboard for Non-linear Feature Engineering Assistant | Creates an interactive dashboard which allows to run a cross-validated decision tree using the same settings as the Non-Linear Feature Engineering Assistant, but with an interactive interface and printable rules ready to copy and paste into data.tables. |
 | interactive.eda_3djs | Interactive Dashboard for Exploratory Data Analysis using d3js | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting up to 3 variables using 3djs. Not recommended and it is better to use interactive.eda_plotly. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
-| interactive.eda_plotly | Interactive Dashboard for Exploratory Data Analysis using d3js via Plotly | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting several variables using 3djs via Plotly. This is the recommended way for interactive charts. Not all plots are available, but support for scatter, bar, pie, histogram, histogram2d, box, contour, heatmap, polar, scatter3d, and surface plots is provided. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). |
+| interactive.eda_plotly | Interactive Dashboard for Exploratory Data Analysis using d3js via Plotly | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting several variables using 3djs via Plotly (can use ggplot2 via Plotly via d3js). This is the recommended way for interactive charts. Not all plots are available, but support for scatter, bar, pie, histogram, histogram2d, box, contour, heatmap, polar, scatter3d, and surface plots is provided. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). Performs also on-demand supervised/unsupervised clustering for continuous to discrete data. |
 | brewer.pal_extended | Color Brewer Palette Extended | Extends the original Color Brewer palettes by providing unlimited colors unlike the original palettes. |
 | interactive.eda_RColorBrewer | Interactive Dashboard for Finding the Perfect Color Brewer Palette | Creates an interactive dashboard which allows you to search visually for the best Color Brewer palette for your own taste. Not only everything is shown in real-time just by editing a field, but a copy&paste output is ready to be pasted into R for further usage. You are greeted with a pyramid. |
 
@@ -447,7 +446,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```

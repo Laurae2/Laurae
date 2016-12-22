@@ -24,6 +24,7 @@ Loaded packages:
   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
   \item{plotly}{Create Interactive Web Graphics via 'plotly.js'}
   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
+  \item{ggthemes}{Extra Themes, Scales and Geoms for 'ggplot2'}
   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
   \item{grid}{The Grid Graphics Package}
   \item{gridExtra}{Miscellaneous Functions for "Grid" Graphics}
