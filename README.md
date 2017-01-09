@@ -9,6 +9,12 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
+# Latest News
+
+09/01/2017: My [LightGBM PR](https://github.com/Microsoft/LightGBM/pull/177) for easy installation in R has been merged in LightGBM official repository. When I will get time to work more on it (harvest metric, harvest feature importance, save/load models), I will update this package and get rid of the old LightGBM wrapper. This way, one will be able to use the latest versions of LightGBM, instead of being stuck with the (old) PR 33 of LightGBM.
+
+08/01/2017: I'm starting to work on an automated machine learning model / stacker.
+
 # What is Data Science
 
 ![What is Data Science](https://cloud.githubusercontent.com/assets/9083669/20948670/8a05baec-bc15-11e6-9c7a-33419038d252.png)
