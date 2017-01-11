@@ -169,9 +169,22 @@ globalVariables(c("Timing_Metric",
                   "width.SJ",
                   "x",
                   "predicted",
-                  "mini"))
+                  "mini",
+                  "temp_params",
+                  "iters",
+                  "hi_score",
+                  "clusterExport",
+                  "mcl",
+                  "%dopar%",
+                  "foreach",
+                  "lgb.Dataset",
+                  "lgb.Dataset.create.valid",
+                  "lgb.train"))
 
 requireNamespace("xgboost")
+requireNamespace("lightgbm")
+requireNamespace("foreach")
+requireNamespace("doParallel")
 requireNamespace("rpart")
 requireNamespace("rpart.plot")
 requireNamespace("partykit")

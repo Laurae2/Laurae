@@ -12,6 +12,9 @@ Imports:
 	Matrix (>= 1.2)
 Suggests:
 	xgboost (>= 0.6),
+	lightgbm (>= 0.1),
+	foreach (>= 1.4.3),
+	doParallel (>= 1.0.10),
 	rpart (>= 4.0),
 	rpart.plot (>= 2.1.0),
 	partykit (>= 1.1),

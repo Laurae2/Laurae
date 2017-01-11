@@ -4,7 +4,8 @@
 \alias{DTcolsample}
 \title{data.table colsampling (nearly without) copy}
 \usage{
-DTcolsample(DT, kept, remove = FALSE)
+DTcolsample(DT, kept, remove = FALSE, low_mem = FALSE, collect = 0,
+  silent = TRUE)
 }
 \arguments{
 \item{DT}{Type: data.table. The data.table to combine on.}
@@ -12,6 +13,12 @@ DTcolsample(DT, kept, remove = FALSE)
 \item{kept}{Type: vector of integers or vector of characters. The columns to select to keep.}
 
 \item{remove}{Type: boolean. Whether the argument \code{kept} acts as a removal (keep all columns which are not in \code{kept}). Defaults to \code{FALSE}.}
+
+\item{low_mem}{Type: boolean. Unallows DT (up to) twice in memory by deleting \code{DT} (WARNING: empties your \code{DT}) to save memory when set to \code{TRUE}. Setting it to \code{FALSE} allow \code{DT} to reside (up to) twice in memory, therefore memory usage increases. Defaults to \code{FALSE}.}
+
+\item{collect}{Type: integer. Forces a garbage collect every \code{collect} iterations to clear up memory. Setting this to \code{1} along with \code{low_mem} = \code{TRUE} leads to the lowest possible memory usage one can ever get to merge two data.tables. It also prints verbose information about the process everytime it garbage collects. Setting this to \code{0} leads to no garbage collect. Lower values increases the time required to subsample the data.table. Defauls to \code{0}.}
+
+\item{silent}{Type: boolean. Force silence during garbage collection iterations at no speed cost. Defaults to \code{TRUE}.}
 }
 \value{
 The subsampled data.table.
@@ -27,8 +34,8 @@ library(data.table)
 DT <- data.frame(matrix(nrow = 50, ncol = 10))
 DT <- setDT(DT)
 colnames(DT) <- paste(colnames(DT), "xx", sep = "")
-DT <- DTcolsample(DT, kept = 1:8, remove = FALSE)
-DT <- DTcolsample(DT, kept = 1:6, remove = TRUE)
+DT <- DTcolsample(DT, kept = 1:8, remove = FALSE, low_mem = TRUE)
+DT <- DTcolsample(DT, kept = 1:6, remove = TRUE, low_mem = TRUE)
 
 }
 

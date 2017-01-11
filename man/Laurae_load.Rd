@@ -17,6 +17,9 @@ Loaded packages:
 
 \describe{
   \item{xgboost}{Extreme Gradient Boosting}
+  \item{lightgbm}{Light Gradient Boosting Machine}
+  \item{foreach}{Provide Foreach Looping Construct for R}
+  \item{doParallel}{Foreach Parallel Adaptor for the 'parallel' Package}
   \item{rpart}{Recursive Partitioning and Regression Trees}
   \item{rpart.plot}{Plot 'rpart' Models: An Enhanced Version of 'plot.rpart'}
   \item{partykit}{A Toolkit for Recursive Partitioning}

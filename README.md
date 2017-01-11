@@ -23,7 +23,7 @@ install_github("Laurae2/Laurae")
 
 Mostly... in a nutshell:
 
-* Supervised Learning: xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant
+* Supervised Learning: automated machine learning (feature selection + hyperparamter tuning), xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant
 * Unsupervised Learning: auto t-SNE
 * Automated Reporting for Machine Learning: linear regression, unbiased xgboost regression/classification
 * Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot, interactive 3djs/Plotly
@@ -34,7 +34,8 @@ Mostly... in a nutshell:
 
 **Supervised Learning:**
 
-* Use LightGBM in R (first wrapper available in R for LightGBM) tuned for maximum I/O without using in-memory dataset moves (which is both a good and bad thing! - 10GB of data takes 4 mins of travel in a HDD) and use feature importance with smart and readable plots
+* (Soon Deprecated) Use LightGBM in R (first wrapper available in R for LightGBM) tuned for maximum I/O without using in-memory dataset moves (which is both a good and bad thing! - 10GB of data takes 4 mins of travel in a HDD) and use feature importance with smart and readable plots - I recommend using official LightGBM R Package which I contribute to
+* Automated Machine Learning from a set of features and hyperparameters (provide algorithm functions, features, hyperparamters, and a stochastic optimizer does the job for you with full logging if required)
 * Use a repeated cross-validated xgboost (Extreme Gradient Boosting)
 * Get pretty interactive feature importance tables of xgboost ready-to-use for markdown documents
 * Throw supervised rules using outliers anywhere you feel it appropriate (univariate, bivariate)
@@ -135,7 +136,7 @@ Need all R dependencies in one shot?:
 install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -147,10 +148,12 @@ If I am not missing stuff (please make a pull request if something is missing th
 
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
-| Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot |
-| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb |
-| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
+| Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
+| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par |
+| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| foreach | No | LauraeML_gblinear_par |
+| doParallel | No | LauraeML_gblinear_par |
 | rpart | No | FeatureLookup, interactive.eda_tree |
 | rpart.plot | No | FeatureLookup, interactive.eda_tree |
 | partykit | No | interactive.eda_tree |
@@ -165,7 +168,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | RColorBrewer | No | interactive.eda_plotly, interactive.eda_RColorBrewer, brewer.pal_extended |
 | lattice | No | report.lm, report.xgb |
 | car | No | .ExtraOpt_plot |
-| CEoptim | No | ExtraOpt |
+| CEoptim | No | ExtraOpt, LauraeML |
 | DT | No | xgb.importance.interactive, report.lm, report.xgb |
 | formattable | No | report.lm, report.xgb |
 | rmarkdown | No | report.lm, report.xgb, interactive.eda_tree |
@@ -214,7 +217,7 @@ Write in your R console `sink()` until you get an error.
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt, LauraeML |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
 | Visualizations | tableplot_jpg, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
@@ -258,22 +261,24 @@ Write in your R console `sink()` until you get an error.
 | interactive.eda_plotly | Interactive Dashboard for Exploratory Data Analysis using d3js via Plotly | Creates an interactive dashboard which allows to work on the data set you want (from the global environment) by plotting several variables using 3djs via Plotly (can use ggplot2 via Plotly via d3js). This is the recommended way for interactive charts. Not all plots are available, but support for scatter, bar, pie, histogram, histogram2d, box, contour, heatmap, polar, scatter3d, and surface plots is provided. Supposed to resist to errors (keeps running even when you input errors), but this is not always true (the window unexpectedly closes sometimes when you input a very very bad setup). Performs also on-demand supervised/unsupervised clustering for continuous to discrete data. |
 | brewer.pal_extended | Color Brewer Palette Extended | Extends the original Color Brewer palettes by providing unlimited colors unlike the original palettes. |
 | interactive.eda_RColorBrewer | Interactive Dashboard for Finding the Perfect Color Brewer Palette | Creates an interactive dashboard which allows you to search visually for the best Color Brewer palette for your own taste. Not only everything is shown in real-time just by editing a field, but a copy&paste output is ready to be pasted into R for further usage. You are greeted with a pyramid. |
+| LauraeML | Automated Machine Learning | (VERY EXPERIMENTAL) Provides a function for doing automated machine learning (optimize features, optimize hyperparameters) using a stochastic optimizer (Cross-Entropy optimization). It does not use a Bayesian optimizer, therefore sampling is random every each optimization iterations and is much slower (for the benefits of finding which features to keep). Full logging is provided which allows you find out the best features and their loss (ex: loss vs number of features used). Still a lot of TO-DO (best would be "throw all in a single function without more than 5 arguments, get results back"). <br> Functions: LauraeML_gblinear, LauraeML_gblinear_par, LauraeML_lgbreg |
 
 # TO-DO:
 
-* Add a super fast matrix to data.table converter
-* Refactor LightGBM code
-* Better handling of LightGBM arguments
-* Better handling of LightGBM files
+* ~~Add a super fast matrix to data.table converter~~
+* ~~Refactor LightGBM code~~
+* ~~Better handling of LightGBM arguments~~
+* ~~Better handling of LightGBM files~~
 * Fuse Laurae2/sparsity 's SVMLight converter/reader and Laurae2/Laurae
-* Add Differential Evolution algorithm for feature selection and hyperparameter simultaneous optimization (add another backend via another interface as it typically takes a lot of time for both)
-* (Attempt to) Add automated non-linear feature creation using decision trees
+* ~~Add Differential Evolution algorithm for feature selection and hyperparameter simultaneous optimization (add another backend via another interface as it typically takes a lot of time for both)~~ (cancelled)
+* ~~(Attempt to) Add automated non-linear feature creation using decision trees~~ (cancelled)
+* Provide more for LauraeML
 
 # To add:
 
-* xgboost grid search
-* xgboost unbalanced large dataset learning
-* large sparse matrix loader for categorical data
+* ~~xgboost grid search~~ (LauraeML)
+* ~~xgboost unbalanced large dataset learning~~ (cancelled)
+* ~~large sparse matrix loader for categorical data~~ (cancelled)
 * Categorical to Numeric converter: h2o's autoencoder, mxnet's autoencoder, t-SNE, Generalized Low Rank Models, largeVis, FeatureHashing - along with testing performance using xgboost
 * Logloss brute force calibration
 * Prediction Analyzer (analyze any type of model predictions, currently only binary)
@@ -284,7 +289,7 @@ Write in your R console `sink()` until you get an error.
 
 # Extra contributors:
 
-@fakyras for the base R code for LightGBM.
+* @fakyras for the base R code for LightGBM.
 
 # Installing this package? (Proper installation)
 
@@ -365,6 +370,8 @@ xgb.train(list(objective="binary:logitraw"), xgb.DMatrix(data=z,label=t), nround
 ```
 
 ## LightGBM installation (~10 GB in Windows)
+
+* Deprecated soon: I recommend to use the official LightGBM R package I contribute to, it is a one-liner install in R and you do not even need Visual Studio (but only Rtools). LightGBM in Laurae's package will be deprecated soon. *
 
 This applies to **Windows only**. Linux users can just compile "out of the box" LightGBM with the gcc tool chain
 
@@ -452,7 +459,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```
