@@ -4,8 +4,8 @@
 \alias{LauraeML}
 \title{Laurae's Machine Learning (Automated modeling, Automated stacking)}
 \usage{
-LauraeML(data, label, folds, seed = 0, models = NULL, by_myself = FALSE,
-  optimize = TRUE, no_train = FALSE, logging = TRUE, maximize = TRUE,
+LauraeML(data, label, folds, seed = 0, models = NULL, parallelized = NULL,
+  optimize = TRUE, no_train = FALSE, logging = NULL, maximize = TRUE,
   features = 0.5, hyperparams = NULL, n_tries = 50, n_iters = 50,
   early_stop = 5, elites = 0.1, feature_smoothing = 1,
   converge_cont = 0.1, converge_disc = 0.1)
@@ -21,13 +21,13 @@ LauraeML(data, label, folds, seed = 0, models = NULL, by_myself = FALSE,
 
 \item{models}{Type: list of functions. A list of functions, taking each a \code{x} (numeric vector of hyperparameters), \code{y} (numeric vector of features used, where each n-th index refers to the n-th feature, with \code{0} being not selected, and \code{1} being selected), \code{data} (data data.table), \code{folds} (folds list) arguments, transforming the data accordingly depending on the features used, doing validation properly, and returning the cross-validated score to optimize. If you do not want to do cross-validation, you are free to not perform it as no check is performed inside the model functions. You can get the number of the models trained using \code{iters}, which is overwritten in the global environment (and which you should increment in the model functions, if you intend to use it). You can also use \code{hi_score} to get the best score, which is overwritten in the global environment (you can make use of it in your model functions.}
 
-\item{by_myself}{Type: boolean. Whether data is split (in a list) before being fed to the modeling functions (with a list per fold containing first the training data, and second the testing data). Defaults to \code{FALSE}, to lower memory usage. You should set it to \code{TRUE} if you want pure speed.}
+\item{parallelized}{Type: parallel socket cluster (makeCluster or similar). When specified, data is split (in a list) before being fed to the modeling functions (with a list per fold containing first the training data, and second the testing data), at the expense of drastically increasing memory usage. Defaults to \code{NULL}, to lower memory usage. You should set it to if you want pure speed and have enough available RAM to handle the dataset multiple times (\code{length(folds)} times).}
 
 \item{optimize}{Type: boolean. Whether to perform optimization or take everything as is (no optimization of any parameters). Defaults to \code{TRUE}, which means an attempt to optimize hyperparameters and/or features.}
 
 \item{no_train}{Type: boolean. When optimize is \code{FALSE} and your only need is to create the list to be usable later for training all models, set this to \code{TRUE}. Otherwise, never touch it. Defaults to \code{FALSE}.}
 
-\item{logging}{Type: boolean. Whether to log data or not. If \code{TRUE}, it is up to you to perform logging. The logging must be done in the variable \code{temp_params} which is created in the global environment (use \code{<<-} to assign to the global environment from the model functions). The first column is the ID of the model optimization iteration (there are \code{(n_iters + 1) * n_tries} iterations), the second column is the score of that iteration, then the following columns are about the hyperparameters used, while the last columns are the features used. It has \code{(n_iters + 1) * n_tries} rows, and \code{length(hyperparams[[i]][[1]]) + ncol(data) + 2} columns for a model of index \code{i} in \code{models}. Defaults to \code{TRUE} for accordance with the demonstrations.}
+\item{logging}{Type: character. The log file output. The logging must be done in the variable \code{mobile$temp_params}. The first column is the ID of the model optimization iteration (there are \code{(n_iters + 1) * n_tries} iterations), the second column is the score of that iteration, then the following columns are about the hyperparameters used, while the last columns are the features used. It has \code{(n_iters + 1) * n_tries} rows, and \code{length(hyperparams[[i]][[1]]) + ncol(data) + 2} columns for a model of index \code{i} in \code{models}. Defaults to \code{NULL}, which means no logging.}
 
 \item{maximize}{Type: boolean. Whether to maximize (\code{TRUE}) or minimize (\code{FALSE}) the metric returned by the model functions. Defaults to \code{TRUE}.}
 
@@ -67,11 +67,11 @@ folds = list(1:1460, 1461:2919),
 seed = 0,
 models = list(lgb = LauraeML_lgbreg,
               xgb = LauraeML_gblinear),
-         by_myself = FALSE,
+         parallelized = FALSE,
          optimize = TRUE,
          no_train = FALSE,
-         logging = FALSE,
-         maximize = FALSE,
+         logging = NULL,
+         maximize = FALSE, # FALSE on RMSE, fast example of doing the worst
          features = 0.50,
          hyperparams = list(lgb = list(Mean = c(5, 5, 1, 0.7, 0.7, 0.5, 0.5),
                                        Sd = c(3, 3, 1, 0.2, 0.2, 0.5, 0.5),

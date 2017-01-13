@@ -4,12 +4,21 @@
 \alias{LauraeML_gblinear}
 \title{Laurae's Machine Learning (xgboost gblinear helper function)}
 \usage{
-LauraeML_gblinear(x, y, data, label, folds)
+LauraeML_gblinear(x, y, mobile, parallelized, maximize, logging, data, label,
+  folds)
 }
 \arguments{
 \item{x}{Type: vector (numeric). The hyperparameters to use.}
 
 \item{y}{Type: vector (numeric). The features to use, as binary format (0 for not using, 1 for using).}
+
+\item{mobile}{Type: environment. The environment passed from \code{LauraeML}.}
+
+\item{parallelized}{Type: parallel socket cluster (makeCluster or similar). The \code{parallelized} parameter passed from \code{LauraeML} (whether to parallelize training per folds or not).}
+
+\item{maximize}{Type: boolean. The \code{maximize} parameter passed from \code{LauraeML} (whether to maximize or not the metric).}
+
+\item{logging}{Type: character. The \code{logging} parameter passed from \code{LauraeML} (where to store log file).}
 
 \item{data}{Type: data.table (mandatory). The data features. Comes from \code{LauraeML}.}
 

@@ -9,10 +9,10 @@
 #' @param folds Type: list of numerics. A list containing per element, the observation rows for the folds, which is passed to your modeling functions.
 #' @param seed Type: numeric. The seed for random number generation. Defaults to \code{0}.
 #' @param models Type: list of functions. A list of functions, taking each a \code{x} (numeric vector of hyperparameters), \code{y} (numeric vector of features used, where each n-th index refers to the n-th feature, with \code{0} being not selected, and \code{1} being selected), \code{data} (data data.table), \code{folds} (folds list) arguments, transforming the data accordingly depending on the features used, doing validation properly, and returning the cross-validated score to optimize. If you do not want to do cross-validation, you are free to not perform it as no check is performed inside the model functions. You can get the number of the models trained using \code{iters}, which is overwritten in the global environment (and which you should increment in the model functions, if you intend to use it). You can also use \code{hi_score} to get the best score, which is overwritten in the global environment (you can make use of it in your model functions.
-#' @param by_myself Type: boolean. Whether data is split (in a list) before being fed to the modeling functions (with a list per fold containing first the training data, and second the testing data). Defaults to \code{FALSE}, to lower memory usage. You should set it to \code{TRUE} if you want pure speed.
+#' @param parallelized Type: parallel socket cluster (makeCluster or similar). When specified, data is split (in a list) before being fed to the modeling functions (with a list per fold containing first the training data, and second the testing data), at the expense of drastically increasing memory usage. Defaults to \code{NULL}, to lower memory usage. You should set it to if you want pure speed and have enough available RAM to handle the dataset multiple times (\code{length(folds)} times).
 #' @param optimize Type: boolean. Whether to perform optimization or take everything as is (no optimization of any parameters). Defaults to \code{TRUE}, which means an attempt to optimize hyperparameters and/or features.
 #' @param no_train Type: boolean. When optimize is \code{FALSE} and your only need is to create the list to be usable later for training all models, set this to \code{TRUE}. Otherwise, never touch it. Defaults to \code{FALSE}.
-#' @param logging Type: boolean. Whether to log data or not. If \code{TRUE}, it is up to you to perform logging. The logging must be done in the variable \code{temp_params} which is created in the global environment (use \code{<<-} to assign to the global environment from the model functions). The first column is the ID of the model optimization iteration (there are \code{(n_iters + 1) * n_tries} iterations), the second column is the score of that iteration, then the following columns are about the hyperparameters used, while the last columns are the features used. It has \code{(n_iters + 1) * n_tries} rows, and \code{length(hyperparams[[i]][[1]]) + ncol(data) + 2} columns for a model of index \code{i} in \code{models}. Defaults to \code{TRUE} for accordance with the demonstrations.
+#' @param logging Type: character. The log file output. The logging must be done in the variable \code{mobile$temp_params}. The first column is the ID of the model optimization iteration (there are \code{(n_iters + 1) * n_tries} iterations), the second column is the score of that iteration, then the following columns are about the hyperparameters used, while the last columns are the features used. It has \code{(n_iters + 1) * n_tries} rows, and \code{length(hyperparams[[i]][[1]]) + ncol(data) + 2} columns for a model of index \code{i} in \code{models}. Defaults to \code{NULL}, which means no logging.
 #' @param maximize Type: boolean. Whether to maximize (\code{TRUE}) or minimize (\code{FALSE}) the metric returned by the model functions. Defaults to \code{TRUE}.
 #' @param features Type: numeric. The approximate percentage of features that should be selected. This parameter is ignored when features when you underestimate the number of features you really need. Defaults to \code{0.50}, which means an attempt to use half of features only.
 #' @param hyperparams Type: list of list of vector of numerics. Contains the hyperparameter interval to optimize per function. Each hyperparameter must have 4 lists, containing separately the mean (first list), the standard deviation (second list), the minimum (third list) and the maximum (fourth list) allowed. This is still used to fetch hyperparameters to pass when \code{optimize = FALSE}, you should just pass one vector per list in this specific case (containing the hyperparamters used for each model).
@@ -35,11 +35,11 @@
 #' seed = 0,
 #' models = list(lgb = LauraeML_lgbreg,
 #'               xgb = LauraeML_gblinear),
-#'          by_myself = FALSE,
+#'          parallelized = FALSE,
 #'          optimize = TRUE,
 #'          no_train = FALSE,
-#'          logging = FALSE,
-#'          maximize = FALSE,
+#'          logging = NULL,
+#'          maximize = FALSE, # FALSE on RMSE, fast example of doing the worst
 #'          features = 0.50,
 #'          hyperparams = list(lgb = list(Mean = c(5, 5, 1, 0.7, 0.7, 0.5, 0.5),
 #'                                        Sd = c(3, 3, 1, 0.2, 0.2, 0.5, 0.5),
@@ -65,10 +65,10 @@ LauraeML <- function(data,
                      folds,
                      seed = 0,
                      models = NULL,
-                     by_myself = FALSE,
+                     parallelized = NULL,
                      optimize = TRUE,
                      no_train = FALSE,
-                     logging = TRUE,
+                     logging = NULL,
                      maximize = TRUE,
                      features = 0.50,
                      hyperparams = NULL,
@@ -83,9 +83,7 @@ LauraeML <- function(data,
   params <- list() # Stores best hyperparameters per model
   featured <- list() # Stores features used per model
   scoring <- list() # Stores scores of models
-  
-  # bypass CRAN checks
-  temp_params <- iters <- hi_score <- NULL
+  mobile <- new.env() # Temporary environment for storing data
   
   # Do the user wants only to prepare a list to be used to train models?
   if (no_train == TRUE) {
@@ -102,12 +100,13 @@ LauraeML <- function(data,
     # Return the premade list
     return(list(Parameters = params,
                 Features = featured,
-                Scores = scoring))
+                Scores = scoring,
+                Calls = models))
     
   } else {
     
-    # Check whether the user wants splitted data (TRUE) or not (FALSE)
-    if (by_myself == TRUE) {
+    # Check whether the user wants parallelization or not
+    if (!is.null(parallelized)) {
       
       # Prepare temporary list
       temp_data <- list()
@@ -135,6 +134,15 @@ LauraeML <- function(data,
         
       }
       
+      # Prepare export to parallel cluster
+      ClusterOut <- function(parallelized, data, label) {
+        clusterExport(parallelized, c("data", "label"), envir = environment())
+        return(NULL)
+      }
+      
+      # Export to cluster
+      ClusterOut(parallelized, temp_data, temp_label)
+      
     } else {
       
       # Make a pointer copy
@@ -155,6 +163,10 @@ LauraeML <- function(data,
         # Store metric by training model with appropriate passed parameters
         scoring[[i]] <- models[[i]](x = hyperparams[[i]],
                                     y = rep(1, ncol(data)),
+                                    mobile = mobile,
+                                    maximize = maximize,
+                                    logging = logging,
+                                    parallelized = parallelized,
                                     data = temp_data,
                                     label = temp_label,
                                     folds = folds)
@@ -166,80 +178,59 @@ LauraeML <- function(data,
       # Return the scored elements
       return(list(Parameters = params,
                   Features = featured,
-                  Scores = scoring))
+                  Scores = scoring,
+                  Calls = models))
       
     } else {
       
       # The user wants to optimize the model
       
       # Do we want logging?
-      if (logging == TRUE) {
+      if (!is.null(logging)) {
         best_params <- list() # Placeholder for best parameters
       }
       
       for (i in 1:length(models)) {
         
         # Do we want logging?
-        if (logging == TRUE) {
-          temp_params <<- data.table(nrow = (n_iters + 1) * n_tries, ncol = (length(hyperparams[[i]][[1]]) + ncol(data) + 2))
+        if (!is.null(logging)) {
+          mobile$temp_params <- data.frame(matrix(rep(0, ((n_iters + 1) * n_tries) * (length(hyperparams[[i]][[1]]) + ncol(data) + 2)), nrow = (n_iters + 1) * n_tries, ncol = (length(hyperparams[[i]][[1]]) + ncol(data) + 2)))
+          colnames(mobile$temp_params) <- c("Iteration", "Score", paste("Param_", 1:length(hyperparams[[i]][[1]]), sep = ""), paste("Feature_", 1:ncol(data), sep = ""))
         }
         
         # Train a model using stochastic optimization (Cross-Entropy method here)
         cont_opt <- list(mean = hyperparams[[i]][[1]], sd = hyperparams[[i]][[2]], conMat = rbind(diag(length(hyperparams[[i]][[1]])), -diag(length(hyperparams[[i]][[1]]))), conVec = c(hyperparams[[i]][[4]], -hyperparams[[i]][[3]]), sdThr = converge_cont)
         
-        # Do we want feature selection?
-        if (features < 1) {
-          
-          p0 <- c(list())
-          for (j in 1:ncol(data)) {p0 <- c(p0, list(c(1 - features, features)))}
-          disc_opt <- list(probs = p0, smoothProb = feature_smoothing, probThr = converge_disc)
-          
-          # Perform cross-entropy optimization
-          iters <<- 0 # Set the iters variable in global environment to pass to the model function
-          hi_score <<- ifelse(maximize == TRUE, -999999999, 999999999) # Set the best score default value
-          set.seed(seed)
-          best_weights <- CEoptim::CEoptim(models[[i]],
-                                  f.arg = list(data = temp_data,
-                                               label = temp_label,
-                                               folds = folds),
-                                  maximize = TRUE,
-                                  continuous = cont_opt,
-                                  discrete = disc_opt,
-                                  N = n_tries,
-                                  rho = elites,
-                                  verbose = TRUE,
-                                  iterThr = n_iters,
-                                  noImproveThr = early_stop)
-          
-          # Get the best performing combination
-          x <- best_weights$optimizer$continuous
-          y <- best_weights$optimizer$discrete
-          z <- best_weights$optimum
-          
-        } else {
-          
-          # Perform cross-entropy optimization
-          iters <<- 0 # Set the iters variable in global environment to pass to the model function
-          hi_score <<- ifelse(maximize == TRUE, -999999999, 999999999) # Set the best score default value
-          set.seed(seed)
-          best_weights <- CEoptim::CEoptim(models[[i]],
-                                  f.arg = list(data = temp_data,
-                                               label = temp_label,
-                                               folds = folds),
-                                  maximize = TRUE,
-                                  continuous = cont_opt,
-                                  N = n_tries,
-                                  rho = elites,
-                                  verbose = TRUE,
-                                  iterThr = n_iters,
-                                  noImproveThr = early_stop)
-          
-          # Get the best performing combination
-          x <- best_weights$optimizer$continuous
-          y <- rep(1, ncol(data))
-          z <- best_weights$optimum
-          
-        }
+        # Create feature importance listing
+        p0 <- c(list())
+        for (j in 1:ncol(data)) {p0 <- c(p0, list(c(1 - features, features)))}
+        disc_opt <- list(probs = p0, smoothProb = feature_smoothing, probThr = converge_disc)
+        
+        # Perform cross-entropy optimization
+        mobile$iters <- 0 # Set the iters variable to pass to the model function
+        hi_score <- ifelse(maximize == TRUE, -999999999, 999999999) # Set the best score default value
+        set.seed(seed)
+        best_weights <- CEoptim::CEoptim(models[[i]],
+                                         f.arg = list(mobile = mobile,
+                                                      maximize = maximize,
+                                                      logging = logging,
+                                                      parallelized = parallelized,
+                                                      data = temp_data,
+                                                      label = temp_label,
+                                                      folds = folds),
+                                         maximize = TRUE,
+                                         continuous = cont_opt,
+                                         discrete = disc_opt,
+                                         N = n_tries,
+                                         rho = elites,
+                                         verbose = TRUE,
+                                         iterThr = n_iters,
+                                         noImproveThr = early_stop)
+        
+        # Get the best performing combination
+        x <- best_weights$optimizer$continuous
+        y <- best_weights$optimizer$discrete
+        z <- best_weights$optimum
         
         # Prepare to return data appropriately
         params[[i]] <- z
@@ -247,26 +238,28 @@ LauraeML <- function(data,
         scoring[[i]] <- x
         
         # Do we need the model logging?
-        if (logging == TRUE) {
-          best_params[[i]] <- temp_params # Assign best parameters
+        if (!is.null(logging)) {
+          best_params[[i]] <- mobile$temp_params # Assign best parameters
         }
         
       }
       
       # Do we need the logs?
-      if (logging == TRUE) {
+      if (!is.null(logging)) {
         
         # Return everything
         return(list(Parameters = params,
                     Features = featured,
                     Scores = scoring,
+                    Calls = models,
                     Log = best_params))
       } else {
         
         # Return everything without the log
         return(list(Parameters = params,
                     Features = featured,
-                    Scores = scoring))
+                    Scores = scoring,
+                    Calls = models))
         
       }
       

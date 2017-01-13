@@ -4,12 +4,21 @@
 \alias{LauraeML_gblinear_par}
 \title{Laurae's Machine Learning (xgboost gblinear helper parallel function)}
 \usage{
-LauraeML_gblinear_par(x, y, data, label, folds)
+LauraeML_gblinear_par(x, y, mobile, parallelized, maximize, logging, data,
+  label, folds)
 }
 \arguments{
 \item{x}{Type: vector (numeric). The hyperparameters to use.}
 
 \item{y}{Type: vector (numeric). The features to use, as binary format (0 for not using, 1 for using).}
+
+\item{mobile}{Type: environment. The environment passed from \code{LauraeML}.}
+
+\item{parallelized}{Type: parallel socket cluster (makeCluster or similar). The \code{parallelized} parameter passed from \code{LauraeML} (whether to parallelize training per folds or not).}
+
+\item{maximize}{Type: boolean. The \code{maximize} parameter passed from \code{LauraeML} (whether to maximize or not the metric).}
+
+\item{logging}{Type: character. The \code{logging} parameter passed from \code{LauraeML} (where to store log file).}
 
 \item{data}{Type: data.table (mandatory). The data features. Comes from \code{LauraeML}.}
 
@@ -26,12 +35,12 @@ This function is a demonstration function for using xgboost gblinear in \code{La
 \examples{
 \dontrun{
 # To run before using LauraeML
-library(doParalllel)
+library(doParallel)
 library(foreach)
 mcl <- makeCluster(4)
 invisible(clusterEvalQ(mcl, library("xgboost")))
 invisible(clusterEvalQ(mcl, library("data.table")))
-registerDoParallel(cl = mcl)
+invisible(clusterEvalQ(mcl, library("Laurae")))
 
 # In case you are doing manual training, try this.
 # We suppose our data is in the variable "data" and labels in "label".
@@ -60,11 +69,25 @@ temp_label[[i]][[1]] <- label[-folds[[i]]]
 temp_label[[i]][[2]] <- label[folds[[i]]]
 
 }
+
+clusterExport(mcl, c("temp_data", "temp_label"), envir = environment())
+registerDoParallel(cl = mcl)
+
+# This will not run correctly because it's not made to be used like that
 LauraeML_gblinear_par(x = c(1, 1, 1),
                       y = rep(1, ncol(data)),
+                      mobile = NA,
+                      parallelized = mcl,
+                      maximize = TRUE,
+                      logging = NULL,
                       data = temp_data,
                       label = temp_label,
                       folds = folds)
+
+# Stops the cluster
+registerDoSEQ()
+stopCluster(mcl)
+#closeAllConnections() # In case of emergency if your cluster do not answer
 }
 
 }

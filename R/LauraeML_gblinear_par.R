@@ -4,6 +4,10 @@
 #' 
 #' @param x Type: vector (numeric). The hyperparameters to use.
 #' @param y Type: vector (numeric). The features to use, as binary format (0 for not using, 1 for using).
+#' @param mobile Type: environment. The environment passed from \code{LauraeML}.
+#' @param parallelized Type: parallel socket cluster (makeCluster or similar). The \code{parallelized} parameter passed from \code{LauraeML} (whether to parallelize training per folds or not).
+#' @param maximize Type: boolean. The \code{maximize} parameter passed from \code{LauraeML} (whether to maximize or not the metric).
+#' @param logging Type: character. The \code{logging} parameter passed from \code{LauraeML} (where to store log file).
 #' @param data Type: data.table (mandatory). The data features. Comes from \code{LauraeML}.
 #' @param label Type: vector (numeric). The labels. Comes from \code{LauraeML}.
 #' @param folds Type: list of numerics. The folds as list. Comes from \code{LauraeML}.
@@ -13,12 +17,12 @@
 #' @examples
 #' \dontrun{
 #' # To run before using LauraeML
-#' library(doParalllel)
+#' library(doParallel)
 #' library(foreach)
 #' mcl <- makeCluster(4)
 #' invisible(clusterEvalQ(mcl, library("xgboost")))
 #' invisible(clusterEvalQ(mcl, library("data.table")))
-#' registerDoParallel(cl = mcl)
+#' invisible(clusterEvalQ(mcl, library("Laurae")))
 #' 
 #' # In case you are doing manual training, try this.
 #' # We suppose our data is in the variable "data" and labels in "label".
@@ -47,16 +51,30 @@
 #' temp_label[[i]][[2]] <- label[folds[[i]]]
 #'
 #' }
+#' 
+#' clusterExport(mcl, c("temp_data", "temp_label"), envir = environment())
+#' registerDoParallel(cl = mcl)
+#' 
+#' # This will not run correctly because it's not made to be used like that
 #' LauraeML_gblinear_par(x = c(1, 1, 1),
 #'                       y = rep(1, ncol(data)),
+#'                       mobile = NA,
+#'                       parallelized = mcl,
+#'                       maximize = TRUE,
+#'                       logging = NULL,
 #'                       data = temp_data,
 #'                       label = temp_label,
 #'                       folds = folds)
+#' 
+#' # Stops the cluster
+#' registerDoSEQ()
+#' stopCluster(mcl)
+#' #closeAllConnections() # In case of emergency if your cluster do not answer
 #' }
 #' 
 #' @export
 
-LauraeML_gblinear_par <- function(x, y, data, label, folds) {
+LauraeML_gblinear_par <- function(x, y, mobile, parallelized, maximize, logging, data, label, folds) {
   
   # The earliest thing to do is to increment the iteration count (we commented that line, just for educational purposes)
   # iters <<- iters + 1 # For logging
@@ -64,61 +82,42 @@ LauraeML_gblinear_par <- function(x, y, data, label, folds) {
   # What if we have no feature selected?
   if (sum(y) == 0) {
     
-    # First, we do some logging in the global environment (we commented that line, just for educational purposes)
-    # temp_params[iters, ] <<- c(iters, 9999999, x, y) # SIMPLE AS THAT!
-    
-    # Second, lets print some logging (we commented that line, just for educational purposes)
-    # We print the time, the number of iterations with 5 digits, and that we had an error.
-    # cat("(   ) [", format(Sys.time(), "%X"), "] Pass ", sprintf("%04d", iters), ": error\n", sep = "", file = "log.txt", append = TRUE)
+    # Logging specific
+    LauraeML_utils.badlog(mobile, logging, x, y, NA)
     
     # Last, we return an absurd score which is so high you would rather have a random model than this 0-feature model
-    return(9999999) # This iteration will be ignored by the optimizer if it does not belong to the elite proportion of the optimization iteration
+    return(LauraeML_utils.badscore(maximize, 999999999)) # This iteration will be ignored by the optimizer if it does not belong to the elite proportion of the optimization iteration
     
   } else {
     
-    # Column sampling of the data depending on the features
-    if (sum(y) < length(y)) {
-      
-      # Create placeholder list
-      mini_data <- list()
-      
-      for (i in 1:length(folds)) {
-        mini_data[[i]] <- list()
-        mini_data[[i]][[1]] <- Laurae::DTcolsample(data[[i]][[1]],
-                                                   kept = which(as.logical(y)),
-                                                   remove = FALSE,
-                                                   low_mem = FALSE,
-                                                   collect = 0,
-                                                   silent = TRUE)
-        mini_data[[i]][[2]] <- Laurae::DTcolsample(data[[i]][[2]],
-                                                   kept = which(as.logical(y)),
-                                                   remove = FALSE,
-                                                   low_mem = FALSE,
-                                                   collect = 0,
-                                                   silent = TRUE)
-      }
-      
-    } else {
-      
-      # No column sampling because we select all columns
-      mini_data <- data
-      
-    }
-    
-    clusterExport(mcl, c("mini_data", "label"), envir = environment())
+    # Export features to keep
+    clusterExport(parallelized, c("x", "y"), envir = environment())
     
     # Loop through each fold
     score <- foreach(i = 1:length(folds), .combine = "c", .inorder = FALSE, .verbose = FALSE, .noexport = c("temp_train", "temp_test", "mini_data", "label", "folds", "my_model")) %dopar% {
       
+      # We split the columns first
+      if (sum(y) < length(y)) {
+        
+        temp_train <- LauraeML_utils.feat_sel(data[[i]][[1]], y)
+        temp_test <- LauraeML_utils.feat_sel(data[[i]][[2]], y)
+        
+      } else {
+        
+        temp_train <- data[[i]][[1]]
+        temp_test <- data[[i]][[2]]
+        
+      }
+      
       # Then we create the xgb.DMatrix training data
-      temp_train <- xgb.DMatrix(Laurae::DT2mat(mini_data[[i]][[1]],
+      temp_train <- xgb.DMatrix(Laurae::DT2mat(temp_train,
                                                low_mem = FALSE,
                                                collect = 0,
                                                silent = TRUE),
                                 label = label[[i]][[1]])
       
       # Then we create the xgb.DMatrix testing data
-      temp_test <- xgb.DMatrix(Laurae::DT2mat(mini_data[[i]][[2]],
+      temp_test <- xgb.DMatrix(Laurae::DT2mat(temp_test,
                                               low_mem = FALSE,
                                               collect = 0,
                                               silent = TRUE),
@@ -150,22 +149,14 @@ LauraeML_gblinear_par <- function(x, y, data, label, folds) {
     # Fifth, get the mean per score
     score <- mean(score)
     
-    # Sixth, we do some logging in the global environment
-    # temp_params[iters, ] <<- c(iters, score, x, y) # SIMPLE AS THAT!
+    # Logging specific
+    LauraeML_utils.newlog(mobile, logging, x, y, maximize, score,
+                          c("RMSE", score, 9, 5),
+                          list(c("alpha", x[1], 2, 6),
+                               c("lambda", x[2], 2, 6),
+                               c("lambda_bias", x[3], 2, 6)))
     
-    # Seventh, did we get the highest score? (we commented those lines because they are only for educational purposes)
-    # if (score > hi_score) { # Is our score better (lower) than the highest score in the global environment?
-    #   hi_score <<- score # Assign to the global environment our new best score
-    #   star <- c("(***) ") # Brag about it in logs
-    # } else {
-    #   star <- "(   ) " # Can't brag higher scores!
-    # }
-    
-    # Eighth, we print some logging! (we commented those lines because they are only for educational purposes)
-    # We print the time, the iteration with 5 digits, the RMSE with 9 spaces (8 numbers when excluding the dot) including 5 digits, the number of features with 3 digits, each parameter with 8 spaces (7 numbers when excluding the dot) including 6 digits, and a line break.
-    # cat(star, "[", format(Sys.time(), "%X"), "] Pass ", sprintf("%05d", iters), ": RMSE=", sprintf("%09.05f", error), " - feats=", sprintf("%03d", sum(y)), " - alpha=", sprintf("%08.06f", x[1]), ", lambda=", sprintf("%08.06f", x[2]), ", lambda_bias=", sprintf("%08.06f", x[3]), "\n", sep = "", file = "log.txt", append = TRUE)
-    
-    # Ninth, we can return the score!
+    # Eventually, we can return the score!
     return(score)
     
   }

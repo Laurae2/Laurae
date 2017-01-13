@@ -179,7 +179,8 @@ globalVariables(c("Timing_Metric",
                   "foreach",
                   "lgb.Dataset",
                   "lgb.Dataset.create.valid",
-                  "lgb.train"))
+                  "lgb.train",
+                  "i"))
 
 requireNamespace("xgboost")
 requireNamespace("lightgbm")
