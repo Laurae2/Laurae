@@ -11,6 +11,8 @@ install_github("Laurae2/Laurae")
 
 # Latest News
 
+30/01/2017: Added "Lextravagenza", a machine learning model based on xgboost ignoring past gradient/hessian for optimization, but allowing dynamic trees to outperform small boosted trees.
+
 09/01/2017: My [LightGBM PR](https://github.com/Microsoft/LightGBM/pull/177) for easy installation in R has been merged in LightGBM official repository. When I will get time to work more on it (harvest metric, harvest feature importance, save/load models), I will update this package and get rid of the old LightGBM wrapper. This way, one will be able to use the latest versions of LightGBM, instead of being stuck with the (old) PR 33 of LightGBM.
 
 08/01/2017: I'm starting to work on an automated machine learning model / stacker.
@@ -23,7 +25,7 @@ install_github("Laurae2/Laurae")
 
 Mostly... in a nutshell:
 
-* Supervised Learning: automated machine learning (feature selection + hyperparamter tuning), xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant
+* Supervised Learning: automated machine learning (feature selection + hyperparamter tuning), xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant, Lextravagenza (dynamic boosted trees)
 * Unsupervised Learning: auto t-SNE
 * Automated Reporting for Machine Learning: linear regression, unbiased xgboost regression/classification
 * Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot, interactive 3djs/Plotly
@@ -43,6 +45,7 @@ Mostly... in a nutshell:
 * Feature Engineering Assistant (mostly non-linear version) using automated decision trees
 * Dictionary of loss functions and ready to input into xgboost (currently: Absolute Error, Squared Error, Cubic Error, Loglikelihood Error, Poisson Error, Kullback-Leibler Error)
 * Symbolic Derivaton for custom loss functions (finding gradient/hessian painlessly)
+* Lextravagenza model (dynamic boosted trees) which are good for small boosting iterations, bad for high boosting iterations (good for diversity)
 
 **Unsupervised Learning:**
 
@@ -149,7 +152,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
-| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par |
+| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza |
 | data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
 | foreach | No | LauraeML_gblinear_par |
@@ -217,7 +220,7 @@ Write in your R console `sink()` until you get an error.
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt, LauraeML |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt, LauraeML, Lextravagenza, pred.Lextravagenza |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
 | Visualizations | tableplot_jpg, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
@@ -262,6 +265,7 @@ Write in your R console `sink()` until you get an error.
 | brewer.pal_extended | Color Brewer Palette Extended | Extends the original Color Brewer palettes by providing unlimited colors unlike the original palettes. |
 | interactive.eda_RColorBrewer | Interactive Dashboard for Finding the Perfect Color Brewer Palette | Creates an interactive dashboard which allows you to search visually for the best Color Brewer palette for your own taste. Not only everything is shown in real-time just by editing a field, but a copy&paste output is ready to be pasted into R for further usage. You are greeted with a pyramid. |
 | LauraeML | Automated Machine Learning | (VERY EXPERIMENTAL) Provides a function for doing automated machine learning (optimize features, optimize hyperparameters) using a stochastic optimizer (Cross-Entropy optimization). It does not use a Bayesian optimizer, therefore sampling is random every each optimization iterations and is much slower (for the benefits of finding which features to keep). Full logging is provided which allows you find out the best features and their loss (ex: loss vs number of features used). Still a lot of TO-DO (best would be "throw all in a single function without more than 5 arguments, get results back"). <br> Functions: LauraeML_gblinear, LauraeML_gblinear_par, LauraeML_lgbreg |
+| Lextravagenza | Laurae's Dynamic Boosted Trees | (EXPERIMENTAL, working) Trains a dynamic boosted trees whose depth is defined by a range instead of a single value, without any past gradient/hessian memory. It outperforms xgboost for a small amount of boosting iterations, but xgboost is better for longer trainings. However, dynamism comes at a price: you need a validation set (for dynamism) and a testing set (for early stopping). You can use pred.Lextravagenza to predict from it. |
 
 # TO-DO:
 
@@ -273,6 +277,7 @@ Write in your R console `sink()` until you get an error.
 * ~~Add Differential Evolution algorithm for feature selection and hyperparameter simultaneous optimization (add another backend via another interface as it typically takes a lot of time for both)~~ (cancelled)
 * ~~(Attempt to) Add automated non-linear feature creation using decision trees~~ (cancelled)
 * Provide more for LauraeML
+* Provide dynamic shrinkage for Lextravagenza for maximally overfitting validation data
 
 # To add:
 
