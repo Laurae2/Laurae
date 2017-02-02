@@ -8,7 +8,7 @@ Description: This package is for advanced statistics, visualization, and
 Depends:
     R (>= 3.3.0),
 Imports:
-	data.table (>= 1.9.7),
+	data.table (>= 1.10.4),
 	Matrix (>= 1.2)
 Suggests:
 	xgboost (>= 0.6),

@@ -136,10 +136,9 @@ install_git("git://github.com/Laurae2/Laurae.git")
 Need all R dependencies in one shot?:
 
 ```r
-install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -153,8 +152,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza |
-| data.table | YES (mandatory) | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
+| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par |
 | foreach | No | LauraeML_gblinear_par |
 | doParallel | No | LauraeML_gblinear_par |
 | rpart | No | FeatureLookup, interactive.eda_tree |
@@ -200,7 +199,6 @@ Manual installations:
 
 * For LightGBM (use PR 33 please), please do NOT use: `git clone --recursive https://github.com/Microsoft/LightGBM` for the repository. Use my stable version which is aligned with Laurae package via `git clone --recursive https://github.com/Laurae2/LightGBM`. Then follow the installation steps (https://github.com/Microsoft/LightGBM/wiki/Installation-Guide).
 * For xgboost, refer to my documentation for installing in MinGW: https://github.com/dmlc/xgboost/tree/master/R-package - If you encounter strange issues in Windows (like permission denied, etc.), please read: https://medium.com/@Laurae2/compiling-xgboost-in-windows-for-r-d0cb826786a5. Make sure you are using MinGW.
-* data.table: to get fwrite, run in your R console `install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")`
 * sparsity: You must use Laurae's sparsity package (SVMLight I/O conversion) which can be found here: https://github.com/Laurae2/sparsity/blob/master/README.md - compilation simply requires writing `devtools:::install_github("Laurae2/sparsity")` (and having Rtools in Windows).
 * tabplot: please use: `install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")`. The 1.3 version is "junk" since they added standard deviation which makes unreadable tableplots when it is too high, even if standard deviation is disabled.
 
@@ -441,16 +439,6 @@ trained <- lgbm.train(y_train = label,
                       metric = "binary_logloss")
 ```
 
-## data.table
-
-To make LightGBM run as fast as possible, improvements for Input/Output is necessary. For this, you will need the development version of data.table. To download it, run in your R console:
-
-```r
-install.packages("data.table", type = "source", repos = "http://Rdatatable.github.io/data.table")
-```
-
-The speed up can reach over 1,000x for pure I/O.
-
 ## tabplot
 
 To have "more readable" tableplots for visualizations, you will need to install an old version of the tabplot package. You can do this by running in your R console:
@@ -464,7 +452,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```
