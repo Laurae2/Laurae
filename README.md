@@ -9,7 +9,9 @@ library(devtools)
 install_github("Laurae2/Laurae")
 ```
 
-# Latest News
+# Latest News (DD/MM/YYYY)
+
+10/02/2017: Added Partial Dependence Analysis, currently a skeleton but I will build more on it. It is fully working for the analysis of single observations against an amount of features you specify. The multiple observation version is not yet working when it comes to analyzing statistically the results.
 
 30/01/2017: Added "Lextravagenza", a machine learning model based on xgboost ignoring past gradient/hessian for optimization, but allowing dynamic trees to outperform small boosted trees.
 
@@ -25,14 +27,16 @@ install_github("Laurae2/Laurae")
 
 Mostly... in a nutshell:
 
-* Supervised Learning: automated machine learning (feature selection + hyperparamter tuning), xgboost, LightGBM, rule-based, feature engineering assistant, interactive xgb feature importance, repeated cross-validation, symbolic loss function derivation, interactive split feature engineering assistant, Lextravagenza (dynamic boosted trees)
-* Unsupervised Learning: auto t-SNE
-* Automated Reporting for Machine Learning: linear regression, unbiased xgboost regression/classification
-* Interactive Analysis: interactive loss function symbolic derivation, interactive "I'm Feeling Lucky" ggplot, interactive 3djs/Plotly
-* Optimization: Cross-Entropy optimization combined with Elite optimization
-* data.table improvements: up to 3X memory efficiency without even a minor cost in CPU time
-* Plot massive amounts of data without being slow: tableplots tableplots tableplots tableplots tableplots
-* SVMLight I/O: C++ implementation of SVMLight reading/saving for dgCMatrix (sparse column-compressed format)
+| What? | Can you do? |
+| --- | --- |
+| Supervised Learning | Automated machine learning (feature selection + hyperparamter tuning) <br> xgboost <br> LightGBM (training from binary, feature importance, prediction) <br> Rule-based model on outliers (univariate, bivariate) <br> Feature engineering assistant <br> Interactive xgboost feature importance <br> Repeated cross-validation <br> Symbolic loss function derivation <br> Interactive split feature engineering assistant <br> Laurae's Lextravagenza (dynamic boosted trees) <br> Partial dependency analysis on single observations for finding insights |
+| Unsupervised Learning | Automated t-SNE |
+| Automated Reporting for Machine Learning | Linear regression <br> Unbiased xgboost regression/classification |
+| Interactive Analysis | Interactive loss function symbolic derivation <br> interactive "I'm Feeling Lucky" ggplot <br> Interactive 3djs/Plotly <br> Interactive Brewer's Paletttes |
+| Optimization | Cross-Entropy optimization combined with Elite optimization |
+| data.table improvements | up to 3X memory efficiency without even a minor cost in CPU time |
+| Plot massive amounts of data without being slow | tableplots tableplots tableplots tableplots tableplots |
+| SVMLight I/O (external package) | C++ implementation of SVMLight reading/saving for dgCMatrix (sparse column-compressed format) |
 
 **Supervised Learning:**
 
@@ -46,6 +50,7 @@ Mostly... in a nutshell:
 * Dictionary of loss functions and ready to input into xgboost (currently: Absolute Error, Squared Error, Cubic Error, Loglikelihood Error, Poisson Error, Kullback-Leibler Error)
 * Symbolic Derivaton for custom loss functions (finding gradient/hessian painlessly)
 * Lextravagenza model (dynamic boosted trees) which are good for small boosting iterations, bad for high boosting iterations (good for diversity)
+* Partial dependency analysis for single observation: the way to get insights on why a black box made a specific decision!
 
 **Unsupervised Learning:**
 
@@ -78,6 +83,8 @@ Mostly... in a nutshell:
 * Load sparse data directly as dgCMatrix (sparse matrix)
 * Plot massive amount of data in an easily readable picture
 * Add unlimited colors to the Color Brewer palettes
+* Add the ability to add linear equation coefficient to ggplot facets
+* Add multiplot ggplot
 
 **Sparsity SVMLight converter benchmark:**
 
@@ -86,6 +93,14 @@ Mostly... in a nutshell:
 * Currently not merged on this repository: see https://github.com/Laurae2/sparsity !
 
 **Nice pictures:**
+
+* Partial Dependence for single observation analysis (5-variate example):
+
+![Partial Dependence for single observation analysis](https://cloud.githubusercontent.com/assets/9083669/22832403/32b36d6c-efae-11e6-8e14-cfdc6faf0cd6.png)
+
+* Partial Dependence for multiple observation analysis (univariate example):
+
+![Partial Dependence for multiple observation analysis](https://cloud.githubusercontent.com/assets/9083669/22832757/94d8e94e-efaf-11e6-91a9-c38afc096b69.png)
 
 * LightGBM Feature Importance:
 
@@ -138,7 +153,7 @@ Need all R dependencies in one shot?:
 ```r
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -151,25 +166,26 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Package | Requires compilation? | Which functions? |
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
-| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza |
+| dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza, predictor_xgb |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par |
+| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par, partial_dep.obs, partial_dep.obs_all, predictor_xgb, partial_dep.plot, partial_dep.feature |
 | foreach | No | LauraeML_gblinear_par |
 | doParallel | No | LauraeML_gblinear_par |
 | rpart | No | FeatureLookup, interactive.eda_tree |
 | rpart.plot | No | FeatureLookup, interactive.eda_tree |
 | partykit | No | interactive.eda_tree |
-| tabplot | No | tableplot_jpg, interactive.eda_ggplot |
+| tabplot | No | tableplot_jpg, interactive.eda_ggplot, partial_dep.plot |
 | rCharts | No | interactive.eda_3djs |
-| plotly | No | interactive.eda_plotly |
-| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb, interactive.eda_ggplot |
+| plotly | No | interactive.eda_plotly, partial_dep.plot |
+| ggplot2 | No | lgbm.fi.plot, report.lm, report.xgb, interactive.eda_ggplot, partial_dep.plot, stat_smooth_func, stat_smooth_func.plotly, grid_arrange_shared_legend |
 | ggthemes | No | interactive.eda_plotly |
+| GGally | No | partial_dep.plot |
 | plotluck | No | interactive.eda_ggplot |
 | grid | No | report.lm, report.xgb, interactive.eda_tree |
 | gridExtra | No | report.lm, report.xgb |
 | RColorBrewer | No | interactive.eda_plotly, interactive.eda_RColorBrewer, brewer.pal_extended |
-| lattice | No | report.lm, report.xgb |
-| car | No | .ExtraOpt_plot |
+| lattice | No | report.lm, report.xgb, partial_dep.plot |
+| car | No | .ExtraOpt_plot, partial_dep.plot |
 | CEoptim | No | ExtraOpt, LauraeML |
 | DT | No | xgb.importance.interactive, report.lm, report.xgb |
 | formattable | No | report.lm, report.xgb |
@@ -264,6 +280,13 @@ Write in your R console `sink()` until you get an error.
 | interactive.eda_RColorBrewer | Interactive Dashboard for Finding the Perfect Color Brewer Palette | Creates an interactive dashboard which allows you to search visually for the best Color Brewer palette for your own taste. Not only everything is shown in real-time just by editing a field, but a copy&paste output is ready to be pasted into R for further usage. You are greeted with a pyramid. |
 | LauraeML | Automated Machine Learning | (VERY EXPERIMENTAL) Provides a function for doing automated machine learning (optimize features, optimize hyperparameters) using a stochastic optimizer (Cross-Entropy optimization). It does not use a Bayesian optimizer, therefore sampling is random every each optimization iterations and is much slower (for the benefits of finding which features to keep). Full logging is provided which allows you find out the best features and their loss (ex: loss vs number of features used). Still a lot of TO-DO (best would be "throw all in a single function without more than 5 arguments, get results back"). <br> Functions: LauraeML_gblinear, LauraeML_gblinear_par, LauraeML_lgbreg |
 | Lextravagenza | Laurae's Dynamic Boosted Trees | (EXPERIMENTAL, working) Trains a dynamic boosted trees whose depth is defined by a range instead of a single value, without any past gradient/hessian memory. It outperforms xgboost for a small amount of boosting iterations, but xgboost is better for longer trainings. However, dynamism comes at a price: you need a validation set (for dynamism) and a testing set (for early stopping). You can use pred.Lextravagenza to predict from it. |
+| grid_arrange_shared_legend | Multiplot ggplot | Allows to add multiple ggplot2 plots in one page, with a common legend. |
+| stat_smooth_func | ggplot equation formula | (For non-Plotly routines only) Prints the formula used for linear regression in ggplot plots. Works with facetting. |
+| stat_smooth_func.plotly | ggplot equation formula | (For Plotly routines only)Prints the formula used for linear regression in ggplot plots. Works with facetting, but you should hover the mouse to check for strange placements (hovering one statistic will reveal the others). |
+| partial_dep.obs | Partial Dependence, Single Observation analysis | Performs a single observation analysis using the provided data in order to check the evolution of the label to predict when the feature values are changed, keeping all other features invariant. This is great if you want to analyze why an observation got XYZ value according to some factors. |
+| partial_dep.obs_all | Partial Dependence, Multiple Observation analysis | Performs a univariate multiple observation analysis using the provided data in order to check the evolution of the label to predict when the feature values are changed, keeping all other features invariant. |
+| partial_dep.plot | Partial Dependence, Plotting | Allows to plot the content of partial dependence analysis. You can use lattice, ggplot2, car, base, or tableplots. Use Plotly for interactive analysis. |
+| partial_dep.feature | Partial Dependence, Statistical checking | Performs statistical tests to check for validity of impact of a feature against a specified variable. |
 
 # TO-DO:
 
@@ -452,7 +475,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```

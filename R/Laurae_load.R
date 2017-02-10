@@ -16,6 +16,7 @@
 #'   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
 #'   \item{plotly}{Create Interactive Web Graphics via 'plotly.js'}
 #'   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
+#'   \item{GGally}{Extension to 'ggplot2'}
 #'   \item{ggthemes}{Extra Themes, Scales and Geoms for 'ggplot2'}
 #'   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
 #'   \item{grid}{The Grid Graphics Package}
@@ -36,9 +37,12 @@
 #'   \item{recommenderlab}{Lab for Developing and Testing Recommender Algorithms}
 #'   \item{sparsity}{What the package does (short line)}
 #'   \item{RcppArmadillo}{'Rcpp' Integration for the 'Armadillo' Templated Linear Algebra Library}
+#'   \item{mgcv}{Mixed GAM Computation Vehicle with GCV/AIC/REML Smoothness Estimation}
 #'   \item{Deriv}{Symbolic Differentiation}
 #'   \item{outliers}{Tests for outliers}
 #'   \item{MASS}{Support Functions and Datasets for Venables and Ripley's MASS}
+#'   \item{infotheo}{Information-Theoretic Measures}
+#'   \item{trend}{Non-Parametric Trend Tests and Change-Point Detection}
 #'   \item{stringi}{Character String Processing Facilities}
 #' }
 #'
@@ -64,6 +68,8 @@ Laurae_load <- function() {
   # try(library(rCharts))
   # try(library(plotly))
   # try(library(ggplot2))
+  # try(library(GGally))
+  # try(library(ggthemes))
   # try(library(plotluck))
   # try(library(grid))
   # try(library(gridExtra))
@@ -83,11 +89,14 @@ Laurae_load <- function() {
   # try(library(recommenderlab))
   # try(library(sparsity))
   # try(library(RcppArmadillo))
+  # try(library(mgcv))
   # try(library(Deriv))
   # try(library(outliers))
   # try(library(MASS))
+  # try(library(infotheo))
+  # try(library(trend))
   # try(library(stringi))
-  eval(parse(text = "try(library(xgboost));try(library(lightgbm));try(library(foreach));try(library(doParallel));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(ggthemes));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(stringi))"))
+  eval(parse(text = "try(library(xgboost));try(library(lightgbm));try(library(foreach));try(library(doParallel));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(GGally));try(library(ggthemes));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(mgcv));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(infotheo));try(library(trend));try(library(stringi))"))
 }
 
 

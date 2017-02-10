@@ -27,6 +27,7 @@ Loaded packages:
   \item{rCharts}{Interactive Charts using Javascript Visualization Libraries}
   \item{plotly}{Create Interactive Web Graphics via 'plotly.js'}
   \item{ggplot2}{Create Elegant Data Visualisations Using the Grammar of Graphics}
+  \item{GGally}{Extension to 'ggplot2'}
   \item{ggthemes}{Extra Themes, Scales and Geoms for 'ggplot2'}
   \item{plotluck}{"ggplot2" Version of "I'm Feeling Lucky!"}
   \item{grid}{The Grid Graphics Package}
@@ -47,9 +48,12 @@ Loaded packages:
   \item{recommenderlab}{Lab for Developing and Testing Recommender Algorithms}
   \item{sparsity}{What the package does (short line)}
   \item{RcppArmadillo}{'Rcpp' Integration for the 'Armadillo' Templated Linear Algebra Library}
+  \item{mgcv}{Mixed GAM Computation Vehicle with GCV/AIC/REML Smoothness Estimation}
   \item{Deriv}{Symbolic Differentiation}
   \item{outliers}{Tests for outliers}
   \item{MASS}{Support Functions and Datasets for Venables and Ripley's MASS}
+  \item{infotheo}{Information-Theoretic Measures}
+  \item{trend}{Non-Parametric Trend Tests and Change-Point Detection}
   \item{stringi}{Character String Processing Facilities}
 }
 }

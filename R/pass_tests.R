@@ -6,6 +6,7 @@
 #' @importFrom graphics plot
 #' @importFrom graphics curve
 #' @importFrom graphics pie
+#' @importFrom stats coef
 #' @importFrom stats cor
 #' @importFrom stats cov
 #' @importFrom stats mahalanobis
@@ -181,7 +182,26 @@ globalVariables(c("Timing_Metric",
                   "lgb.Dataset.create.valid",
                   "lgb.train",
                   "i",
-                  "setinfo"))
+                  "setinfo",
+                  "..exploration",
+                  "..select_i",
+                  "Stat",
+                  "aes_string",
+                  "arrangeGrob",
+                  "coef",
+                  "facet_grid",
+                  "geom_boxplot",
+                  "geom_point",
+                  "ggplotGrob",
+                  "ggplotly",
+                  "ggproto",
+                  "grid.draw",
+                  "grid.newpage",
+                  "layer",
+                  "stat_smooth",
+                  "theme",
+                  "unit",
+                  "unit.c"))
 
 requireNamespace("xgboost")
 requireNamespace("lightgbm")
