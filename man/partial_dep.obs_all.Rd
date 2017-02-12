@@ -4,9 +4,9 @@
 \alias{partial_dep.obs_all}
 \title{Partial Dependency Observation, Contour (multiple observations)}
 \usage{
-partial_dep.obs_all(model, predictor, data, column = colnames(data),
-  accuracy = min(length(data), 10), exact_only = TRUE,
-  label_name = "Target", comparator_name = "Evolution")
+partial_dep.obs_all(model, predictor, data, observation,
+  column = colnames(data), accuracy = min(length(data), 10),
+  exact_only = TRUE, label_name = "Target", comparator_name = "Evolution")
 }
 \arguments{
 \item{model}{Type: unknown. The model to pass to \code{predictor}.}
@@ -14,6 +14,8 @@ partial_dep.obs_all(model, predictor, data, column = colnames(data),
 \item{predictor}{Type: function(model, data). The predictor function which takes a model and data as inputs, and return predictions. \code{data} is provided as data.table for maximum performance.}
 
 \item{data}{Type: data.table (mandatory). The data we need to use to sample from for the partial dependency.}
+
+\item{observation}{Type: data.table (mandatory). The observation we want to get partial dependence from. You can put the same as \code{data} if you wish to get partial dependence from it.}
 
 \item{column}{Type: character. The column we want partial dependence from. You can specify two or more \code{column} as a vector, but it is highly not recommended to go for a lot of columns because the complexity is linearly multiplicative, think as \code{O*length(column)*accuracy}. For instance, \code{accuracy = 100}, \code{length(column) = 100}, and \code{nrow(data) = 1000000} leads to \code{1e+10} theoretical observations, which could explode the memory of any computer.}
 
@@ -52,6 +54,7 @@ xgboost_model <- xgboost(data = data.matrix(mtcars[, -1]),
 preds_partial <- partial_dep.obs_all(model = xgboost_model,
                                      predictor = predictor_xgb, # Default for xgboost
                                      data = mtcars[, -1], # train data
+                                     observation = mtcars[, -1], # train data
                                      # when column is not specified => all columns
                                      accuracy = 20, # Up to 20 unique values per column
                                      exact_only = TRUE, # Not allowing approximations,

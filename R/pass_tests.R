@@ -20,6 +20,7 @@
 #' @importFrom stats dnorm
 #' @importFrom stats quantile
 #' @importFrom stats var
+#' @importFrom stats as.formula
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @importFrom utils setTxtProgressBar

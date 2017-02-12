@@ -20,9 +20,11 @@
 #'   \item{c("ggplot", "boxplot")}{ggplot is used to draw boxplots to check for distribution in boxplots, grouped by feature.}
 #'   \item{c("ggplot", "point")}{ggplot is used to draw points and check for evolution, grouped both by feature and evolution.}
 #'   \item{c("ggplot", "line")}{ggplot is used to draw points and lines and check for evolution, grouped both by feature and evolution.}
+#'   \item{c("ggplot", "line2")}{ggplot is used to draw points and lines and check for evolution, grouped both by feature and evolution, interactively, protected against "2 point only" error.}
 #'   \item{c("plotly", "boxplot")}{plotly + ggplot is used to draw boxplots to check for distribution in boxplots, grouped by feature, interactively.}
 #'   \item{c("plotly", "point")}{plotly + ggplot is used to draw points and check for evolution, grouped both by feature and evolution, interactively.}
 #'   \item{c("plotly", "line")}{plotly + ggplot is used to draw points and line and check for evolution, grouped both by feature and evolution, interactively.}
+#'   \item{c("plotly", "line2")}{plotly + ggplot is used to draw points and line and check for evolution, grouped both by feature and evolution, interactively, protected against "2 point only" error.}
 #' }
 #' 
 #' @param grid_data Type: data.table. A \code{partial_dep} \code{grid_exp} output.
@@ -59,11 +61,13 @@ partial_dep.plot <- function(grid_data, backend = "tableplot", label_name = "Tar
     } else if (backend[1] == "ggplot") {
       
       if (backend[2] == "boxplot") {
-        ggplot(data = grid_data, mapping = aes_string(x = "Feature", y = "mpg", fill = "Feature")) + geom_boxplot() + theme_bw()
+        ggplot(data = grid_data, mapping = aes_string(x = "Feature", y = label_name, fill = "Feature")) + geom_boxplot() + theme_bw()
       } else if (backend[2] == "point") {
-        ggplot(data = grid_data, mapping = aes_string(x = "mpg", y = "Value", color = "Feature")) + geom_point() + facet_grid(Feature ~ evo, scales = "free") + theme_bw()
+        ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw()
       } else if (backend[2] == "line") {
-        ggplot(data = grid_data, mapping = aes_string(x = "mpg", y = "Value", color = "Feature")) + geom_point() + stat_smooth_func(geom = "text", method = "lm", hjust = 0, parse = TRUE) + stat_smooth(method = "lm") + facet_grid(Feature ~ evo, scales = "free") + theme_bw()
+        ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + stat_smooth_func(geom = "text", method = "lm", hjust = 0, parse = TRUE) + stat_smooth(method = "lm") + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw()
+      } else if (backend[2] == "line2") {
+        ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + stat_smooth(method = "glm") + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw()
       } else {
         warning(paste0("Unknown backend provided: ", backend))
       }
@@ -71,11 +75,13 @@ partial_dep.plot <- function(grid_data, backend = "tableplot", label_name = "Tar
     } else if (backend[1] == "plotly") {
       
       if (backend[2] == "boxplot") {
-        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = "Feature", y = "mpg", fill = "Feature")) + geom_boxplot() + theme_bw())
+        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = "Feature", y = label_name, fill = "Feature")) + geom_boxplot() + theme_bw())
       } else if (backend[2] == "point") {
-        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = "mpg", y = "Value", color = "Feature")) + geom_point() + facet_grid(Feature ~ evo, scales = "free") + theme_bw())
+        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw())
       } else if (backend[2] == "line") {
-        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = "mpg", y = "Value", color = "Feature")) + geom_point() + stat_smooth_func.plotly(geom = "text", method = "lm", hjust = 0, parse = TRUE) + stat_smooth(method = "lm") + facet_grid(Feature ~ evo, scales = "free") + theme_bw())
+        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + stat_smooth_func.plotly(geom = "text", method = "lm", hjust = 0, parse = TRUE) + stat_smooth(method = "lm") + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw())
+      } else if (backend[2] == "line2") {
+        ggplotly(ggplot(data = grid_data, mapping = aes_string(x = label_name, y = "Value", color = "Feature")) + geom_point() + stat_smooth(method = "glm") + facet_grid(as.formula(paste0("Feature ~ ", comparator_name)), scales = "free") + theme_bw())
       } else {
         warning(paste0("Unknown backend provided: ", backend))
       }

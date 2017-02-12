@@ -43,9 +43,11 @@ If you are using multiple observations (\code{partial_dep.obs_all}), you are pro
   \item{c("ggplot", "boxplot")}{ggplot is used to draw boxplots to check for distribution in boxplots, grouped by feature.}
   \item{c("ggplot", "point")}{ggplot is used to draw points and check for evolution, grouped both by feature and evolution.}
   \item{c("ggplot", "line")}{ggplot is used to draw points and lines and check for evolution, grouped both by feature and evolution.}
+  \item{c("ggplot", "line2")}{ggplot is used to draw points and lines and check for evolution, grouped both by feature and evolution, interactively, protected against "2 point only" error.}
   \item{c("plotly", "boxplot")}{plotly + ggplot is used to draw boxplots to check for distribution in boxplots, grouped by feature, interactively.}
   \item{c("plotly", "point")}{plotly + ggplot is used to draw points and check for evolution, grouped both by feature and evolution, interactively.}
   \item{c("plotly", "line")}{plotly + ggplot is used to draw points and line and check for evolution, grouped both by feature and evolution, interactively.}
+  \item{c("plotly", "line2")}{plotly + ggplot is used to draw points and line and check for evolution, grouped both by feature and evolution, interactively, protected against "2 point only" error.}
 }
 }
 \examples{

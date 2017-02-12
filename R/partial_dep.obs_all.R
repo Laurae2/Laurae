@@ -5,6 +5,7 @@
 #' @param model Type: unknown. The model to pass to \code{predictor}.
 #' @param predictor Type: function(model, data). The predictor function which takes a model and data as inputs, and return predictions. \code{data} is provided as data.table for maximum performance.
 #' @param data Type: data.table (mandatory). The data we need to use to sample from for the partial dependency.
+#' @param observation Type: data.table (mandatory). The observation we want to get partial dependence from. You can put the same as \code{data} if you wish to get partial dependence from it.
 #' @param column Type: character. The column we want partial dependence from. You can specify two or more \code{column} as a vector, but it is highly not recommended to go for a lot of columns because the complexity is linearly multiplicative, think as \code{O*length(column)*accuracy}. For instance, \code{accuracy = 100}, \code{length(column) = 100}, and \code{nrow(data) = 1000000} leads to \code{1e+10} theoretical observations, which could explode the memory of any computer.
 #' @param accuracy Type: integer. The accuracy of the partial dependence from, exprimed as number of sampled points by percentile of the \code{column} from the the \code{data}. Defaults to \code{min(length(data), 10)}, which means either 10 samples or all samples of \code{data} if the latter has less than 10 observations.
 #' @param exact_only Type: logical. Whether to select only exact values for data sampling. Defaults to \code{TRUE}.
@@ -34,6 +35,7 @@
 #' preds_partial <- partial_dep.obs_all(model = xgboost_model,
 #'                                      predictor = predictor_xgb, # Default for xgboost
 #'                                      data = mtcars[, -1], # train data
+#'                                      observation = mtcars[, -1], # train data
 #'                                      # when column is not specified => all columns
 #'                                      accuracy = 20, # Up to 20 unique values per column
 #'                                      exact_only = TRUE, # Not allowing approximations,
@@ -73,12 +75,10 @@
 #' 
 #' @export
 
-
-
-partial_dep.obs_all <- function(model, predictor, data, column = colnames(data), accuracy = min(length(data), 10), exact_only = TRUE, label_name = "Target", comparator_name = "Evolution") {
+partial_dep.obs_all <- function(model, predictor, data, observation, column = colnames(data), accuracy = min(length(data), 10), exact_only = TRUE, label_name = "Target", comparator_name = "Evolution") {
   
   # Get copy of data to process
-  temp_data <- data
+  temp_data <- observation
   
   # Prepare uniform length vector of percentile
   temp_percentile <- (1/accuracy) * (1:accuracy)
@@ -87,7 +87,7 @@ partial_dep.obs_all <- function(model, predictor, data, column = colnames(data),
   temp_percentile <- (temp_percentile - 1/accuracy) / (1 - 1/accuracy)
   
   # Get predicted values for initial observation
-  initial_observation <- predictor(model = model, data = data)
+  initial_observation <- predictor(model = model, data = observation)
   
   # Initalize dummy lists
   grid_search <- list()
@@ -120,7 +120,7 @@ partial_dep.obs_all <- function(model, predictor, data, column = colnames(data),
       names(grid_search)[i] <- column[i]
       
       # Store current values
-      temp_values <- data[[column[i]]]
+      temp_values <- temp_data[[column[i]]]
       
       best_grid[[i]] <- rbindlist(sapply(grid_search[[i]], function(x, temp_data, predictor, label_name, initial_observation) {
         
@@ -179,7 +179,7 @@ partial_dep.obs_all <- function(model, predictor, data, column = colnames(data),
       names(grid_search)[i] <- column[i]
       
       # Store current values
-      temp_values <- data[[column[i]]]
+      temp_values <- temp_data[[column[i]]]
       
       best_grid[[i]] <- rbindlist(sapply(grid_search[[i]], function(x, temp_data, predictor, label_name, initial_observation) {
         
