@@ -6,6 +6,7 @@
 #' 
 #' @param model Type: list. A model trained by \code{CRTreeForest}.
 #' @param data Type: data.table. A data to predict on. If passing training data, it will predict as if it was out of fold and you will overfit (so, use the list \code{train_preds} instead please).
+#' @param folds Type: list. The folds as list for cross-validation if using the training data. Otherwise, leave \code{NULL}. Defaults to \code{NULL}.
 #' @param prediction Type: logical. Whether the predictions of the forest ensemble are averaged. Set it to \code{FALSE} for debugging / feature engineering. Setting it to \code{TRUE} overrides \code{return_list}. Defaults to \code{FALSE}.
 #' @param multi_class Type: numeric. How many classes you got. Set to 2 for binary classification, or regression cases. Set to \code{NULL} to let it try guessing by reading the \code{model}. Defaults to \code{NULL}.
 #' @param data_start Type: vector of numeric. The initial prediction labels. Set to \code{NULL} if you do not know what you are doing. Defaults to \code{NULL}.
@@ -52,6 +53,10 @@
 #' # Predict from model
 #' new_preds <- CRTreeForest_pred(model, agaricus_data_test, return_list = FALSE)
 #' 
+#' # We can check whether we have equal predictions, it's all TRUE!
+#' all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
+#' all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
+#' 
 #' # Attempt to perform fake multiclass problem
 #' agaricus_label_train[1:100] <- 2
 #' 
@@ -77,12 +82,17 @@
 #' 
 #' # Predict from model for mutliclass problems
 #' new_preds <- CRTreeForest_pred(model, agaricus_data_test, return_list = FALSE)
+#' 
+#' # We can check whether we have equal predictions, it's all TRUE!
+#' all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
+#' all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
 #' }
 #' 
 #' @export
 
 CRTreeForest_pred <- function(model,
                               data,
+                              folds = NULL,
                               prediction = FALSE,
                               multi_class = NULL,
                               data_start = NULL,
@@ -109,12 +119,54 @@ CRTreeForest_pred <- function(model,
       preds[[i]] <- numeric(nrow(data))
     }
     
-    # Column sampling
-    new_data <- Laurae::DTcolsample(data, model$features[[i]])
-    new_data <- xgb.DMatrix(data = Laurae::DT2mat(new_data), base_margin = data_start)
+    # Column sampling by checking whether to copy or not
+    if (length(model$features[[i]]) != ncol(data)) {
+      new_data <- Laurae::DTcolsample(data, model$features[[i]])
+    } else {
+      new_data <- copy(data)
+    }
     
-    for (j in 1:length(model$model[[i]])) {
-      preds[[i]] <- (predict(model$model[[i]][[j]], new_data, reshape = TRUE) / length(model$folds)) + preds[[i]]
+    # Are we predicting cross-validated training data or new data?
+    if (is.null(folds)) {
+      
+      # Convert to xgb.DMatrix
+      new_data <- xgb.DMatrix(data = Laurae::DT2mat(new_data), base_margin = data_start)
+      
+      for (j in 1:length(model$model[[i]])) {
+        # Make predictions
+        preds[[i]] <- (predict(model$model[[i]][[j]], new_data, reshape = TRUE) / length(model$folds)) + preds[[i]]
+      }
+      
+    } else {
+      
+      # Check whether we are doing multiclass or not
+      
+      if (multi_class > 2) {
+        
+        for (j in 1:length(model$model[[i]])) {
+          
+          # Convert to xgb.DMatrix
+          new_data_sub <- xgb.DMatrix(data = Laurae::DT2mat(Laurae::DTsubsample(new_data, folds[[j]])), base_margin = data_start[folds[[j]]])
+          
+          # Make predictions
+          preds[[i]][folds[[j]]] <- data.table(predict(model$model[[i]][[j]], new_data_sub, reshape = TRUE))
+          
+        }
+        
+      } else {
+        
+        for (j in 1:length(model$model[[i]])) {
+          
+          # Convert to xgb.DMatrix
+          new_data_sub <- xgb.DMatrix(data = Laurae::DT2mat(Laurae::DTsubsample(new_data, folds[[j]])), base_margin = data_start[folds[[j]]])
+          
+          # Make predictions
+          preds[[i]][folds[[j]]] <- predict(model$model[[i]][[j]], new_data_sub, reshape = TRUE)
+          
+        }
+        
+      }
+      
     }
     
   }

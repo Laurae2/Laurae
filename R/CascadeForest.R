@@ -27,7 +27,7 @@
 #' @param cascade_forests Type: numeric vector (mandatory). The number of forest models per layer in the architecture to create for the Cascade Forest. Defaults to \code{rep(4, 5)}.
 #' @param cascade_trees Type: numeric vector or numeric. The number of trees per forest model per layer in the architecture to create for the Cascade Forest. You may specify a vector to change the learning rate per layer, such as \code{500} so you can perform boosting afterwards. Defaults to \code{1000}.
 #' @param cascade_rf Type: numeric vector or numeric. The number of Random Forest model per layer in the architecture to create for the Cascade Forest. You may specify a vector to change the learning rate per layer, such as \code{c(1, 1, 2, 3, 5)} so you can perform boosting afterwards. Defaults to \code{2}.
-#' @param cascade_seeds Type: numeric vector or numeric. Random seed for reproducibility per layer. Defaults to \code{0}.
+#' @param cascade_seeds Type: numeric vector or numeric. Random seed for reproducibility per layer. Do not set it to a value which is identical throughout the architecture, you will train on the same features over and over otherwise! When using a single value as seed, it automatically adds 1 each time an advance in the layer is made. Defaults to \code{1:length(cascade_forests)}.
 #' @param objective Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.
 #' @param eval_metric Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.
 #' @param multi_class Type: numeric. Defines the number of classes internally for whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{2}, which is for regression and binary classification.
@@ -68,7 +68,7 @@
 #'                        cascade_forests = rep(4, 5), # Number of forest models
 #'                        cascade_trees = 1000, # Number of trees per forest
 #'                        cascade_rf = 2, # Number of Random Forest in models
-#'                        cascade_seeds = 0, # Seed per layer
+#'                        cascade_seeds = 1:5, # Seed per layer
 #'                        objective = "binary:logistic",
 #'                        eval_metric = "logloss",
 #'                        multi_class = 2, # Modify this for multiclass problems
@@ -94,7 +94,7 @@
 #'                        cascade_forests = rep(4, 5), # Number of forest models
 #'                        cascade_trees = 1000, # Number of trees per forest
 #'                        cascade_rf = 2, # Number of Random Forest in models
-#'                        cascade_seeds = 0, # Seed per layer
+#'                        cascade_seeds = 1:5, # Seed per layer
 #'                        objective = "multi:softprob",
 #'                        eval_metric = "mlogloss",
 #'                        multi_class = 3, # Modify this for multiclass problems
@@ -119,7 +119,7 @@ CascadeForest <- function(training_data,
                           cascade_forests = rep(4, 5),
                           cascade_trees = 500,
                           cascade_rf = 2,
-                          cascade_seeds = 0,
+                          cascade_seeds = 1:length(cascade_forests),
                           objective = "reg:linear",
                           eval_metric = "rmse",
                           multi_class = FALSE,
@@ -151,7 +151,7 @@ CascadeForest <- function(training_data,
   
   # Check whether user has input a vector or a simple numeric for cascade_seeds
   if (length(cascade_seeds) == 1) {
-    cascade_seeds <- rep(cascade_seeds, num_layers)
+    cascade_seeds <- cascade_seeds:(cascade_seeds + num_layers - 1)
   }
   
   # Are we using the low_memory implementation? (does not copy data.table in place)

@@ -4,13 +4,15 @@
 \alias{CRTreeForest_pred}
 \title{Complete-Random Tree Forest Predictor implementation in R}
 \usage{
-CRTreeForest_pred(model, data, prediction = FALSE, multi_class = NULL,
-  data_start = NULL, return_list = TRUE)
+CRTreeForest_pred(model, data, folds = NULL, prediction = FALSE,
+  multi_class = NULL, data_start = NULL, return_list = TRUE)
 }
 \arguments{
 \item{model}{Type: list. A model trained by \code{CRTreeForest}.}
 
 \item{data}{Type: data.table. A data to predict on. If passing training data, it will predict as if it was out of fold and you will overfit (so, use the list \code{train_preds} instead please).}
+
+\item{folds}{Type: list. The folds as list for cross-validation if using the training data. Otherwise, leave \code{NULL}. Defaults to \code{NULL}.}
 
 \item{prediction}{Type: logical. Whether the predictions of the forest ensemble are averaged. Set it to \code{FALSE} for debugging / feature engineering. Setting it to \code{TRUE} overrides \code{return_list}. Defaults to \code{FALSE}.}
 
@@ -68,6 +70,10 @@ model <- CRTreeForest(training_data = agaricus_data_train, # Training data
 # Predict from model
 new_preds <- CRTreeForest_pred(model, agaricus_data_test, return_list = FALSE)
 
+# We can check whether we have equal predictions, it's all TRUE!
+all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
+all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
+
 # Attempt to perform fake multiclass problem
 agaricus_label_train[1:100] <- 2
 
@@ -93,6 +99,10 @@ model <- CRTreeForest(training_data = agaricus_data_train, # Training data
 
 # Predict from model for mutliclass problems
 new_preds <- CRTreeForest_pred(model, agaricus_data_test, return_list = FALSE)
+
+# We can check whether we have equal predictions, it's all TRUE!
+all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
+all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
 }
 
 }

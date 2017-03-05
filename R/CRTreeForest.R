@@ -130,9 +130,11 @@ CRTreeForest <- function(training_data,
     if (i <= random_forest) {
       
       # Setup parameters for Random Forest
-      column_sampling_tree <- ceiling(sqrt(ncol(training_data)))
-      column_sampling_level <- 1
+      column_sampling_tree <- 1
+      column_sampling_level <- ceiling(sqrt(ncol(training_data))) / ncol(training_data)
       row_sampling <- 0.632
+      
+      features_used[[i]] <- 1:ncol(training_data)
       
     } else {
       
@@ -140,6 +142,10 @@ CRTreeForest <- function(training_data,
       column_sampling_tree <- ceiling(sqrt(ncol(training_data)))
       column_sampling_level <- 1/(column_sampling_tree)
       row_sampling <- 1
+      
+      # Sample features
+      set.seed(seed + i)
+      features_used[[i]] <- sample(1:ncol(training_data), column_sampling_tree)
       
     }
     
@@ -163,10 +169,6 @@ CRTreeForest <- function(training_data,
     # More initialization
     model[[i]] <- list()
     logger[[i]] <- numeric(length(folds))
-    
-    # Sample features to use
-    set.seed(seed + i)
-    features_used[[i]] <- sample(1:ncol(training_data), column_sampling_tree)
     
     for (j in 1:length(folds)) {
       

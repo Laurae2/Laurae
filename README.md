@@ -177,7 +177,7 @@ If I am not missing stuff (please make a pull request if something is missing th
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza, predictor_xgb, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
 | Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, setDF, DTfillNA, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par, partial_dep.obs, partial_dep.obs_all, predictor_xgb, partial_dep.plot, partial_dep.feature, cbindlist, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
+| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, DTcolsample, setDF, DTfillNA, DT2mat, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par, partial_dep.obs, partial_dep.obs_all, predictor_xgb, partial_dep.plot, partial_dep.feature, cbindlist, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
 | foreach | No | LauraeML_gblinear_par |
 | doParallel | No | LauraeML_gblinear_par |
 | rpart | No | FeatureLookup, interactive.eda_tree |
@@ -243,11 +243,11 @@ Write in your R console `sink()` until you get an error.
 
 | Utility | Function Name(s) |
 | --- | --- |
-| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth, xgb.importance.interactive <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup, ExtraOpt, LauraeML, Lextravagenza, pred.Lextravagenza |
+| Supervised Learning | xgboost: xgb.ncv, xgb.opt.depth <br> LightGBM: lgbm.train, lgbm.predict, lgbm.cv, lgbm.metric, lgbm.fi, lgbm.fi.plot, lgbm.find <br> Rules: rule_single, rule_double <br> Base: kfold, nkfold <br> Helpers: SymbolicLoss, FeatureLookup <br> AutoML: ExtraOpt, LauraeML <br> Laurae's Dynamic Trees: Lextravagenza, pred.Lextravagenza <br> Partial Dependence: partial_dep.obs, partial_dep.obs_all, partial_dep.plot, partial_dep.feature <br> Deep Forest: CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
 | Unsupervised Learning | t-SNE: tsne_grid |
 | Automated Reporting | report.lm, report.xgb |
-| Visualizations | tableplot_jpg, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
-| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTfillNA <br> CSV sparse: read_sparse_csv |
+| Visualizations | Interactive: interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer <br> Helpers: tableplot_jpg, brewer.pal_extended, grid_arrange_shared_legend, stat_smooth_func, stat_smooth_func.plotly, xgb.importance.interactive |
+| Extreme low-memory manipulation | data.table: setDF, DTcbind, DTrbind, DTsubsample, DTcolsample, DTfillNA, cbindtable <br> CSV sparse: read_sparse_csv |
 
 | Function Name | Type | What is it for |
 | --- | --- | --- |
@@ -271,7 +271,9 @@ Write in your R console `sink()` until you get an error.
 | DTcbind | Low memory DT cbind | Column bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to cbind, this reduce peak memory usage by 3X, and sometimes by more. |
 | DTrbind | Low memory DT rbind | Row bind two data.tables using the least possible memory. With extreme settings, it uses only one column extra of memory, and the peak is reached when hitting the largest RAM intensive column (which is not much when you have 1,000+ columns). Compared to rbind, this reduce peak memory usage by 3X, and sometimes by more. |
 | DTsubsample | Low memory DT subsampling | Subsample a data.table using the least possible memory. It should not do lower memory usage than direct subsampling. Sometimes, you can get a slight efficiency of up to 5%. |
+| DTcolsample | Low memory DT column sampling | Column sample a data.table using the least possible memory. Impact is major versus a FROM clause in data.table, but it is more a convenience function for NULLing and COPYing the data.table / modify in-memoory (versus a NULL loop, the performance and memory difference should be non existant). |
 | DTfillNA | Low memory DT Missing Value filling | Fills the missing values of a data.table using the least possible memory. Compared to direct usages (DT[is.na(DT)] <- value), this function consumes up to 3X less (and typically 2X less). You can even create a new data.table or overwrite the original one. Also, this function works on data.frame, and can even overwrite the original data.frame. |
+| DT2mat | Low memory DT to Matrix | Converts a data.table to a matrix using the least possible memory, and way faster than using as.matrix. |
 | kfold | k-fold Cross-Validation | Creates folds for cross-validation. |
 | nkfold | n-repeated k-fold Cross-Validation | Creates folds for repeated cross-validation. |
 | ExtraOpt | Cross-Entropy -based Hybrid Optimization | Combines Cross-Entropy optimization and Elite optimization in order to optimize mixed types of variable (continuous, ordinal, discrete). The frontend is fully featured and requires the usage of callbacks in order to be usable. Example callbacks are provided. A demo trainer, a demo estimator, a demo predictor, and a demo plotter are provided as reference callbacks to customize. The optimization backend is fully customizable, allowing you to switch the optimizer (default is xgboost) to any other (un)supervised machine learning model! |
@@ -297,9 +299,9 @@ Write in your R console `sink()` until you get an error.
 | partial_dep.plot | Partial Dependence, Plotting | Allows to plot the content of partial dependence analysis. You can use lattice, ggplot2, car, base, or tableplots. Use Plotly for interactive analysis. |
 | partial_dep.feature | Partial Dependence, Statistical checking | Performs statistical tests to check for validity of impact of a feature against a specified variable. |
 | cbindlist | data.table rbindlist for columns | Allows to perform rbindlist on list of vectors. |
-| CRTreeForest | Deep Forest - Complete-Random Tree Forest | Trains a Complete-Random Tree Forest model which is used in Cascade Forests from Deep Forests. |
-| CascadeForest | Deep Forest - Cascade Forest | Trains a Cascade Forest model which is the equivalent of a Multilayer Perceptron / Neural Network. Adding MGScanning before it makes it become a Deep Forest. Performance is very similar to LeNet (untested against other implementations yet), which is a convolutional neural network (CNN). |
-| MGScanning | Deep Forest - Multi-Grained Scanning | Trains a Multi-Grained Scanning model which is, when used as features for a Cascade Forest, turns it into a Deep Forest. |
+| CRTreeForest | Complete-Random Tree Forest | Trains a Complete-Random Tree Forest model which is used in Cascade Forests from Deep Forests. You can use CRTreeForest_pred to predict from it. |
+| CascadeForest | Cascade Forest | Trains a Cascade Forest model which is the equivalent of a Multilayer Perceptron / Neural Network. Adding MGScanning before it makes it become a Deep Forest. Performance is very similar to LeNet (untested against other implementations yet), which is a convolutional neural network (CNN). You can use CascadeForest_pred to predict from it. |
+| MGScanning | Multi-Grained Scanning | Trains a Multi-Grained Scanning model which is, when used as features for a Cascade Forest, turns it into a Deep Forest. You can use MGScannning_pred to predict from it. |
 
 # TO-DO:
 

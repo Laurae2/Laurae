@@ -6,6 +6,7 @@
 #' 
 #' @param model Type: list. A model trained by \code{MGScanning}.
 #' @param data Type: data.table. A data to predict on. If passing training data, it will predict as if it was out of fold and you will overfit (so, use the list \code{preds} instead please).
+#' @param folds Type: list. The folds as list for cross-validation if using the training data. Otherwise, leave \code{NULL}. Defaults to \code{NULL}.
 #' @param dimensions Type: numeric. The dimensions of the data. Only supported is \code{1} for matrix format, and \code{2} for list of matrices. Defaults to \code{NULL}.
 #' @param multi_class Type: numeric. How many classes you got. Set to 2 for binary classification, or regression cases. Set to \code{NULL} to let it try guessing by reading the \code{model}. Defaults to \code{NULL}.
 #' @param data_start Type: vector of numeric. The initial prediction labels. Set to \code{NULL} if you do not know what you are doing. Defaults to \code{NULL}.
@@ -54,6 +55,11 @@
 #' # Make real predictions
 #' new_preds <- MGScanning_pred(model, data = agaricus_data_test)
 #' 
+#' # We can check whether we have equal predictions, it's all TRUE!
+#' all.equal(model$preds, MGScanning_pred(model,
+#'                                        agaricus_data_train,
+#'                                        folds = folds))
+#' 
 #' # Example on fake pictures (matrices) and multiclass problem
 #' 
 #' # Generate fake images
@@ -94,6 +100,11 @@
 #' # Matrix output is 10x600
 #' dim(model$preds)
 #' 
+#' # We can check whether we have equal predictions, it's all TRUE!
+#' all.equal(model$preds, MGScanning_pred(model,
+#'                                        new_data,
+#'                                        folds = list(1:3, 3:6, 7:10)))
+#' 
 #' # Real predictions on new data
 #' new_data <- list(matrix(rnorm(n = 400), ncol = 20, nrow = 20),
 #'                  matrix(rnorm(n = 400), ncol = 20, nrow = 20),
@@ -112,6 +123,7 @@
 
 MGScanning_pred <- function(model,
                             data,
+                            folds = NULL,
                             dimensions = NULL,
                             multi_class = NULL,
                             data_start = NULL) {
@@ -152,6 +164,7 @@ MGScanning_pred <- function(model,
       # Do predictions
       temp_preds <- CRTreeForest_pred(model = model$model[[i]],
                                       data = temp_data,
+                                      folds = folds,
                                       prediction = FALSE,
                                       multi_class = multi_class,
                                       data_start = data_start,
@@ -198,6 +211,7 @@ MGScanning_pred <- function(model,
         # Do predictions
         temp_preds <- CRTreeForest_pred(model = model$model[[i]][[j]],
                                         data = temp_data,
+                                        folds = folds,
                                         prediction = FALSE,
                                         multi_class = multi_class,
                                         data_start = data_start,

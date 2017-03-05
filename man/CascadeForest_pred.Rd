@@ -4,13 +4,16 @@
 \alias{CascadeForest_pred}
 \title{Cascade Forest Predictor implementation in R}
 \usage{
-CascadeForest_pred(model, data, layer = NULL, prediction = TRUE,
-  multi_class = NULL, data_start = NULL, return_list = TRUE)
+CascadeForest_pred(model, data, folds = NULL, layer = NULL,
+  prediction = TRUE, multi_class = NULL, data_start = NULL,
+  return_list = TRUE)
 }
 \arguments{
 \item{model}{Type: list. A model trained by \code{CascadeForest}.}
 
 \item{data}{Type: data.table. A data to predict on. If passing training data, it will predict as if it was out of fold and you will overfit (so, use the list \code{train_preds} instead please).}
+
+\item{folds}{Type: list. The folds as list for cross-validation if using the training data. Otherwise, leave \code{NULL}. Defaults to \code{NULL}.}
 
 \item{layer}{Type: numeric. The layer you want to predict on. If not provided (\code{NULL}), attempts to guess by taking the last layer of the model. Defaults to \code{NULL}.}
 
@@ -73,6 +76,15 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
 # Predict from model
 new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
 
+# We can check whether we have equal predictions, it's all TRUE!
+all.equal(model$train_preds, CascadeForest_pred(model,
+                                                agaricus_data_train,
+                                                folds = folds,
+                                                return_list = FALSE))
+all.equal(model$valid_preds, CascadeForest_pred(model,
+                                                agaricus_data_test,
+                                                return_list = FALSE))
+
 # Attempt to perform fake multiclass problem
 agaricus_label_train[1:100] <- 2
 
@@ -101,6 +113,15 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
 
 # Predict from model for mutliclass problems
 new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
+
+# We can check whether we have equal predictions, it's all TRUE!
+all.equal(model$train_preds, CascadeForest_pred(model,
+                                                agaricus_data_train,
+                                                folds = folds,
+                                                return_list = FALSE))
+all.equal(model$valid_preds, CascadeForest_pred(model,
+                                                agaricus_data_test,
+                                                return_list = FALSE))
 }
 
 }

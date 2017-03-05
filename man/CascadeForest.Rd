@@ -7,10 +7,10 @@
 CascadeForest(training_data, validation_data, training_labels,
   validation_labels, folds, boosting = FALSE, nthread = 1, cascade_lr = 1,
   training_start = NULL, validation_start = NULL, cascade_forests = rep(4,
-  5), cascade_trees = 500, cascade_rf = 2, cascade_seeds = 0,
-  objective = "reg:linear", eval_metric = "rmse", multi_class = FALSE,
-  early_stopping = 2, maximize = FALSE, verbose = TRUE,
-  low_memory = FALSE)
+  5), cascade_trees = 500, cascade_rf = 2,
+  cascade_seeds = 1:length(cascade_forests), objective = "reg:linear",
+  eval_metric = "rmse", multi_class = FALSE, early_stopping = 2,
+  maximize = FALSE, verbose = TRUE, low_memory = FALSE)
 }
 \arguments{
 \item{training_data}{Type: data.table. The training data. Columns are added during training if \code{low_memory == TRUE}, so you may want to clean it up if you use \code{low_memory == TRUE} and interrupt training.}
@@ -39,7 +39,7 @@ CascadeForest(training_data, validation_data, training_labels,
 
 \item{cascade_rf}{Type: numeric vector or numeric. The number of Random Forest model per layer in the architecture to create for the Cascade Forest. You may specify a vector to change the learning rate per layer, such as \code{c(1, 1, 2, 3, 5)} so you can perform boosting afterwards. Defaults to \code{2}.}
 
-\item{cascade_seeds}{Type: numeric vector or numeric. Random seed for reproducibility per layer. Defaults to \code{0}.}
+\item{cascade_seeds}{Type: numeric vector or numeric. Random seed for reproducibility per layer. Do not set it to a value which is identical throughout the architecture, you will train on the same features over and over otherwise! When using a single value as seed, it automatically adds 1 each time an advance in the layer is made. Defaults to \code{1:length(cascade_forests)}.}
 
 \item{objective}{Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.}
 
@@ -104,7 +104,7 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        cascade_forests = rep(4, 5), # Number of forest models
                        cascade_trees = 1000, # Number of trees per forest
                        cascade_rf = 2, # Number of Random Forest in models
-                       cascade_seeds = 0, # Seed per layer
+                       cascade_seeds = 1:5, # Seed per layer
                        objective = "binary:logistic",
                        eval_metric = "logloss",
                        multi_class = 2, # Modify this for multiclass problems
@@ -130,7 +130,7 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        cascade_forests = rep(4, 5), # Number of forest models
                        cascade_trees = 1000, # Number of trees per forest
                        cascade_rf = 2, # Number of Random Forest in models
-                       cascade_seeds = 0, # Seed per layer
+                       cascade_seeds = 1:5, # Seed per layer
                        objective = "multi:softprob",
                        eval_metric = "mlogloss",
                        multi_class = 3, # Modify this for multiclass problems
