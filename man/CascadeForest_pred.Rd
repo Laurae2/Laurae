@@ -34,6 +34,7 @@ For implementation details of Cascade Forest / Complete-Random Tree Forest / Mul
 \examples{
 \dontrun{
 # Load libraries
+library(data.table)
 library(Matrix)
 library(xgboost)
 

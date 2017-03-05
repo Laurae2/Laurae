@@ -16,6 +16,7 @@
 #' @examples
 #' \dontrun{
 #' # Load libraries
+#' library(data.table)
 #' library(Matrix)
 #' library(xgboost)
 #' 
