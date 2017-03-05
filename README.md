@@ -13,7 +13,7 @@ install_github("Laurae2/Laurae")
 
 04/03/2017: Added **Deep Forest** implementation in R using xgboost, which provides similar performance versus Convolutional Neural Networks (CNNs). You can find the paper [here](https://arxiv.org/pdf/1702.08835.pdf). Supported: **Complete-Random Tree Forest, Cascade Forest, Multi-Grained Scanning, Deep Forest**.
 
-![Deep Forest](https://cloud.githubusercontent.com/assets/9083669/23583255/5ea51874-013f-11e7-89bf-30a4ddf71112.png)
+![Deep Forest](https://cloud.githubusercontent.com/assets/9083669/23586617/f0440732-0198-11e7-9e1e-ceff2414dad8.png)
 
 10/02/2017: Added **Partial Dependence Analysis**, currently a skeleton but I will build more on it. It is fully working for the analysis of single observations against an amount of features you specify. The multiple observation version is not yet working when it comes to analyzing statistically the results.
 
@@ -134,6 +134,10 @@ Mostly... in a nutshell:
 * Interactive Feature Engineering Assistant:
 
 ![Interactive Feature Engineering Assistant](https://cloud.githubusercontent.com/assets/9083669/21165716/78499d46-c1a1-11e6-9912-9acba65a6099.png)
+
+* Deep Forest example:
+
+![Deep Forest](https://cloud.githubusercontent.com/assets/9083669/23586632/54a9752c-0199-11e7-8a99-f5a7a744c048.png)
 
 # Installing this package? (Unproper installation)
 
