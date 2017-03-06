@@ -7,8 +7,8 @@
 MGScanning(data, labels, folds, dimensions = 1, depth = 10, stride = 1,
   nthread = 1, lr = 1, training_start = NULL, validation_start = NULL,
   n_forest = 2, n_trees = 30, random_forest = 1, seed = 0,
-  objective = "reg:linear", eval_metric = "rmse", multi_class = 2,
-  verbose = TRUE)
+  objective = "reg:linear", eval_metric = Laurae::df_rmse,
+  multi_class = 2, verbose = TRUE)
 }
 \arguments{
 \item{data}{Type: data.table (\code{dimensions == 1}) or list of matrices (\code{dimensions == 2}). The training data.}
@@ -41,7 +41,7 @@ MGScanning(data, labels, folds, dimensions = 1, depth = 10, stride = 1,
 
 \item{objective}{Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.}
 
-\item{eval_metric}{Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.}
+\item{eval_metric}{Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.}
 
 \item{multi_class}{Type: logical. Defines internally whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{FALSE}.}
 
@@ -51,7 +51,7 @@ MGScanning(data, labels, folds, dimensions = 1, depth = 10, stride = 1,
 A data.table based on \code{target}.
 }
 \description{
-This function attempts to replicate Multi-Grained Scanning using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees on your data using a sliding window to create features. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+This function attempts to replicate Multi-Grained Scanning using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees on your data using a sliding window to create features. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 }
 \details{
 For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
@@ -98,7 +98,7 @@ model <- MGScanning(data = agaricus_data_train, # Training data
                     random_forest = 1, # We want only 2 random forest
                     seed = 0,
                     objective = "binary:logistic",
-                    eval_metric = "logloss",
+                    eval_metric = Laurae::df_logloss,
                     multi_class = 2, # Modify this for multiclass problems)
                     verbose = TRUE)
 
@@ -138,7 +138,7 @@ model <- MGScanning(data = new_data, # Training data
                     random_forest = 1, # We want only 2 random forest
                     seed = 0,
                     objective = "multi:softprob",
-                    eval_metric = "mlogloss",
+                    eval_metric = Laurae::df_logloss,
                     multi_class = 3, # Modify this for multiclass problems)
                     verbose = TRUE)
 

@@ -8,7 +8,7 @@ CRTreeForest(training_data, validation_data, training_labels, validation_labels,
   folds, nthread = 1, lr = 1, training_start = NULL,
   validation_start = NULL, n_forest = 5, n_trees = 1000,
   random_forest = 0, seed = 0, objective = "reg:linear",
-  eval_metric = "rmse", return_list = TRUE, multi_class = 2,
+  eval_metric = Laurae::df_rmse, return_list = TRUE, multi_class = 2,
   verbose = " ")
 }
 \arguments{
@@ -40,7 +40,7 @@ CRTreeForest(training_data, validation_data, training_labels, validation_labels,
 
 \item{objective}{Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.}
 
-\item{eval_metric}{Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.}
+\item{eval_metric}{Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.}
 
 \item{return_list}{Type: logical. Whether lists should be returned instead of concatenated frames for predictions. Defaults to \code{TRUE}.}
 
@@ -52,7 +52,7 @@ CRTreeForest(training_data, validation_data, training_labels, validation_labels,
 A data.table based on \code{target}.
 }
 \description{
-This function attempts to replicate Complete-Random Tree Forests using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+This function attempts to replicate Complete-Random Tree Forests using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 }
 \details{
 For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
@@ -98,7 +98,7 @@ model <- CRTreeForest(training_data = agaricus_data_train, # Training data
                       random_forest = 2, # We want only 2 random forest
                       seed = 0,
                       objective = "binary:logistic",
-                      eval_metric = "logloss",
+                      eval_metric = Laurae::df_logloss,
                       return_list = TRUE, # Set this to FALSE for a data.table output
                       multi_class = 2, # Modify this for multiclass problems
                       verbose = " ")
@@ -121,7 +121,7 @@ model <- CRTreeForest(training_data = agaricus_data_train, # Training data
                       random_forest = 2, # We want only 2 random forest
                       seed = 0,
                       objective = "multi:softprob",
-                      eval_metric = "mlogloss",
+                      eval_metric = Laurae::df_logloss,
                       return_list = TRUE, # Set this to FALSE for a data.table output
                       multi_class = 3, # Modify this for multiclass problems
                       verbose = " ")

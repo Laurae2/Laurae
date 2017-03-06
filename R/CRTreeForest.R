@@ -1,6 +1,6 @@
 #' Complete-Random Tree Forest implementation in R
 #'
-#' This function attempts to replicate Complete-Random Tree Forests using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+#' This function attempts to replicate Complete-Random Tree Forests using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 #' 
 #' For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
 #' 
@@ -28,7 +28,7 @@
 #' @param random_forest Type: numeric. The number of Random Forest in the forest. Defaults to \code{0}.
 #' @param seed Type: numeric. Random seed for reproducibility. Defaults to \code{0}.
 #' @param objective Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.
-#' @param eval_metric Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.
+#' @param eval_metric Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.
 #' @param return_list Type: logical. Whether lists should be returned instead of concatenated frames for predictions. Defaults to \code{TRUE}.
 #' @param multi_class Type: numeric. Defines the number of classes internally for whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{2}, which is for regression and binary classification.
 #' @param verbose Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.
@@ -66,7 +66,7 @@
 #'                       random_forest = 2, # We want only 2 random forest
 #'                       seed = 0,
 #'                       objective = "binary:logistic",
-#'                       eval_metric = "logloss",
+#'                       eval_metric = Laurae::df_logloss,
 #'                       return_list = TRUE, # Set this to FALSE for a data.table output
 #'                       multi_class = 2, # Modify this for multiclass problems
 #'                       verbose = " ")
@@ -89,7 +89,7 @@
 #'                       random_forest = 2, # We want only 2 random forest
 #'                       seed = 0,
 #'                       objective = "multi:softprob",
-#'                       eval_metric = "mlogloss",
+#'                       eval_metric = Laurae::df_logloss,
 #'                       return_list = TRUE, # Set this to FALSE for a data.table output
 #'                       multi_class = 3, # Modify this for multiclass problems
 #'                       verbose = " ")
@@ -111,7 +111,7 @@ CRTreeForest <- function(training_data,
                          random_forest = 0,
                          seed = 0,
                          objective = "reg:linear",
-                         eval_metric = "rmse",
+                         eval_metric = Laurae::df_rmse,
                          return_list = TRUE,
                          multi_class = 2,
                          verbose = " ") {
@@ -205,17 +205,19 @@ CRTreeForest <- function(training_data,
                                      verbose = 0,
                                      watchlist = list(test = validate_data),
                                      objective = objective,
-                                     num_class = multi_class,
-                                     eval_metric = eval_metric)
+                                     num_class = multi_class)
         
         # Predict out of fold predictions
         train_preds[[i]][folds[[j]]] <- data.table(predict(model[[i]][[j]], test_data, reshape = TRUE))
         
         # Check for validation
         if (!premade_folds) {
-          train_preds[[i]][folds[[j]]] <- train_preds[[i]][folds[[j]]]
+          valid_preds[[i]][folds[[j]]] <- train_preds[[i]][folds[[j]]]
+          logger[[i]][j] <- eval_metric(valid_preds[[i]][folds[[j]]], training_labels[folds[[j]]])
         } else {
-          valid_preds[[i]] <- (data.table(predict(model[[i]][[j]], validate_data, reshape = TRUE)) / length(folds)) + valid_preds[[i]]
+          temp_preds <- data.table(predict(model[[i]][[j]], validate_data, reshape = TRUE))
+          logger[[i]][j] <- eval_metric(temp_preds, validation_labels)
+          valid_preds[[i]] <- (temp_preds / length(folds)) + valid_preds[[i]]
         }
         
       } else {
@@ -235,22 +237,22 @@ CRTreeForest <- function(training_data,
                                      nrounds = 1,
                                      verbose = 0,
                                      watchlist = list(test = validate_data),
-                                     objective = objective,
-                                     eval_metric = eval_metric)
+                                     objective = objective)
         
         # Predict out of fold predictions
         train_preds[[i]][folds[[j]]] <- predict(model[[i]][[j]], test_data, reshape = TRUE)
         
         # Check for validation
         if (!premade_folds) {
-          train_preds[[i]][folds[[j]]] <- train_preds[[i]][folds[[j]]]
+          valid_preds[[i]][folds[[j]]] <- train_preds[[i]][folds[[j]]]
+          logger[[i]][j] <- eval_metric(valid_preds[[i]][folds[[j]]], training_labels[folds[[j]]])
         } else {
-          valid_preds[[i]] <- (predict(model[[i]][[j]], validate_data, reshape = TRUE) / length(folds)) + valid_preds[[i]]
+          temp_preds <- predict(model[[i]][[j]], validate_data, reshape = TRUE)
+          logger[[i]][j] <- eval_metric(temp_preds, validation_labels)
+          valid_preds[[i]] <- (temp_preds / length(folds)) + valid_preds[[i]]
         }
         
       }
-      
-      logger[[i]][j] <- model[[i]][[j]]$evaluation_log[[2]]
       
     }
     

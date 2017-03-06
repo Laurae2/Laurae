@@ -9,7 +9,7 @@ CascadeForest(training_data, validation_data, training_labels,
   training_start = NULL, validation_start = NULL, cascade_forests = rep(4,
   5), cascade_trees = 500, cascade_rf = 2,
   cascade_seeds = 1:length(cascade_forests), objective = "reg:linear",
-  eval_metric = "rmse", multi_class = FALSE, early_stopping = 2,
+  eval_metric = Laurae::df_rmse, multi_class = FALSE, early_stopping = 2,
   maximize = FALSE, verbose = TRUE, low_memory = FALSE)
 }
 \arguments{
@@ -43,7 +43,7 @@ CascadeForest(training_data, validation_data, training_labels,
 
 \item{objective}{Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.}
 
-\item{eval_metric}{Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.}
+\item{eval_metric}{Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.}
 
 \item{multi_class}{Type: numeric. Defines the number of classes internally for whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{2}, which is for regression and binary classification.}
 
@@ -59,7 +59,7 @@ CascadeForest(training_data, validation_data, training_labels,
 A data.table based on \code{target}.
 }
 \description{
-This function attempts to replicate Cascade Forest using xgboost. It performs Complete-Random Tree Forest in a Neural Network directed acrylic graph like in Neural Networks, but only for simple graphs (e.g use previous layer output data for next layer training each time). You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+This function attempts to replicate Cascade Forest using xgboost. It performs Complete-Random Tree Forest in a Neural Network directed acrylic graph like in Neural Networks, but only for simple graphs (e.g use previous layer output data for next layer training each time). You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 }
 \details{
 For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
@@ -106,7 +106,7 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        cascade_rf = 2, # Number of Random Forest in models
                        cascade_seeds = 1:5, # Seed per layer
                        objective = "binary:logistic",
-                       eval_metric = "logloss",
+                       eval_metric = Laurae::df_logloss,
                        multi_class = 2, # Modify this for multiclass problems
                        early_stopping = 2, # stop after 2 bad combos of forests
                        maximize = FALSE, # not a maximization task
@@ -132,7 +132,7 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        cascade_rf = 2, # Number of Random Forest in models
                        cascade_seeds = 1:5, # Seed per layer
                        objective = "multi:softprob",
-                       eval_metric = "mlogloss",
+                       eval_metric = Laurae::df_logloss,
                        multi_class = 3, # Modify this for multiclass problems
                        early_stopping = 2, # stop after 2 bad combos of forests
                        maximize = FALSE, # not a maximization task

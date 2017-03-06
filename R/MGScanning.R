@@ -1,6 +1,6 @@
 #' Multi-Grained Scanning implementation in R
 #'
-#' This function attempts to replicate Multi-Grained Scanning using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees on your data using a sliding window to create features. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+#' This function attempts to replicate Multi-Grained Scanning using xgboost. It performs Random Forest \code{n_forest} times using \code{n_trees} trees on your data using a sliding window to create features. You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 #' 
 #' For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
 #' 
@@ -29,7 +29,7 @@
 #' @param random_forest Type: numeric. The number of Random Forest in the forest. Defaults to \code{0}.
 #' @param seed Type: numeric. Random seed for reproducibility. Defaults to \code{0}.
 #' @param objective Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.
-#' @param eval_metric Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.
+#' @param eval_metric Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.
 #' @param multi_class Type: logical. Defines internally whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{FALSE}.
 #' @param verbose Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.
 #' 
@@ -67,7 +67,7 @@
 #'                     random_forest = 1, # We want only 2 random forest
 #'                     seed = 0,
 #'                     objective = "binary:logistic",
-#'                     eval_metric = "logloss",
+#'                     eval_metric = Laurae::df_logloss,
 #'                     multi_class = 2, # Modify this for multiclass problems)
 #'                     verbose = TRUE)
 #' 
@@ -107,7 +107,7 @@
 #'                     random_forest = 1, # We want only 2 random forest
 #'                     seed = 0,
 #'                     objective = "multi:softprob",
-#'                     eval_metric = "mlogloss",
+#'                     eval_metric = Laurae::df_logloss,
 #'                     multi_class = 3, # Modify this for multiclass problems)
 #'                     verbose = TRUE)
 #' 
@@ -132,7 +132,7 @@ MGScanning <- function(data,
                        random_forest = 1,
                        seed = 0,
                        objective = "reg:linear",
-                       eval_metric = "rmse",
+                       eval_metric = Laurae::df_rmse,
                        multi_class = 2,
                        verbose = TRUE) {
   

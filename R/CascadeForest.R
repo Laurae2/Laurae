@@ -1,6 +1,6 @@
 #' Cascade Forest implementation in R
 #'
-#' This function attempts to replicate Cascade Forest using xgboost. It performs Complete-Random Tree Forest in a Neural Network directed acrylic graph like in Neural Networks, but only for simple graphs (e.g use previous layer output data for next layer training each time). You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}.
+#' This function attempts to replicate Cascade Forest using xgboost. It performs Complete-Random Tree Forest in a Neural Network directed acrylic graph like in Neural Networks, but only for simple graphs (e.g use previous layer output data for next layer training each time). You can specify your learning objective using \code{objective} and the metric to check for using \code{eval_metric}. You can plug custom objectives instead of the objectives provided by \code{xgboost}. As with any uncalibrated machine learning methods, this method suffers uncalibrated outputs. Therefore, the usage of scale-dependent metrics is discouraged (please use scale-invariant metrics, such as Accuracy, AUC, R-squared, Spearman correlation...).
 #' 
 #' For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.
 #' 
@@ -29,7 +29,7 @@
 #' @param cascade_rf Type: numeric vector or numeric. The number of Random Forest model per layer in the architecture to create for the Cascade Forest. You may specify a vector to change the learning rate per layer, such as \code{c(1, 1, 2, 3, 5)} so you can perform boosting afterwards. Defaults to \code{2}.
 #' @param cascade_seeds Type: numeric vector or numeric. Random seed for reproducibility per layer. Do not set it to a value which is identical throughout the architecture, you will train on the same features over and over otherwise! When using a single value as seed, it automatically adds 1 each time an advance in the layer is made. Defaults to \code{1:length(cascade_forests)}.
 #' @param objective Type: character or function. The function which leads \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"reg:linear"}.
-#' @param eval_metric Type: character or function. The function which evaluates \code{boosting} loss. See \code{xgboost::xgb.train}. Defaults to \code{"rmse"}.
+#' @param eval_metric Type: function. The function which evaluates \code{boosting} loss. Must take two arguments in the following order: \code{preds, labels} (they may be named in another way) and returns a metric. Defaults to \code{Laurae::df_rmse}.
 #' @param multi_class Type: numeric. Defines the number of classes internally for whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{2}, which is for regression and binary classification.
 #' @param early_stopping Type: numeric. Defines how many architecture layers without improvement to require before stopping early (therefore, you must remove 1 to that value - for instance, a stopping of 2 means it will stop after 3 failures to improve). 0 means instantly stop at the first failure for improvement. -1 means no stopping. Requires \code{validation_data} to be able to stop early. Defaults to \code{2}.
 #' @param maximize Type: logical. Whether to maximize or not the loss evaluation metric. Defaults to \code{FALSE}.
@@ -70,7 +70,7 @@
 #'                        cascade_rf = 2, # Number of Random Forest in models
 #'                        cascade_seeds = 1:5, # Seed per layer
 #'                        objective = "binary:logistic",
-#'                        eval_metric = "logloss",
+#'                        eval_metric = Laurae::df_logloss,
 #'                        multi_class = 2, # Modify this for multiclass problems
 #'                        early_stopping = 2, # stop after 2 bad combos of forests
 #'                        maximize = FALSE, # not a maximization task
@@ -96,7 +96,7 @@
 #'                        cascade_rf = 2, # Number of Random Forest in models
 #'                        cascade_seeds = 1:5, # Seed per layer
 #'                        objective = "multi:softprob",
-#'                        eval_metric = "mlogloss",
+#'                        eval_metric = Laurae::df_logloss,
 #'                        multi_class = 3, # Modify this for multiclass problems
 #'                        early_stopping = 2, # stop after 2 bad combos of forests
 #'                        maximize = FALSE, # not a maximization task
@@ -121,7 +121,7 @@ CascadeForest <- function(training_data,
                           cascade_rf = 2,
                           cascade_seeds = 1:length(cascade_forests),
                           objective = "reg:linear",
-                          eval_metric = "rmse",
+                          eval_metric = Laurae::df_rmse,
                           multi_class = FALSE,
                           early_stopping = 2,
                           maximize = FALSE,
