@@ -29,6 +29,7 @@
 #' @param multi_class Type: numeric. Defines the number of classes internally for whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{2}, which is for regression and binary classification.
 #' @param verbose Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.
 #' @param garbage Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.
+#' @param work_dir Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.
 #' 
 #' @return A data.table based on \code{target}.
 #' 
@@ -112,7 +113,8 @@ CRTreeForest <- function(training_data,
                          return_list = TRUE,
                          multi_class = 2,
                          verbose = " ",
-                         garbage = FALSE) {
+                         garbage = FALSE,
+                         work_dir = NULL) {
   
   model <- list()
   train_preds <- list()
@@ -123,6 +125,9 @@ CRTreeForest <- function(training_data,
   features_used <- list()
   
   premade_folds <- !(is.null(validation_data))
+  out_of_memory <- !is.null(work_dir)
+  
+  model_path <- list()
   
   # Setup train_means / valid_means
   if (multi_class > 2) {
@@ -213,6 +218,7 @@ CRTreeForest <- function(training_data,
     # More initialization
     model[[i]] <- list()
     logger[[1]][[i]] <- numeric(length(folds))
+    model_path[[i]] <- list() # Even if not used, it will be used for directory detection for predictions
     
     for (j in 1:length(folds)) {
       
@@ -268,6 +274,20 @@ CRTreeForest <- function(training_data,
           valid_preds[[i]] <- (temp_preds / length(folds)) + valid_preds[[i]]
         }
         
+        # Save model out of memory?
+        if (out_of_memory) {
+          
+          # Store path
+          model_path[[i]][[j]] <- paste0(work_dir, "Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), i), "_Fold", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), j))
+          
+          # Save model
+          model_save <- xgb.save(model[[i]][[j]], model_path[[i]][[j]])
+          
+          # Overwrite current model with path
+          model[[i]][[j]] <- model_path[[i]][[j]]
+          
+        }
+        
       } else {
         
         # Binary class or regression training
@@ -300,6 +320,20 @@ CRTreeForest <- function(training_data,
           temp_preds <- predict(model[[i]][[j]], validate_data, reshape = TRUE)
           logger[[1]][[i]][j] <- eval_metric(temp_preds, validation_labels)
           valid_preds[[i]] <- (temp_preds / length(folds)) + valid_preds[[i]]
+        }
+        
+        # Save model out of memory?
+        if (out_of_memory) {
+          
+          # Store path
+          model_path[[i]][[j]] <- paste0(work_dir, "Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), i), "_Fold", sprintf(paste0("%0", floor(log10(length(folds))) + 1, "d"), j))
+          
+          # Save model
+          model_save <- xgb.save(model[[i]][[j]], model_path[[i]][[j]])
+          
+          # Overwrite current model with path
+          model[[i]][[j]] <- model_path[[i]][[j]]
+          
         }
         
       }
@@ -427,6 +461,7 @@ CRTreeForest <- function(training_data,
               valid_preds = valid_preds,
               features = features_used,
               multi_class = multi_class,
-              folds = folds))
+              folds = folds,
+              work_dir = list(work_dir, model_path)))
   
 }

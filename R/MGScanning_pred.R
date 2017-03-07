@@ -29,7 +29,27 @@
 #' agaricus_label_test <- agaricus.test$label
 #' folds <- Laurae::kfold(agaricus_label_train, 5)
 #' 
-#' # Train a model (binary classification)
+#' # Train a model (binary classification) - FAST VERSION
+#' model <- MGScanning(data = agaricus_data_train, # Training data
+#'                     labels = agaricus_label_train, # Training labels
+#'                     folds = folds, # Folds for cross-validation
+#'                     dimensions = 1, # Change this for 2 dimensions if needed
+#'                     depth = 10, # Change this to change the sliding window size
+#'                     stride = 20, # Change this to change the sliding window speed
+#'                     nthread = 1, # Change this to use more threads
+#'                     lr = 1, # Do not touch this unless you are expert
+#'                     training_start = NULL, # Do not touch this unless you are expert
+#'                     validation_start = NULL, # Do not touch this unless you are expert
+#'                     n_forest = 2, # Number of forest models
+#'                     n_trees = 30, # Number of trees per forest
+#'                     random_forest = 1, # We want only 2 random forest
+#'                     seed = 0,
+#'                     objective = "binary:logistic",
+#'                     eval_metric = Laurae::df_logloss,
+#'                     multi_class = 2, # Modify this for multiclass problems)
+#'                     verbose = TRUE)
+#' 
+#' # Train a model (binary classification) - SLOW
 #' model <- MGScanning(data = agaricus_data_train, # Training data
 #'                     labels = agaricus_label_train, # Training labels
 #'                     folds = folds, # Folds for cross-validation
@@ -168,7 +188,8 @@ MGScanning_pred <- function(model,
                                       prediction = FALSE,
                                       multi_class = multi_class,
                                       data_start = data_start,
-                                      return_list = FALSE)
+                                      return_list = FALSE,
+                                      work_dir = model$work_dir[[i]])
       
       if (multi_class > 2) {
         
@@ -215,7 +236,8 @@ MGScanning_pred <- function(model,
                                         prediction = FALSE,
                                         multi_class = multi_class,
                                         data_start = data_start,
-                                        return_list = FALSE)
+                                        return_list = FALSE,
+                                        work_dir = model$work_dir[[i]][[j]])
         
         if (multi_class > 2) {
           

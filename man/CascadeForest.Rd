@@ -11,7 +11,8 @@ CascadeForest(training_data, validation_data, training_labels,
   cascade_seeds = 1:length(cascade_forests), objective = "reg:linear",
   eval_metric = Laurae::df_rmse, multi_class = FALSE, early_stopping = 2,
   maximize = FALSE, verbose = TRUE, low_memory = FALSE,
-  essentials = FALSE, garbage = FALSE, fail_safe = 65536)
+  essentials = FALSE, garbage = FALSE, work_dir = NULL,
+  fail_safe = 65536)
 }
 \arguments{
 \item{training_data}{Type: data.table. The training data. Columns are added during training if \code{low_memory == TRUE}, so you may want to clean it up if you use \code{low_memory == TRUE} and interrupt training.}
@@ -59,6 +60,8 @@ CascadeForest(training_data, validation_data, training_labels,
 \item{essentials}{Type: logical. Whether to store intermediary predictions or not. Set it to \code{TRUE} if you encounter memory issues. Defaults to \code{FALSE}.}
 
 \item{garbage}{Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.}
+
+\item{work_dir}{Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.}
 
 \item{fail_safe}{Type: numeric. In case of infinite training (\code{cascade_forests}'s last value equal to 0), this limits the number of training iterations. Defaults to \code{65536}.}
 }

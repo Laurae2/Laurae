@@ -8,7 +8,7 @@ MGScanning(data, labels, folds, dimensions = 1, depth = 10, stride = 1,
   nthread = 1, lr = 1, training_start = NULL, validation_start = NULL,
   n_forest = 2, n_trees = 30, random_forest = 1, seed = 0,
   objective = "reg:linear", eval_metric = Laurae::df_rmse,
-  multi_class = 2, verbose = TRUE, garbage = FALSE)
+  multi_class = 2, verbose = TRUE, garbage = FALSE, work_dir = NULL)
 }
 \arguments{
 \item{data}{Type: data.table (\code{dimensions == 1}) or list of matrices (\code{dimensions == 2}). The training data.}
@@ -48,6 +48,8 @@ MGScanning(data, labels, folds, dimensions = 1, depth = 10, stride = 1,
 \item{verbose}{Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.}
 
 \item{garbage}{Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.}
+
+\item{work_dir}{Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.}
 }
 \value{
 A data.table based on \code{target}.

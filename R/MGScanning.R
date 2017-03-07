@@ -29,6 +29,7 @@
 #' @param multi_class Type: logical. Defines internally whether you are doing multi class classification or not to use specific routines for multiclass problems when using \code{return_list == FALSE}. Defaults to \code{FALSE}.
 #' @param verbose Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.
 #' @param garbage Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.
+#' @param work_dir Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.
 #' 
 #' @return A data.table based on \code{target}.
 #' 
@@ -152,9 +153,13 @@ MGScanning <- function(data,
                        eval_metric = Laurae::df_rmse,
                        multi_class = 2,
                        verbose = TRUE,
-                       garbage = FALSE) {
+                       garbage = FALSE,
+                       work_dir = NULL) {
   
   model <- list()
+  model_path <- list()
+  
+  out_of_memory <- !is.null(work_dir)
   
   if (dimensions == 1) {
     
@@ -189,9 +194,11 @@ MGScanning <- function(data,
                                  return_list = FALSE,
                                  multi_class = multi_class,
                                  verbose = ifelse(verbose == TRUE, paste0("Scan ", sprintf(paste0("%0", floor(log10(steps_perform)) + 1, "d"), i), "/", steps_perform, ", "), ""),
-                                 garbage = garbage)
+                                 garbage = garbage,
+                                 work_dir = if (out_of_memory) {paste0(work_dir, paste0("Scan", sprintf(paste0("%0", floor(log10(steps_perform)) + 1, "d"), i), "_"))} else {NULL})
       
       model[[i]]$step <- step
+      model_path[[i]] <- model[[i]]$work_dir
       
       if (multi_class > 2) {
         
@@ -221,7 +228,10 @@ MGScanning <- function(data,
     
     return(list(model = model,
                 preds = preds,
-                dimensions = dimensions))
+                dimensions = dimensions,
+                multi_class = multi_class,
+                folds = folds,
+                work_dir = model_path))
     
   } else {
     
@@ -235,6 +245,7 @@ MGScanning <- function(data,
     for (i in 1:steps_perform[1]) {
       
       model[[i]] <- list()
+      model_path[[i]] <- list()
       
       # Reset steps
       step[[2]] <- 1:depth[length(depth)]
@@ -264,9 +275,11 @@ MGScanning <- function(data,
                                         return_list = FALSE,
                                         multi_class = multi_class,
                                         verbose = ifelse(verbose == TRUE, paste0("Scan x=", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "/", steps_perform[1], ", y=", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "/", steps_perform[2], ", "), ""),
-                                        garbage = garbage)
+                                        garbage = garbage,
+                                        work_dir = if (out_of_memory) {paste0(work_dir, paste0("Scan_x", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "_y", , sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "_"))} else {NULL})
         
         model[[i]][[j]]$step <- step
+        model_path[[i]][[j]] <- model[[i]][[j]]$work_dir
         
         if (multi_class > 2) {
           
@@ -302,7 +315,8 @@ MGScanning <- function(data,
                 preds = preds,
                 dimensions = dimensions,
                 multi_class = multi_class,
-                folds = folds))
+                folds = folds,
+                work_dir = model_path))
     
   }
   

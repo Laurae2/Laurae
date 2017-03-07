@@ -33,6 +33,7 @@
 #' @param low_memory Type: logical. Whether to perform the data.table transformations in place to lower memory usage. Defaults to \code{FALSE}.
 #' @param essentials Type: logical. Whether to store intermediary predictions or not. Set it to \code{TRUE} if you encounter memory issues. Defaults to \code{FALSE}.
 #' @param garbage Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.
+#' @param work_dir Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.
 #' @param fail_safe Type: numeric. In case of infinite training (\code{cascade_forests}'s last value equal to 0), this limits the number of training iterations. Defaults to \code{65536}.
 #' 
 #' @return A data.table based on \code{target}.
@@ -128,12 +129,17 @@ CascadeForest <- function(training_data,
                           low_memory = FALSE,
                           essentials = FALSE,
                           garbage = FALSE,
+                          work_dir = NULL,
                           fail_safe = 65536) {
   
   model <- list()
   logger <- list()
   original_cols <- copy(ncol(training_data)) + 1 # Perform deep copy of columns
   patience <- early_stopping + 1 # for early_stopping
+  
+  out_of_memory <- !is.null(work_dir)
+  
+  model_path <- list()
   
   # Check whether user wants infinite training
   if (cascade_forests[length(cascade_forests)] == 0) {
@@ -210,9 +216,11 @@ CascadeForest <- function(training_data,
                                  return_list = FALSE,
                                  multi_class = multi_class,
                                  verbose = ifelse(verbose == FALSE, "", paste0("Layer ", sprintf(paste0("%0", floor(log10(num_layers - (2 * cascade_infinite))) + 1, "d"), i), ", ")),
-                                 garbage = garbage)
+                                 garbage = garbage,
+                                 work_dir = if (out_of_memory) {paste0(work_dir, paste0("Layer", sprintf(paste0("%0", floor(log10(num_layers - (2 * cascade_infinite))) + 1, "d"), i), "_"))} else {NULL})
       
       logger[[i]] <- model[[i]]$logger[[2]]
+      model_path[[i]] <- model[[i]]$work_dir
       
       # Check for early stopping
       if ((early_stopping > -1) & (i > 1)) {
@@ -281,7 +289,8 @@ CascadeForest <- function(training_data,
                     valid_means = valid_means,
                     multi_class = multi_class,
                     folds = folds,
-                    best_iteration = best_iteration))
+                    best_iteration = best_iteration,
+                    work_dir = model_path))
         
       } else {
         
@@ -350,9 +359,11 @@ CascadeForest <- function(training_data,
                                  return_list = FALSE,
                                  multi_class = multi_class,
                                  verbose = ifelse(verbose == FALSE, "", paste0("Layer ", sprintf(paste0("%0", floor(log10(num_layers - (2 * cascade_infinite))) + 1, "d"), i), ", ")),
-                                 garbage = garbage)
+                                 garbage = garbage,
+                                 work_dir = if (out_of_memory) {paste0(work_dir, paste0("Layer", sprintf(paste0("%0", floor(log10(num_layers - (2 * cascade_infinite))) + 1, "d"), i), "_"))} else {NULL})
       
       logger[[i]] <- model[[i]]$logger[[2]]
+      model_path[[i]] <- model[[i]]$work_dir
       
       # Check for early stopping
       if ((early_stopping > -1) & (i > 1)) {
@@ -411,7 +422,8 @@ CascadeForest <- function(training_data,
                     valid_means = valid_means,
                     multi_class = multi_class,
                     folds = folds,
-                    best_iteration = best_iteration))
+                    best_iteration = best_iteration,
+                    work_dir = model_path))
         
       } else {
         

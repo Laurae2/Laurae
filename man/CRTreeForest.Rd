@@ -9,7 +9,7 @@ CRTreeForest(training_data, validation_data, training_labels, validation_labels,
   validation_start = NULL, n_forest = 5, n_trees = 1000,
   random_forest = 0, seed = 0, objective = "reg:linear",
   eval_metric = Laurae::df_rmse, return_list = TRUE, multi_class = 2,
-  verbose = " ", garbage = FALSE)
+  verbose = " ", garbage = FALSE, work_dir = NULL)
 }
 \arguments{
 \item{training_data}{Type: data.table. The training data.}
@@ -49,6 +49,8 @@ CRTreeForest(training_data, validation_data, training_labels, validation_labels,
 \item{verbose}{Type: character. Whether to print for training evaluation. Use \code{""} for no printing (double quotes without space between quotes). Defaults to \code{" "} (double quotes with space between quotes.}
 
 \item{garbage}{Type: logical. Whether to perform garbage collect regularly. Defaults to \code{FALSE}.}
+
+\item{work_dir}{Type: character, allowing concatenation with another character text (ex: "dev/tools/save_in_this_folder/" = add slash, or "dev/tools/save_here/prefix_" = don't add slash). The working directory to store models. If you provide a working directory, the models will be saved inside that directory (and all other models will get wiped if they are under the same names). It will lower severely the memory usage as the models will not be saved anymore in memory. Combined with \code{garbage == TRUE}, you achieve the lowest possible memory usage in this Deep Forest implementation. Defaults to \code{NULL}, which means store models in memory.}
 }
 \value{
 A data.table based on \code{target}.

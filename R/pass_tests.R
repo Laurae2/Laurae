@@ -204,7 +204,9 @@ globalVariables(c("Timing_Metric",
                   "stat_smooth",
                   "theme",
                   "unit",
-                  "unit.c"))
+                  "unit.c",
+                  "xgb.load",
+                  "xgb.save"))
 
 requireNamespace("xgboost")
 requireNamespace("lightgbm")

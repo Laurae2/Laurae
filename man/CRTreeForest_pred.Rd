@@ -5,7 +5,8 @@
 \title{Complete-Random Tree Forest Predictor implementation in R}
 \usage{
 CRTreeForest_pred(model, data, folds = NULL, prediction = FALSE,
-  multi_class = NULL, data_start = NULL, return_list = TRUE)
+  multi_class = NULL, data_start = NULL, return_list = TRUE,
+  work_dir = NULL)
 }
 \arguments{
 \item{model}{Type: list. A model trained by \code{CRTreeForest}.}
@@ -21,12 +22,14 @@ CRTreeForest_pred(model, data, folds = NULL, prediction = FALSE,
 \item{data_start}{Type: vector of numeric. The initial prediction labels. Set to \code{NULL} if you do not know what you are doing. Defaults to \code{NULL}.}
 
 \item{return_list}{Type: logical. Whether lists should be returned instead of concatenated frames for predictions. Defaults to \code{TRUE}.}
+
+\item{work_dir}{Type: character, without slash at end (ex: "dev/tools/save_in_this_folder"). The working directory where models are stored, if using external model files as memory. Defaults to \code{NULL}, which means models are in memory. It will attempt to detect automatically the working directory from the model if it is available.}
 }
 \value{
 A data.table or a list based on \code{data} predicted using \code{model}.
 }
 \description{
-This function attempts to predict from Complete-Random Tree Forests using xgboost.
+This function attempts to predict from Complete-Random Tree Forests using xgboost. Predictions are deferred to \code{CRTreeForest_pred_internals}.
 }
 \details{
 For implementation details of Cascade Forest / Complete-Random Tree Forest / Multi-Grained Scanning / Deep Forest, check this: \url{https://github.com/Microsoft/LightGBM/issues/331#issuecomment-283942390} by Laurae.

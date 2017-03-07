@@ -144,7 +144,8 @@ CascadeForest_pred <- function(model,
                                prediction = FALSE,
                                multi_class = multi_class,
                                data_start = data_start,
-                               return_list = FALSE)
+                               return_list = FALSE,
+                               work_dir = model$work_dir[[1]])
     
     # Check for low memory requirements
     if (low_memory == TRUE) {
@@ -168,7 +169,8 @@ CascadeForest_pred <- function(model,
                                      prediction = FALSE,
                                      multi_class = multi_class,
                                      data_start = data_start,
-                                     return_list = FALSE)
+                                     return_list = FALSE,
+                                     work_dir = model$work_dir[[i]])
           
           # Overwrite predictions
           data <- Laurae::DTcbind(data, preds)
@@ -184,7 +186,8 @@ CascadeForest_pred <- function(model,
                                  prediction = prediction,
                                  multi_class = multi_class,
                                  data_start = data_start,
-                                 return_list = return_list)
+                                 return_list = return_list,
+                                 work_dir = model$work_dir[[layer]])
       
       # Restore original data
       DTcolsample(data, kept = original_cols:copy(ncol(data)), remove = TRUE, low_mem = TRUE)
@@ -210,7 +213,8 @@ CascadeForest_pred <- function(model,
                                      prediction = FALSE,
                                      multi_class = multi_class,
                                      data_start = data_start,
-                                     return_list = FALSE)
+                                     return_list = FALSE,
+                                     work_dir = model$work_dir[[i]])
           
           # Overwrite predictions
           new_data <- Laurae::DTcbind(new_data, preds)
@@ -226,7 +230,8 @@ CascadeForest_pred <- function(model,
                                  prediction = prediction,
                                  multi_class = multi_class,
                                  data_start = data_start,
-                                 return_list = return_list)
+                                 return_list = return_list,
+                                 work_dir = model$work_dir[[layer]])
       
     }
     
@@ -239,7 +244,8 @@ CascadeForest_pred <- function(model,
                                prediction = prediction,
                                multi_class = multi_class,
                                data_start = data_start,
-                               return_list = return_list)
+                               return_list = return_list,
+                               work_dir = model$work_dir[[1]])
     
   }
   
