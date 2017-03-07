@@ -229,22 +229,28 @@ CascadeForest <- function(training_data,
         if (maximize == FALSE) {
           
           # Remove or reset patience
-          if (logger[[i]] >= logger[[i - 1]]) {
+          if (logger[[i]] >= best_score) {
             patience <- patience - 1 - ((patience - 1) == early_stopping)
           } else {
             patience <- early_stopping + 1
+            best_score <- logger[[i]]
           }
           
         } else {
           
           # Remove or reset patience
-          if (logger[[i]] <= logger[[i - 1]]) {
+          if (logger[[i]] <= best_score) {
             patience <- patience - 1 - ((patience - 1) == early_stopping)
           } else {
             patience <- early_stopping + 1
+            best_score <- logger[[i]]
           }
           
         }
+        
+      } else {
+        
+        best_score <- logger[[i]]
         
       }
       
@@ -372,22 +378,28 @@ CascadeForest <- function(training_data,
         if (maximize == FALSE) {
           
           # Remove or reset patience
-          if (logger[[i]] >= logger[[i - 1]]) {
+          if (logger[[i]] >= best_score) {
             patience <- patience - 1 - ((patience - 1) == early_stopping)
           } else {
             patience <- early_stopping + 1
+            best_score <- logger[[i]]
           }
           
         } else {
           
           # Remove or reset patience
-          if (logger[[i]] <= logger[[i - 1]]) {
+          if (logger[[i]] <= best_score) {
             patience <- patience - 1 - ((patience - 1) == early_stopping)
           } else {
             patience <- early_stopping + 1
+            best_score <- logger[[i]]
           }
           
         }
+        
+      } else {
+        
+        best_score <- logger[[i]]
         
       }
       
