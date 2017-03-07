@@ -45,7 +45,7 @@
 #'                     random_forest = 1, # We want only 2 random forest
 #'                     seed = 0,
 #'                     objective = "binary:logistic",
-#'                     eval_metric = "logloss",
+#'                     eval_metric = Laurae::df_logloss,
 #'                     multi_class = 2, # Modify this for multiclass problems)
 #'                     verbose = TRUE)
 #' 
@@ -93,7 +93,7 @@
 #'                     random_forest = 1, # We want only 2 random forest
 #'                     seed = 0,
 #'                     objective = "multi:softprob",
-#'                     eval_metric = "mlogloss",
+#'                     eval_metric = Laurae::df_logloss,
 #'                     multi_class = 3, # Modify this for multiclass problems)
 #'                     verbose = TRUE)
 #' 

@@ -6,7 +6,7 @@
 \usage{
 CascadeForest_pred(model, data, folds = NULL, layer = NULL,
   prediction = TRUE, multi_class = NULL, data_start = NULL,
-  return_list = TRUE)
+  return_list = FALSE, low_memory = FALSE)
 }
 \arguments{
 \item{model}{Type: list. A model trained by \code{CascadeForest}.}
@@ -24,6 +24,8 @@ CascadeForest_pred(model, data, folds = NULL, layer = NULL,
 \item{data_start}{Type: vector of numeric. The initial prediction labels. Set to \code{NULL} if you do not know what you are doing. Defaults to \code{NULL}.}
 
 \item{return_list}{Type: logical. Whether lists should be returned instead of concatenated frames for predictions. Defaults to \code{TRUE}.}
+
+\item{low_memory}{Type: logical. Whether to perform the data.table transformations in place to lower memory usage. Defaults to \code{FALSE}.}
 }
 \value{
 A data.table or a list based on \code{data} predicted using \code{model}.
@@ -62,11 +64,11 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        training_start = NULL, # Do not touch this unless you are expert
                        validation_start = NULL, # Do not touch this unless you are expert
                        cascade_forests = rep(4, 5), # Number of forest models
-                       cascade_trees = 1000, # Number of trees per forest
+                       cascade_trees = 10, # Number of trees per forest
                        cascade_rf = 2, # Number of Random Forest in models
                        cascade_seeds = 0, # Seed per layer
                        objective = "binary:logistic",
-                       eval_metric = "logloss",
+                       eval_metric = Laurae::df_logloss,
                        multi_class = 2, # Modify this for multiclass problems
                        early_stopping = 2, # stop after 2 bad combos of forests
                        maximize = FALSE, # not a maximization task
@@ -74,16 +76,14 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        low_memory = FALSE)
 
 # Predict from model
-new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
+new_preds <- CascadeForest_pred(model, agaricus_data_test, prediction = FALSE)
 
 # We can check whether we have equal predictions, it's all TRUE!
-all.equal(model$train_preds, CascadeForest_pred(model,
+all.equal(model$train_means, CascadeForest_pred(model,
                                                 agaricus_data_train,
-                                                folds = folds,
-                                                return_list = FALSE))
-all.equal(model$valid_preds, CascadeForest_pred(model,
-                                                agaricus_data_test,
-                                                return_list = FALSE))
+                                                folds = folds))
+all.equal(model$valid_means, CascadeForest_pred(model,
+                                                agaricus_data_test))
 
 # Attempt to perform fake multiclass problem
 agaricus_label_train[1:100] <- 2
@@ -100,11 +100,11 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        training_start = NULL, # Do not touch this unless you are expert
                        validation_start = NULL, # Do not touch this unless you are expert
                        cascade_forests = rep(4, 5), # Number of forest models
-                       cascade_trees = 1000, # Number of trees per forest
+                       cascade_trees = 10, # Number of trees per forest
                        cascade_rf = 2, # Number of Random Forest in models
                        cascade_seeds = 0, # Seed per layer
                        objective = "multi:softprob",
-                       eval_metric = "mlogloss",
+                       eval_metric = Laurae::df_logloss,
                        multi_class = 3, # Modify this for multiclass problems
                        early_stopping = 2, # stop after 2 bad combos of forests
                        maximize = FALSE, # not a maximization task
@@ -112,16 +112,14 @@ model <- CascadeForest(training_data = agaricus_data_train, # Training data
                        low_memory = FALSE)
 
 # Predict from model for mutliclass problems
-new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
+new_preds <- CascadeForest_pred(model, agaricus_data_test, prediction = FALSE)
 
 # We can check whether we have equal predictions, it's all TRUE!
-all.equal(model$train_preds, CascadeForest_pred(model,
+all.equal(model$train_means, CascadeForest_pred(model,
                                                 agaricus_data_train,
-                                                folds = folds,
-                                                return_list = FALSE))
-all.equal(model$valid_preds, CascadeForest_pred(model,
-                                                agaricus_data_test,
-                                                return_list = FALSE))
+                                                folds = folds))
+all.equal(model$valid_means, CascadeForest_pred(model,
+                                                agaricus_data_test))
 }
 
 }

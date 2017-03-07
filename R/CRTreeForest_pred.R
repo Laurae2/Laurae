@@ -41,11 +41,11 @@
 #'                       training_start = NULL, # Do not touch this unless you are expert
 #'                       validation_start = NULL, # Do not touch this unless you are expert
 #'                       n_forest = 5, # Number of forest models
-#'                       n_trees = 1000, # Number of trees per forest
+#'                       n_trees = 10, # Number of trees per forest
 #'                       random_forest = 2, # We want only 2 random forest
 #'                       seed = 0,
 #'                       objective = "binary:logistic",
-#'                       eval_metric = "logloss",
+#'                       eval_metric = Laurae::df_logloss,
 #'                       return_list = TRUE, # Set this to FALSE for a data.table output
 #'                       multi_class = 2, # Modify this for multiclass problems
 #'                       verbose = " ")
@@ -56,6 +56,15 @@
 #' # We can check whether we have equal predictions, it's all TRUE!
 #' all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
 #' all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
+#' all.equal(model$train_means, CRTreeForest_pred(model,
+#'                                                agaricus_data_train,
+#'                                                folds = folds,
+#'                                                return_list = FALSE,
+#'                                                prediction = TRUE))
+#' all.equal(model$valid_means, CRTreeForest_pred(model,
+#'                                                agaricus_data_test,
+#'                                                return_list = FALSE,
+#'                                                prediction = TRUE))
 #' 
 #' # Attempt to perform fake multiclass problem
 #' agaricus_label_train[1:100] <- 2
@@ -71,11 +80,11 @@
 #'                       training_start = NULL, # Do not touch this unless you are expert
 #'                       validation_start = NULL, # Do not touch this unless you are expert
 #'                       n_forest = 5, # Number of forest models
-#'                       n_trees = 1000, # Number of trees per forest
+#'                       n_trees = 10, # Number of trees per forest
 #'                       random_forest = 2, # We want only 2 random forest
 #'                       seed = 0,
 #'                       objective = "multi:softprob",
-#'                       eval_metric = "mlogloss",
+#'                       eval_metric = Laurae::df_logloss,
 #'                       return_list = TRUE, # Set this to FALSE for a data.table output
 #'                       multi_class = 3, # Modify this for multiclass problems
 #'                       verbose = " ")
@@ -86,6 +95,15 @@
 #' # We can check whether we have equal predictions, it's all TRUE!
 #' all.equal(model$train_preds, CRTreeForest_pred(model, agaricus_data_train, folds = folds))
 #' all.equal(model$valid_preds, CRTreeForest_pred(model, agaricus_data_test))
+#' all.equal(model$train_means, CRTreeForest_pred(model,
+#'                                                agaricus_data_train,
+#'                                                folds = folds,
+#'                                                return_list = FALSE,
+#'                                                prediction = TRUE))
+#' all.equal(model$valid_means, CRTreeForest_pred(model,
+#'                                                agaricus_data_test,
+#'                                                return_list = FALSE,
+#'                                                prediction = TRUE))
 #' }
 #' 
 #' @export
@@ -230,6 +248,35 @@ CRTreeForest_pred <- function(model,
     
   }
   
+  # # Are we averaging? a.k.a prediction code
+  # if (average == TRUE) {
+  #   
+  #   if (multi_class > 2) {
+  #     
+  #     # Prepare for multiclass problems
+  #     my_preds <- data.table(matrix(rep(0, nrow(data) * multi_class), nrow = nrow(data), ncol = multi_class))
+  #     colnames(my_preds) <- paste0("Label_", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), 1:multi_class))
+  #     
+  #     for (i in 1:multi_class) {
+  #       my_preds[[i]] <- rowMeans(preds[, (0:(length(model$model) - 1)) * multi_class + i, with = FALSE])
+  #     }
+  #     
+  #     # Give back hand to user
+  #     return(my_preds)
+  #     
+  #   } else {
+  #     
+  #     # Take mean of all predictions by row
+  #     preds <- rowMeans(preds)
+  #     
+  #     # Give back hand to user
+  #     return(preds)
+  #     
+  #   }
+  #   
+  # }
+  
+  # Give back hand to user
   return(preds)
   
 }

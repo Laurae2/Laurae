@@ -51,6 +51,7 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
       
     } else {
       # not fast
+      dt1 <- copy(dt1)
       for (i in cols) {
         set(dt1, j = i, value = copy(dt2[[i]]))
       }
@@ -76,6 +77,7 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
         
       } else {
         # not fast
+        dt1 <- copy(dt1)
         for (i in cols) {
           j <- j + 1
           set(dt1, j = i, value = copy(dt2[[i]]))
@@ -97,6 +99,7 @@ DTcbind <- function(dt1, dt2, low_mem = FALSE, collect = 0, silent = TRUE) {
         
       } else {
         # not fast
+        dt1 <- copy(dt1)
         for (i in cols) {
           j <- j + 1
           set(dt1, j = i, value = copy(dt2[[i]]))

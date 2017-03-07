@@ -12,6 +12,7 @@
 #' @param multi_class Type: numeric. How many classes you got. Set to 2 for binary classification, or regression cases. Set to \code{NULL} to let it try guessing by reading the \code{model}. Defaults to \code{NULL}.
 #' @param data_start Type: vector of numeric. The initial prediction labels. Set to \code{NULL} if you do not know what you are doing. Defaults to \code{NULL}.
 #' @param return_list Type: logical. Whether lists should be returned instead of concatenated frames for predictions. Defaults to \code{TRUE}.
+#' @param low_memory Type: logical. Whether to perform the data.table transformations in place to lower memory usage. Defaults to \code{FALSE}.
 #' 
 #' @return A data.table or a list based on \code{data} predicted using \code{model}.
 #' 
@@ -43,11 +44,11 @@
 #'                        training_start = NULL, # Do not touch this unless you are expert
 #'                        validation_start = NULL, # Do not touch this unless you are expert
 #'                        cascade_forests = rep(4, 5), # Number of forest models
-#'                        cascade_trees = 1000, # Number of trees per forest
+#'                        cascade_trees = 10, # Number of trees per forest
 #'                        cascade_rf = 2, # Number of Random Forest in models
 #'                        cascade_seeds = 0, # Seed per layer
 #'                        objective = "binary:logistic",
-#'                        eval_metric = "logloss",
+#'                        eval_metric = Laurae::df_logloss,
 #'                        multi_class = 2, # Modify this for multiclass problems
 #'                        early_stopping = 2, # stop after 2 bad combos of forests
 #'                        maximize = FALSE, # not a maximization task
@@ -55,16 +56,14 @@
 #'                        low_memory = FALSE)
 #' 
 #' # Predict from model
-#' new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
+#' new_preds <- CascadeForest_pred(model, agaricus_data_test, prediction = FALSE)
 #' 
 #' # We can check whether we have equal predictions, it's all TRUE!
-#' all.equal(model$train_preds, CascadeForest_pred(model,
+#' all.equal(model$train_means, CascadeForest_pred(model,
 #'                                                 agaricus_data_train,
-#'                                                 folds = folds,
-#'                                                 return_list = FALSE))
-#' all.equal(model$valid_preds, CascadeForest_pred(model,
-#'                                                 agaricus_data_test,
-#'                                                 return_list = FALSE))
+#'                                                 folds = folds))
+#' all.equal(model$valid_means, CascadeForest_pred(model,
+#'                                                 agaricus_data_test))
 #' 
 #' # Attempt to perform fake multiclass problem
 #' agaricus_label_train[1:100] <- 2
@@ -81,11 +80,11 @@
 #'                        training_start = NULL, # Do not touch this unless you are expert
 #'                        validation_start = NULL, # Do not touch this unless you are expert
 #'                        cascade_forests = rep(4, 5), # Number of forest models
-#'                        cascade_trees = 1000, # Number of trees per forest
+#'                        cascade_trees = 10, # Number of trees per forest
 #'                        cascade_rf = 2, # Number of Random Forest in models
 #'                        cascade_seeds = 0, # Seed per layer
 #'                        objective = "multi:softprob",
-#'                        eval_metric = "mlogloss",
+#'                        eval_metric = Laurae::df_logloss,
 #'                        multi_class = 3, # Modify this for multiclass problems
 #'                        early_stopping = 2, # stop after 2 bad combos of forests
 #'                        maximize = FALSE, # not a maximization task
@@ -93,16 +92,14 @@
 #'                        low_memory = FALSE)
 #' 
 #' # Predict from model for mutliclass problems
-#' new_preds <- CascadeForest_pred(model, agaricus_data_test, return_list = FALSE)
+#' new_preds <- CascadeForest_pred(model, agaricus_data_test, prediction = FALSE)
 #' 
 #' # We can check whether we have equal predictions, it's all TRUE!
-#' all.equal(model$train_preds, CascadeForest_pred(model,
+#' all.equal(model$train_means, CascadeForest_pred(model,
 #'                                                 agaricus_data_train,
-#'                                                 folds = folds,
-#'                                                 return_list = FALSE))
-#' all.equal(model$valid_preds, CascadeForest_pred(model,
-#'                                                 agaricus_data_test,
-#'                                                 return_list = FALSE))
+#'                                                 folds = folds))
+#' all.equal(model$valid_means, CascadeForest_pred(model,
+#'                                                 agaricus_data_test))
 #' }
 #' 
 #' @export
@@ -114,7 +111,8 @@ CascadeForest_pred <- function(model,
                                prediction = TRUE,
                                multi_class = NULL,
                                data_start = NULL,
-                               return_list = TRUE) {
+                               return_list = FALSE,
+                               low_memory = FALSE) {
   
   preds <- list()
   
@@ -136,14 +134,115 @@ CascadeForest_pred <- function(model,
     }
   }
   
-  # Do predictions
-  preds <- CRTreeForest_pred(model = model$model[[layer]],
-                             data = data,
-                             folds = folds,
-                             prediction = prediction,
-                             multi_class = multi_class,
-                             data_start = data_start,
-                             return_list = return_list)
+  # Check if only one layer
+  if (layer > 1) {
+    
+    # Do first predictions
+    preds <- CRTreeForest_pred(model = model$model[[1]],
+                               data = data,
+                               folds = folds,
+                               prediction = FALSE,
+                               multi_class = multi_class,
+                               data_start = data_start,
+                               return_list = FALSE)
+    
+    # Check for low memory requirements
+    if (low_memory == TRUE) {
+      
+      # Store column count
+      original_cols <- copy(ncol(data))
+      
+      # Append predictions
+      data <- Laurae::DTcbind(data, preds)
+      
+      # Check for more than 2 layers to loop through all layers except last
+      if (layer > 2) {
+        
+        # Loop through all layers except last
+        for (i in 2:(layer - 1)) {
+          
+          # Do intermediary predictions
+          preds <- CRTreeForest_pred(model = model$model[[i]],
+                                     data = data,
+                                     folds = folds,
+                                     prediction = FALSE,
+                                     multi_class = multi_class,
+                                     data_start = data_start,
+                                     return_list = FALSE)
+          
+          # Overwrite predictions
+          data <- Laurae::DTcbind(data, preds)
+          
+        }
+        
+      }
+      
+      # Do final predictions
+      preds <- CRTreeForest_pred(model = model$model[[layer]],
+                                 data = data,
+                                 folds = folds,
+                                 prediction = prediction,
+                                 multi_class = multi_class,
+                                 data_start = data_start,
+                                 return_list = return_list)
+      
+      # Restore original data
+      DTcolsample(data, kept = original_cols:copy(ncol(data)), remove = TRUE, low_mem = TRUE)
+      
+    } else {
+      
+      # Copy data
+      new_data <- copy(data)
+      
+      # Append predictions
+      new_data <- Laurae::DTcbind(new_data, preds)
+      
+      # Check for more than 2 layers to loop through all layers except last
+      if (layer > 2) {
+        
+        # Loop through all layers except last
+        for (i in 2:(layer - 1)) {
+          
+          # Do intermediary predictions
+          preds <- CRTreeForest_pred(model = model$model[[i]],
+                                     data = new_data,
+                                     folds = folds,
+                                     prediction = FALSE,
+                                     multi_class = multi_class,
+                                     data_start = data_start,
+                                     return_list = FALSE)
+          
+          # Overwrite predictions
+          new_data <- Laurae::DTcbind(new_data, preds)
+          
+        }
+        
+      }
+      
+      # Do final predictions
+      preds <- CRTreeForest_pred(model = model$model[[layer]],
+                                 data = new_data,
+                                 folds = folds,
+                                 prediction = prediction,
+                                 multi_class = multi_class,
+                                 data_start = data_start,
+                                 return_list = return_list)
+      
+    }
+    
+  } else {
+    
+    # Do final predictions
+    preds <- CRTreeForest_pred(model = model$model[[1]],
+                               data = data,
+                               folds = folds,
+                               prediction = prediction,
+                               multi_class = multi_class,
+                               data_start = data_start,
+                               return_list = return_list)
+    
+  }
+  
   
   return(preds)
   
