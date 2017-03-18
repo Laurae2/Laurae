@@ -254,7 +254,7 @@ MGScanning <- function(data,
       for (j in 1:steps_perform[2]) {
         
         # Create training data
-        training_data <- data.table(matrix(unlist(lapply(data, function(x, step) {return(as.numeric(x[step[[1]], step[[2]]]))}, step = step)), ncol = ((max(step[[1]]) - min(step[[1]]) + 1) * (max(step[[2]]) - min(step[[2]]) + 1)), nrow = length(data), byrow = TRUE))
+        training_data <- data.table(matrix(unlist(lapply(data, function(x, step) {return(as.numeric(x[step[[2]], step[[1]]]))}, step = step)), ncol = ((max(step[[1]]) - min(step[[1]]) + 1) * (max(step[[2]]) - min(step[[2]]) + 1)), nrow = length(data), byrow = TRUE))
         
         # Train model
         model[[i]][[j]] <- CRTreeForest(training_data = training_data,
@@ -276,7 +276,7 @@ MGScanning <- function(data,
                                         multi_class = multi_class,
                                         verbose = ifelse(verbose == TRUE, paste0("Scan x=", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "/", steps_perform[1], ", y=", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "/", steps_perform[2], ", "), ""),
                                         garbage = garbage,
-                                        work_dir = if (out_of_memory) {paste0(work_dir, paste0("Scan_x", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "_y", , sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "_"))} else {NULL})
+                                        work_dir = if (out_of_memory) {paste0(work_dir, "Scan_x", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "_y", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "_")} else {NULL})
         
         model[[i]][[j]]$step <- step
         model_path[[i]][[j]] <- model[[i]][[j]]$work_dir
@@ -285,7 +285,7 @@ MGScanning <- function(data,
           
           # Multiclass combination
           for (k in 1:(multi_class * n_forest)) {
-            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "x_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "y_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), j), "_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), ((k - 1) %/% multi_class) + 1), "_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), ((k - 1) %% multi_class) + 1))) := model[[i]][[j]]$train_preds[, k, with = FALSE]]
+            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "x_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "y_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), ((k - 1) %/% multi_class) + 1), "_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), ((k - 1) %% multi_class) + 1))) := model[[i]][[j]]$train_preds[, k, with = FALSE]]
           }
           
           if (garbage) {gc(verbose = FALSE)}
@@ -294,7 +294,7 @@ MGScanning <- function(data,
           
           # Not multiclass combination
           for (k in 1:n_forest) {
-            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "x_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "y_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), k))) := model[[i]][[j]]$train_preds[, k, with = FALSE]]
+            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "x_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "y_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), k))) := model[[i]][[j]]$train_preds[, k, with = FALSE]]
           }
           
           if (garbage) {gc(verbose = FALSE)}

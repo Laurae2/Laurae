@@ -243,7 +243,7 @@ MGScanning_pred <- function(model,
           
           # Multiclass combination
           for (k in 1:(multi_class * n_forest)) {
-            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "x_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "y_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), j), "_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), ((k - 1) %/% multi_class) + 1), "_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), ((k - 1) %% multi_class) + 1))) := temp_preds[, k, with = FALSE]]
+            preds <- preds[, (paste0("Scan_", sprintf(paste0("%0", floor(log10(steps_perform[2])) + 1, "d"), j), "x_", sprintf(paste0("%0", floor(log10(steps_perform[1])) + 1, "d"), i), "y_Forest", sprintf(paste0("%0", floor(log10(n_forest)) + 1, "d"), ((k - 1) %/% multi_class) + 1), "_Class", sprintf(paste0("%0", floor(log10(multi_class)) + 1, "d"), ((k - 1) %% multi_class) + 1))) := temp_preds[, k, with = FALSE]]
           }
           
         } else {
