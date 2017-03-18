@@ -11,7 +11,17 @@ install_github("Laurae2/Laurae")
 
 # Latest News (DD/MM/YYYY)
 
-04/03/2017: Added **Deep Forest** implementation in R using xgboost, which provides similar performance versus Convolutional Neural Networks (CNNs). You can find the paper [here](https://arxiv.org/pdf/1702.08835.pdf). Supported: **Complete-Random Tree Forest, Cascade Forest, Multi-Grained Scanning, Deep Forest**.
+04/03/2017: Added **Deep Forest** implementation in R using xgboost, which may provide similar performance versus very simple Convolutional Neural Networks (CNNs), and slightly better results than boosted models. You can find the paper [here](https://arxiv.org/pdf/1702.08835.pdf). Supported: **Complete-Random Tree Forest, Cascade Forest, Multi-Grained Scanning, Deep Forest**. You can use Gradient Boosting to get a sort of "Deep Boosting" model.
+
+[Benchmark](https://github.com/Laurae2/Laurae/blob/master/demo/DeepForest_mnist.R) on MNIST 2,000 samples for training, 10,000 samples for testing, i7-4600U, 3-fold cross-validation (Cascade Forest with poor parameters for speed, Multi-Grained Scanning with poor parameters for speed):
+
+| Model | Features | Accuracy | Training Time | Model Size |
+| --- | ---: | ---:| ---: | --- |
+| Cascade Forest (xgboost) | 784 | 89.91%<br>6th iteration | 637.264s<br>11th iteration | Forest: 274,951,008 bytes |
+| Boosted Trees (xgboost) | 784 | 90.53%<br>250th iteration | 267.884s<br>300 iterations | Boost: NA |
+| "Deep Forest" (xgboost)<br>=> Multi-Grained Scanning<br>=>Cascade Forest | Scan: 28x28<br>Forest: 2404 | 91.46%<br>5 iterations | Scan: 449.593s<br>Forest (8): 1135.937s | Scan: 256,419,396 bytes<br>Forest: 273,624,912 bytes |
+| "Deep Boosting" (xgboost)<br>=> Multi-Grained Scanning<br>=>Boosted Trees | Scan: 28x28<br>Boost: 2404 | 92.41%<br>215 iterations | Scan: 449.593s<br>Boost (265): 852.360s | Scan: 256,419,396 bytes<br>Boost: NA |
+| LeNet (MXnet + R w/ Intel MKL) | 28x28 | 94.74%<br>50 epochs | 647.638s<br>50 epochs | CNN: NA |
 
 ![Deep Forest](https://cloud.githubusercontent.com/assets/9083669/23586617/f0440732-0198-11e7-9e1e-ceff2414dad8.png)
 
