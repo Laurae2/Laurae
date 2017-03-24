@@ -36,6 +36,7 @@ Suggests:
 	rmarkdown (>= 1.2.9000),
 	shiny (>= 0.14.2),
 	shinydashboard (>= 0.5.3),
+	miniUI (>= 0.1.1),
 	matrixStats (>= 0.51.0),
 	R.utils (>= 2.4.0),
 	recommenderlab (>= 0.2),

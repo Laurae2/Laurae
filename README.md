@@ -5,11 +5,14 @@ Advanced High Performance Data Science Toolbox for R by Laurae
 # me = wants download
 
 ```r
-library(devtools)
-install_github("Laurae2/Laurae")
+devtools::install_github("Laurae2/Laurae")
 ```
 
 # Latest News (DD/MM/YYYY)
+
+24/03/2017: Added **Xgboard**, an interactive dashboard for visualizing xgboost training, whether you are on computer, on your phone, on a tablet... by setting up a server accessible using a web browser (Google Chrome, Firefox...). Supports only Accuracy and Timing, more to come soon!
+
+![xgboard](https://cloud.githubusercontent.com/assets/9083669/24310124/eef7222a-10ce-11e7-9032-53ea008461fe.gif)
 
 04/03/2017: Added **Deep Forest** implementation in R using xgboost, which may provide similar performance versus very simple Convolutional Neural Networks (CNNs), and slightly better results than boosted models. You can find the paper [here](https://arxiv.org/pdf/1702.08835.pdf). Supported: **Complete-Random Tree Forest, Cascade Forest, Multi-Grained Scanning, Deep Forest**. You can use Gradient Boosting to get a sort of "Deep Boosting" model.
 
@@ -46,7 +49,7 @@ Mostly... in a nutshell:
 | Supervised Learning | Deep Forest implementation: Complete-Random Tree Forest, Cascade Forest, Multi-Grained Scanning, Deep Forest. <br> Automated machine learning (feature selection + hyperparamter tuning) <br> xgboost <br> LightGBM (training from binary, feature importance, prediction) <br> Rule-based model on outliers (univariate, bivariate) <br> Feature engineering assistant <br> Interactive xgboost feature importance <br> Repeated cross-validation <br> Symbolic loss function derivation <br> Interactive split feature engineering assistant <br> Laurae's Lextravagenza (dynamic boosted trees) <br> Partial dependency analysis on single observations for finding insights |
 | Unsupervised Learning | Automated t-SNE |
 | Automated Reporting for Machine Learning | Linear regression <br> Unbiased xgboost regression/classification |
-| Interactive Analysis | Interactive loss function symbolic derivation <br> interactive "I'm Feeling Lucky" ggplot <br> Interactive 3djs/Plotly <br> Interactive Brewer's Paletttes |
+| Interactive Analysis | Interactive loss function symbolic derivation <br> interactive "I'm Feeling Lucky" ggplot <br> Interactive 3djs/Plotly <br> Interactive Brewer's Paletttes, Xgboard |
 | Optimization | Cross-Entropy optimization combined with Elite optimization |
 | data.table improvements | up to 3X memory efficiency without even a minor cost in CPU time |
 | Plot massive amounts of data without being slow | tableplots tableplots tableplots tableplots tableplots |
@@ -84,6 +87,7 @@ Mostly... in a nutshell:
 * Plot several variables for Exploratory Data Analysis using 3djs via Plotly/ggplot, in real-time
 * Discover rule-based (from decision trees) non-linear relationship between variables, with rules ready to be copied and pasted for data.tables
 * Visualize interactively Color Brewer palettes with unlimited colors (unlike the original palettes), with ready to copy&paste color codes as vectors
+* Monitor xgboost training in real time
 
 **Optimization:**
 
@@ -156,15 +160,13 @@ Mostly... in a nutshell:
 If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
 
 ```r
-library(devtools)
-install_github("Laurae2/Laurae")
+devtools::install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```r
-library(devtools)
-install_git("git://github.com/Laurae2/Laurae.git")
+devtools::install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
 Need all R dependencies in one shot?:
@@ -172,7 +174,7 @@ Need all R dependencies in one shot?:
 ```r
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "miniUI", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -186,8 +188,8 @@ If I am not missing stuff (please make a pull request if something is missing th
 | --- | :---: | --- |
 | Microsoft/LightGBM | YES (install separately, from PR 33\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.metric, lgbm.fi.plot, LauraeML_lgbreg |
 | dmlc/xgboost | YES (install separately, from PR 1855\*\*) | xgb.ncv, xgb.opt.depth, report.xgb, LauraeML_gblinear, LauraeML_gblinear_par, Lextravagenza, pred.Lextravagenza, predictor_xgb, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
-| Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep |
-| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, DTcolsample, setDF, DTfillNA, DT2mat, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par, partial_dep.obs, partial_dep.obs_all, predictor_xgb, partial_dep.plot, partial_dep.feature, cbindlist, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
+| Laurae2/sparsity | YES (\*\*\*) | lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, *xgboard functions* |
+| data.table | No | read_sparse_csv, lgbm.train, lgbm.predict, lgbm.cv, lgbm.cv.prep, lgbm.fi, lgbm.fi.plot, DTcbind, DTrbind, DTsubsample, DTcolsample, setDF, DTfillNA, DT2mat, report.lm, report.xgb, interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer, LauraeML, LauraeML_gblinear, LauraeML_gblinear_par, partial_dep.obs, partial_dep.obs_all, predictor_xgb, partial_dep.plot, partial_dep.feature, cbindlist, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred, *xgboard functions* |
 | foreach | No | LauraeML_gblinear_par |
 | doParallel | No | LauraeML_gblinear_par |
 | rpart | No | FeatureLookup, interactive.eda_tree |
@@ -211,9 +213,10 @@ If I am not missing stuff (please make a pull request if something is missing th
 | rmarkdown | No | report.lm, report.xgb, interactive.eda_tree |
 | shiny | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
 | shinydashboard | No | interactive.SymbolicLoss, interactive.eda_ggplot, interactive.eda_tree, interactive.eda_3djs, interactive.eda_plotly, interactive.eda_RColorBrewer |
+| miniUI | No | *xgboard functions* |
 | Matrix | No | read_sparse_csv, CRTreeForest, CRTreeForest_pred, CascadeForest, CascadeForest_pred, MGScanning, MGScanning_pred |
 | matrixStats | No | report.lm, report.xgb |
-| R.utils | No | rule_single, rule_double, report.lm, report.xgb |
+| R.utils | No | rule_single, rule_double, report.lm, report.xgb, *xgboard functions* |
 | Rtsne | No | tsne_grid |
 | recommenderlab | No | read_sparse_csv (only when using NAs as sparse) |
 | Rcpp | No | sparsity (package) |
@@ -312,6 +315,13 @@ Write in your R console `sink()` until you get an error.
 | CRTreeForest | Complete-Random Tree Forest | Trains a Complete-Random Tree Forest model which is used in Cascade Forests from Deep Forests. You can use CRTreeForest_pred to predict from it. |
 | CascadeForest | Cascade Forest | Trains a Cascade Forest model which is the equivalent of a Multilayer Perceptron / Neural Network. Adding MGScanning before it makes it become a Deep Forest. Performance is very similar to LeNet (untested against other implementations yet), which is a convolutional neural network (CNN). You can use CascadeForest_pred to predict from it. |
 | MGScanning | Multi-Grained Scanning | Trains a Multi-Grained Scanning model which is, when used as features for a Cascade Forest, turns it into a Deep Forest. You can use MGScannning_pred to predict from it. |
+| xgboard.run | Xgboard Dashboard (run) | Runs Xgboard Dashboard using the IP and port you specify and opens a window in a new browser (if asked to). By default, it uses `127.0.0.1:6700`. You can use IP `0.0.0.0` for broadcasting in your Intranet. |
+| xgboard.init | Xgboard Dashboard (init) | Initialize an environment for xgboost. |
+| xgboard.time | Xgboard Dashboard (reset) | Resets the time environment for xgboost. |
+| xgboard.dump | Xgboard Dashboard (dump) | Performs dumping of metrics when passed in an evaluation metric. |
+| xgboard.xgb | Xgboard Dashboard (eval_metric) | (Easy) wrapper for the evaluation metric to pass to xgboost. |
+| xgboard.eval.error | Xgboard Dashboard (metric) | Evaluates the best threshold for maximum binary accuracy and return both accuracy and threshold. |
+| xgboard.eval.logloss | Xgboard Dashboard (metric) | Evaluates the logartihmic loss for binary classification. |
 
 # TO-DO:
 
@@ -500,7 +510,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "miniUI", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```
@@ -510,15 +520,13 @@ devtools:::install_github("Laurae2/sparsity")
 You can now install the Laurae package and use the fully fledged version of it.
 
 ```r
-library(devtools)
-install_github("Laurae2/Laurae")
+devtools::install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```r
-library(devtools)
-install_git("git://github.com/Laurae2/Laurae.git")
+devtools::install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
 Getting a package error while running install_github/install_git which is not "could not connect to server"? Make sure you have the package outlined in the error, which is required by devtools.
@@ -620,15 +628,13 @@ Getting a package error while running install_github/install_git which is not "c
 If you already installed this package in the past, or you want to install this package super fast because you want the functions, run in R:
 
 ```r
-library(devtools)
-install_github("Laurae2/Laurae")
+devtools::install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```r
-library(devtools)
-install_git("git://github.com/Laurae2/Laurae.git")
+devtools::install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
 Need all R dependencies in one shot?:
@@ -636,7 +642,7 @@ Need all R dependencies in one shot?:
 ```r
 devtools:::install_github("ramnathv/rCharts")
 install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot_1.1.tar.gz", repos=NULL, type="source")
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "miniUI", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("Laurae2/sparsity")
 ```
 
@@ -962,7 +968,7 @@ install.packages("https://cran.r-project.org/src/contrib/Archive/tabplot/tabplot
 You can install the other packages by running in your R console:
 
 ```r
-install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
+install.packages(c("data.table", "foreach", "doParallel", "rpart", "rpart.plot", "partykit", "tabplot", "partykit", "ggplot2", "ggthemes", "plotluck", "grid", "gridExtra", "RColorBrewer", "lattice", "car", "CEoptim", "DT", "formattable", "rmarkdown", "shiny", "shinydashboard", "miniUI", "Matrix", "matrixStats", "R.utils", "Rtsne", "recommenderlab", "Rcpp", "RcppArmadillo", "mgcv", "Deriv", "outliers", "MASS", "stringi"))
 devtools:::install_github("ramnathv/rCharts")
 devtools:::install_github("Laurae2/sparsity")
 ```
@@ -972,15 +978,13 @@ devtools:::install_github("Laurae2/sparsity")
 You can now install the Laurae package and use the fully fledged version of it.
 
 ```r
-library(devtools)
-install_github("Laurae2/Laurae")
+devtools::install_github("Laurae2/Laurae")
 ```
 
 Running in a Virtual Machine and/or have no proxy redirection from R? Use the following alternative:
 
 ```r
-library(devtools)
-install_git("git://github.com/Laurae2/Laurae.git")
+devtools::install_git("git://github.com/Laurae2/Laurae.git")
 ```
 
 Getting a package error while running install_github/install_git which is not "could not connect to server"? Make sure you have the package outlined in the error, which is required by devtools.

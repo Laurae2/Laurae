@@ -82,6 +82,7 @@ Laurae_load <- function() {
   # try(library(rmarkdown))
   # try(library(shiny))
   # try(library(shinydashboard))
+  # try(library(miniUI))
   # try(library(Matrix))
   # try(library(matrixStats))
   # try(library(R.utils))
@@ -96,7 +97,7 @@ Laurae_load <- function() {
   # try(library(infotheo))
   # try(library(trend))
   # try(library(stringi))
-  eval(parse(text = "try(library(xgboost));try(library(lightgbm));try(library(foreach));try(library(doParallel));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(GGally));try(library(ggthemes));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(mgcv));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(infotheo));try(library(trend));try(library(stringi))"))
+  eval(parse(text = "try(library(xgboost));try(library(lightgbm));try(library(foreach));try(library(doParallel));try(library(rpart));try(library(rpart.plot));try(library(partykit));try(library(tabplot));try;try(library(rCharts));try(library(plotly));try(library(ggplot2));try(library(GGally));try(library(ggthemes));try(library(plotluck));try(library(grid));try(library(gridExtra));try(library(RColorBrewer));try(library(lattice));try(library(car));try(library(CEoptim));try(library(DT));try(library(formattable));try(library(rmarkdown));try(library(shiny));try(library(shinydashboard));try(library(miniUI));try(library(Matrix));try(library(matrixStats));try(library(R.utils));try(library(Rtsne));try(library(recommenderlab));try(library(sparsity));try(library(RcppArmadillo));try(library(mgcv));try(library(Deriv));try(library(outliers));try(library(MASS));try(library(infotheo));try(library(trend));try(library(stringi))"))
 }
 
 
